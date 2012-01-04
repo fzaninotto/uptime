@@ -1,29 +1,62 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
+// models dependencies
+var Ping   = require('../models/ping').Ping;
 
+// embedded document
+var GroupMembership = new Schema({
+    name   : { type: String, default: 'all' }
+  , weight : { type: Number, default: 1 }
+});
+
+// main model
 var Target = new Schema({
     url         : String
   , timeout     : Number
-  , weight      : Number
+  , groups      : [GroupMembership]
   , lastChanged : Date
   , lastTested  : Date
   , lastStatus  : Boolean
+  , uptime      : { type: Number, default: 0 }
+  , downtime    : { type: Number, default: 0 }
+  , qos         : {}
 });
+
 Target.methods.setLastTest = function(date, status) {
   this.lastTested = date;
   if (this.lastStatus != status) {
     this.lastChanged = date;
     this.lastStatus = status;
+    this.uptime = 0;
+    this.downtime = 0;
+  }
+  var durationSinceLastChange = date - this.lastChanged;
+  if (status) {
+    this.uptime = durationSinceLastChange;
+  } else {
+    this.downtime = durationSinceLastChange;
   }
   return this;
 }
+
 Target.methods.isUp = function() {
   return this.lastStatus == true;
 }
-Target.methods.getUptime = function() {
-  if (!this.isUp()) return false;
-  return Date.now() - this.lastChanged;
+
+Target.methods.updateQos = function(callback) {
+  var target = this;
+  Ping.countForTarget(target, new Date() - (24 * 60 * 60 * 1000), new Date(), function(err, result) {
+    target.qos = result[0].value;
+    target.markModified('qos');
+    target.save(callback);
+  });
+}
+
+Target.statics.updateAllQos = function(callback) {
+  this.find({}, function (err, targets) {
+    targets.forEach(function(target) { target.updateQos(callback); });
+  });
 }
 
 exports.Target = mongoose.model('Target', Target);
