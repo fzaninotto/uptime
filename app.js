@@ -16,6 +16,6 @@ mongoose.connect('mongodb://' + mongodbUser + ':' + mongodbPassword + '@' + mong
 m = monitor.createMonitor(2000);
 m.start();
 
-// test reduce
 var Target = require('./models/target').Target;
-Target.updateAllQos();
+// Update QoS for each target
+setInterval(Target.updateAllQos.bind(Target), 10000);
