@@ -44,6 +44,11 @@ Target.methods.isUp = function() {
   return this.lastStatus == true;
 }
 
+Target.methods.getQosPercentage = function() {
+  if (!this.qos) return false;
+  return (this.qos.ups / this.qos.count) * 100;
+}
+
 Target.methods.updateQos = function(callback) {
   var target = this;
   Ping.countForTarget(target, new Date() - (24 * 60 * 60 * 1000), new Date(), function(err, result) {
@@ -52,6 +57,14 @@ Target.methods.updateQos = function(callback) {
     target.markModified('qos');
     target.save(callback);
   });
+}
+
+Target.statics.findUpByUptime = function(callback) {
+  this.where('lastStatus', true).asc('uptime').run(callback);
+}
+
+Target.statics.findDownByDowntime = function(callback) {
+  this.where('lastStatus', false).desc('downtime').run(callback);
 }
 
 Target.statics.updateAllQos = function(callback) {
