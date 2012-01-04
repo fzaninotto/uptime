@@ -1,6 +1,7 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
+
 var Target = new Schema({
     url         : String
   , timeout     : Number
