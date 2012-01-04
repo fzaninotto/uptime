@@ -12,7 +12,8 @@ var GroupMembership = new Schema({
 
 // main model
 var Target = new Schema({
-    url         : String
+    name        : String
+  , url         : String
   , timeout     : Number
   , groups      : [GroupMembership]
   , lastChanged : Date
