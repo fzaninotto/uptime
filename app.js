@@ -3,8 +3,10 @@
  */
 
 var mongoose = require('mongoose'),
-    poller   = require('./lib/poller'),
-    schema   = require('./lib/schema');
+    poller   = require('./lib/poller');
+
+// models
+var Target = require('./models/target').Target;
 
 // configure mongodb
 var mongodbUser = 'root';
@@ -14,18 +16,18 @@ var mongodbDatabase = 'uptime';
 mongoose.connect('mongodb://' + mongodbUser + ':' + mongodbPassword + '@' + mongodbServer +'/' + mongodbDatabase);
 
 // clear database
-schema.Target.remove({}, function (err) {
+Target.remove({}, function (err) {
   if (err) console.dir(err);
 });
 
 // add two targets
-t = new schema.Target();
+t = new Target();
 t.url = 'http://www.google.com/index.html';
 t.timeout = 300;
 t.save(function (err) {
   if (err) console.dir(err);
 });
-t = new schema.Target();
+t = new Target();
 t.url = 'http://www.yahoo.com/';
 t.timeout = 1000;
 t.save(function (err) {
@@ -33,7 +35,7 @@ t.save(function (err) {
 });
 
 // poll targets
-schema.Target.find({}, function (err, docs) {
+Target.find({}, function (err, docs) {
   if (err) console.dir(err);
   docs.forEach(function(doc) {
     p = poller.createPoller(doc.url, function() {
