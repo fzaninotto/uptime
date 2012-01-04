@@ -15,3 +15,14 @@ mongoose.connect('mongodb://' + mongodbUser + ':' + mongodbPassword + '@' + mong
 // poll targets
 m = monitor.createMonitor(2000);
 m.start();
+
+// test reduce
+var Ping = require('./models/ping').Ping;
+var Target = require('./models/target').Target;
+Target.find({}, function (err, targets) {
+  targets.forEach(function(target) {
+    Ping.countForTarget(target, function(err, result) {
+      console.dir(result);
+    });
+  });
+});
