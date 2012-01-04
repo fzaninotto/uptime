@@ -47,6 +47,7 @@ Target.methods.isUp = function() {
 Target.methods.updateQos = function(callback) {
   var target = this;
   Ping.countForTarget(target, new Date() - (24 * 60 * 60 * 1000), new Date(), function(err, result) {
+    if (err || !(0 in result)) return;
     target.qos = result[0].value;
     target.markModified('qos');
     target.save(callback);
@@ -57,6 +58,29 @@ Target.statics.updateAllQos = function(callback) {
   this.find({}, function (err, targets) {
     targets.forEach(function(target) { target.updateQos(callback); });
   });
+}
+
+Target.statics.countForGroups = function(callback) {
+  var mapFunction = function() {
+    var target = this;
+    this.groups.forEach(function(group) {
+      emit(group.name, { qos: target.qos } )
+    });
+  }
+  var reduceFunction = function(key, values) {
+    var result = { qos: { count: 0, ups: 0 } };
+    values.forEach(function(value) {
+      result.qos.count += value.qos.count;
+      result.qos.ups   += value.qos.ups;
+    });
+    return result;
+  }
+  this.collection.mapReduce(
+    mapFunction.toString(),
+    reduceFunction.toString(),
+    { out: { inline: 1 } },
+    callback
+  );
 }
 
 exports.Target = mongoose.model('Target', Target);
