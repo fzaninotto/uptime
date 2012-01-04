@@ -1,0 +1,8 @@
+{
+    "name": "uptime"
+  , "version": "0.0.1"
+  , "private": true
+  , "dependencies": {
+        "mongoose" : "2.3.13"
+  }
+}
