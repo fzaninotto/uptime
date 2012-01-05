@@ -4,6 +4,7 @@ var mongoose = require('mongoose'),
 var Ping = new Schema({
     date   : { type: Date, default: Date.now }
   , isUp   : Boolean
+  , time   : Number
   , target : Schema.ObjectId
 });
 
@@ -11,10 +12,11 @@ Ping.methods.findTarget = function(callback) {
   return this.db.model('Target').findById(this.target, callback);
 }
 
-Ping.statics.createForTarget = function(target, status, callback) {
+Ping.statics.createForTarget = function(target, status, time, callback) {
   ping = new this();
   ping.target = target;
   ping.isUp = status;
+  ping.time = time;
   ping.save(callback);
 }
 
