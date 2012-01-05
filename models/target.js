@@ -60,17 +60,28 @@ Target.methods.updateQos = function(callback) {
   });
 }
 
-Target.statics.findUpByUptime = function(callback) {
-  this.where('lastStatus', true).asc('uptime').run(callback);
-}
-
-Target.statics.findDownByDowntime = function(callback) {
-  this.where('lastStatus', false).desc('downtime').run(callback);
+Target.statics.findByUptime = function(order, callback) {
+  if (typeof order == 'undefined' || order == 'asc') {
+    // return first targets that are down since a long time,
+    // then the ones down since not that long,
+    // then the ones up since not that long,
+    // then the ones up since a long time
+    // useful for monitoring
+    this.find({}).desc('downtime').asc('uptime').run(callback);
+  } else {
+    // return first atrgets that are up since a long time
+    // then the ones up since not that long
+    // then the ones down since not that long
+    // then the ones down since a long time
+    // useful to see the most stable services
+    this.find({}).desc('uptime').asc('downtime').run(callback);
+  }
 }
 
 Target.statics.updateAllQos = function(callback) {
-  this.find({}, function (err, targets) {
-    targets.forEach(function(target) { target.updateQos(callback); });
+  this.find({}).each(function (err, target) {
+    if(err || !target) return;
+    target.updateQos(callback);
   });
 }
 
