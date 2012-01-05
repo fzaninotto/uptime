@@ -14,11 +14,11 @@ var GroupMembership = new Schema({
 var Target = new Schema({
     name        : String
   , url         : String
-  , timeout     : Number
+  , maxTime     : Number             // time under which a ping is considered responsive
   , groups      : [GroupMembership]
   , lastChanged : Date
   , lastTested  : Date
-  , lastStatus  : Boolean
+  , isUp        : Boolean
   , uptime      : { type: Number, default: 0 }
   , downtime    : { type: Number, default: 0 }
   , qos         : {}
@@ -26,9 +26,9 @@ var Target = new Schema({
 
 Target.methods.setLastTest = function(date, status) {
   this.lastTested = date;
-  if (this.lastStatus != status) {
+  if (this.isUp != status) {
     this.lastChanged = date;
-    this.lastStatus = status;
+    this.isUp = status;
     this.uptime = 0;
     this.downtime = 0;
   }
@@ -39,10 +39,6 @@ Target.methods.setLastTest = function(date, status) {
     this.downtime = durationSinceLastChange;
   }
   return this;
-}
-
-Target.methods.isUp = function() {
-  return this.lastStatus == true;
 }
 
 Target.methods.getQosPercentage = function() {
@@ -93,10 +89,11 @@ Target.statics.countForGroups = function(callback) {
     });
   }
   var reduceFunction = function(key, values) {
-    var result = { qos: { count: 0, ups: 0 } };
+    var result = { qos: { count: 0, ups: 0, responsives: 0 } };
     values.forEach(function(value) {
-      result.qos.count += value.qos.count;
-      result.qos.ups   += value.qos.ups;
+      result.qos.count       += value.qos.count;
+      result.qos.ups         += value.qos.ups;
+      result.qos.responsives += value.qos.responsives;
     });
     return result;
   }

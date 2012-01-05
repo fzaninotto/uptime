@@ -19,8 +19,8 @@ You must also add target URIs to monitor. For now, this must be done directly in
 
     > mongo uptime
     connecting to: uptime
-    > db.targets.save({ name: 'Google', url: 'http://www.google.com/index.html', timeout: 1000 })
-    > db.targets.save({ name: 'Yahoo',  url: 'http://www.yahoo.com/', timeout: 5000})
+    > db.targets.save({ name: 'Google', url: 'http://www.google.com/index.html', maxTime: 1000 })
+    > db.targets.save({ name: 'Yahoo',  url: 'http://www.yahoo.com/', maxTime: 5000})
 
 Running the Uptime Monitor
 --------------------------
@@ -36,7 +36,6 @@ TODO
 
 * Create a web API
 * Create a web GUI
-* Distinguish between availability and performance
 * Keep QoS history in targets (month per month)
 * Cleanup old pings automatically to save disk space
 * Allow email alerts in case of non-availability (not sure if this should be part of the lib)
