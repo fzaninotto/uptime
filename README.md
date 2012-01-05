@@ -41,3 +41,4 @@ TODO
 * Cleanup old pings automatically to save disk space
 * Allow email alerts in case of non-availability (not sure if this should be part of the lib)
 * Account for scheduled maintenance (and provide two QoS calculations: with and without scheduled maintenance)
+* Allow for JavaScript execution in the monitored resources by using a headless browser (probably zombie.js)
