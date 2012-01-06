@@ -11,7 +11,7 @@ var GroupMembership = new Schema({
 });
 
 // main model
-var Target = new Schema({
+var Check = new Schema({
     name        : String
   , url         : String
   , maxTime     : Number             // time under which a ping is considered responsive
@@ -24,7 +24,7 @@ var Target = new Schema({
   , qos         : {}
 });
 
-Target.methods.setLastTest = function(date, status) {
+Check.methods.setLastTest = function(date, status) {
   this.lastTested = date;
   if (this.isUp != status) {
     this.lastChanged = date;
@@ -41,24 +41,24 @@ Target.methods.setLastTest = function(date, status) {
   return this;
 }
 
-Target.methods.getQosPercentage = function() {
+Check.methods.getQosPercentage = function() {
   if (!this.qos) return false;
   return (this.qos.ups / this.qos.count) * 100;
 }
 
-Target.methods.updateQos = function(callback) {
-  var target = this;
-  Ping.countForTarget(target, new Date() - (24 * 60 * 60 * 1000), new Date(), function(err, result) {
+Check.methods.updateQos = function(callback) {
+  var check = this;
+  Ping.countForCheck(check, new Date() - (24 * 60 * 60 * 1000), new Date(), function(err, result) {
     if (err || !(0 in result)) return;
-    target.qos = result[0].value;
-    target.markModified('qos');
-    target.save(callback);
+    check.qos = result[0].value;
+    check.markModified('qos');
+    check.save(callback);
   });
 }
 
-Target.statics.findByUptime = function(order, callback) {
+Check.statics.findByUptime = function(order, callback) {
   if (typeof order == 'undefined' || order == 'asc') {
-    // return first targets that are down since a long time,
+    // return first checks that are down since a long time,
     // then the ones down since not that long,
     // then the ones up since not that long,
     // then the ones up since a long time
@@ -74,18 +74,18 @@ Target.statics.findByUptime = function(order, callback) {
   }
 }
 
-Target.statics.updateAllQos = function(callback) {
-  this.find({}).each(function (err, target) {
-    if(err || !target) return;
-    target.updateQos(callback);
+Check.statics.updateAllQos = function(callback) {
+  this.find({}).each(function (err, check) {
+    if(err || !check) return;
+    check.updateQos(callback);
   });
 }
 
-Target.statics.countForGroups = function(callback) {
+Check.statics.countForGroups = function(callback) {
   var mapFunction = function() {
-    var target = this;
+    var check = this;
     this.groups.forEach(function(group) {
-      emit(group.name, { qos: target.qos } )
+      emit(group.name, { qos: check.qos } )
     });
   }
   var reduceFunction = function(key, values) {
@@ -105,4 +105,4 @@ Target.statics.countForGroups = function(callback) {
   );
 }
 
-exports.Target = mongoose.model('Target', Target);
+exports.Check = mongoose.model('Check', Check);

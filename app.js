@@ -12,7 +12,7 @@ var mongodbServer = 'localhost';
 var mongodbDatabase = 'uptime';
 mongoose.connect('mongodb://' + mongodbUser + ':' + mongodbPassword + '@' + mongodbServer +'/' + mongodbDatabase);
 
-// poll targets every 2 seconds and update the QoS score every 5 seconds
+// poll checks every 2 seconds and update the QoS score every 5 seconds
 m = monitor.createMonitor(2000, 5000);
 m.start();
 
