@@ -4,6 +4,7 @@
 
 var mongoose = require('mongoose'),
     express  = require('express'),
+    api      = require('./routes/api'),
     monitor  = require('./lib/monitor');
 
 // configure mongodb
@@ -20,6 +21,7 @@ m.start();
 var app = module.exports = express.createServer();
 
 // Configuration
+
 app.configure(function(){
   app.use(app.router);
 });
@@ -35,17 +37,10 @@ app.configure('production', function(){
   app.use(express.errorHandler());
 });
 
-var Check = require('./models/check').Check;
-app.get('/api/check', function(req, res){
-  Check.byUptime().find({}).exclude('qos').run(function(err, checks) {
-    res.json(checks);
-  });
-});
+// Routes
 
-app.get('/api/check/:name', function(req, res){
-  Check.findOne({ name: req.params.name }, function(err, check) {
-    res.json(check);
-  });
-});
+app.get('/api/check',       api.checkAll);
+app.get('/api/check/:name', api.checkOne);
 
 app.listen(3000);
+console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
