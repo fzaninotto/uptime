@@ -3,6 +3,7 @@
  */
 
 var mongoose = require('mongoose'),
+    express  = require('express'),
     monitor  = require('./lib/monitor');
 
 // configure mongodb
@@ -16,3 +17,35 @@ mongoose.connect('mongodb://' + mongodbUser + ':' + mongodbPassword + '@' + mong
 m = monitor.createMonitor(2000, 5000);
 m.start();
 
+var app = module.exports = express.createServer();
+
+// Configuration
+app.configure(function(){
+  app.use(app.router);
+});
+
+app.configure('development', function(){
+  app.use(express.static(__dirname + '/public'));
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+});
+
+app.configure('production', function(){
+  var oneYear = 31557600000;
+  app.use(express.static(__dirname + '/public', { maxAge: oneYear }));
+  app.use(express.errorHandler());
+});
+
+var Check = require('./models/check').Check;
+app.get('/api/check', function(req, res){
+  Check.byUptime().find({}).exclude('qos').run(function(err, checks) {
+    res.json(checks);
+  });
+});
+
+app.get('/api/check/:name', function(req, res){
+  Check.findOne({ name: req.params.name }, function(err, check) {
+    res.json(check);
+  });
+});
+
+app.listen(3000);

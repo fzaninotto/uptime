@@ -56,23 +56,23 @@ Check.methods.updateQos = function(callback) {
   });
 }
 
-Check.statics.findByUptime = function(order, callback) {
+Check.namedScope('byUptime', function(order) {
   if (typeof order == 'undefined' || order == 'asc') {
     // return first checks that are down since a long time,
     // then the ones down since not that long,
     // then the ones up since not that long,
     // then the ones up since a long time
     // useful for monitoring
-    this.find({}).desc('downtime').asc('uptime').run(callback);
+    return this.find({}).desc('downtime').asc('uptime');
   } else {
     // return first atrgets that are up since a long time
     // then the ones up since not that long
     // then the ones down since not that long
     // then the ones down since a long time
     // useful to see the most stable services
-    this.find({}).desc('uptime').asc('downtime').run(callback);
+    return this.find({}).desc('uptime').asc('downtime');
   }
-}
+});
 
 Check.statics.updateAllQos = function(callback) {
   this.find({}).each(function (err, check) {
