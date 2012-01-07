@@ -1,0 +1,22 @@
+<h1>Checks</h1>
+<table id="checks">
+  <thead>
+    <tr><th>Name</th><th>Up?</th><th>Uptime/Downtime</th></tr>
+    <tbody></tbody>
+  </thead>
+</table>
+<script>
+$(document).ready(function() {
+  var updateChecks = function() {
+    $.getJSON('/api/check', function(checks) {
+      var lines = [];
+      $.each(checks, function(key, check) {
+        lines.push('<tr><td>' + check.name + '</td><td>' + (check.isUp ? 'up' : 'down') + '</td><td>' + (check.isUp ? check.uptime : check.downtime)+ '</td></tr>');
+      });
+      $('#checks tbody').html(lines.join(''));
+    });
+  }
+  updateChecks();
+  window.setInterval(updateChecks, 5000);
+});
+</script>

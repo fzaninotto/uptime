@@ -37,7 +37,8 @@ app.configure('production', function(){
 });
 
 // Routes
-app.use('/api', require('./app/api/app'));
+app.use('/api',       require('./app/api/app'));
+app.use('/dashboard', require('./app/dashboard/app'));
 
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
