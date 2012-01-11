@@ -17,6 +17,8 @@ module.exports = function(app) {
   
   app.get('/check/:name', function(req, res) {
     Check.findOne({ name: req.params.name }, function(err, check) {
+      if (err) return next(err);
+      if (!check) return next(new Error('failed to load check ' + req.params.name));
       res.json(check);
     });
   });

@@ -15,6 +15,7 @@ module.exports = function(app) {
       if (err) return next(err);
       if (!check) return next(new Error('failed to load check ' + req.params.id));
       Ping.find({ check: check }).desc('date').limit(50).run(function(err, pings) {
+        if (err) return next(err);
         res.json(pings);
       });
     });
