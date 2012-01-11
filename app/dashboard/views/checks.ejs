@@ -1,20 +1,22 @@
 <h1>Checks</h1>
-<table class="span4" style="margin: 0 auto">
+<table id="check_summary">
+  <thead>
+    <tr><th><span class="label success">Up</span></th><th><span class="label important">Down</label></th></tr>
+  </thead>
   <tbody>
-    <thead>
-      <tr><th><span class="label success">Up</span></th><th><span class="label important">Down</label></th></tr>
-    </thead>
-    <tr style="font-size:3em"><td id="all_up" class="green"></td><td id="all_down" class="red"></td></tr>
+    <tr><td id="all_up" class="green"></td><td id="all_down" class="red"></td></tr>
   </tbody>
 </table>
 <table id="checks">
   <thead>
-    <tr><th>Name</th><th>Up?</th><th>Uptime/Downtime</th></tr>
+    <tr><th>Name</th><th>Up?</th><th>Uptime</th><th>Up for</th></tr>
   </thead>
   <tbody></tbody>
 </table>
+<script src="<%= route %>/javascripts/jquery.timeago.js"></script>
 <script>
-$(document).ready(function() {
+jQuery(document).ready(function($) {
+  $.timeago.settings.strings.suffixAgo = null;
   var updateChecks = function() {
     $.getJSON('/api/check', function(checks) {
       var all_up = all_down = 0;

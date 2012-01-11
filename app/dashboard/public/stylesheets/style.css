@@ -1,3 +1,18 @@
 body {
   padding-top: 50px;
 }
+
+table#check_summary {
+  float: right;
+  display: block;
+  width: auto;
+  margin: -50px 0 10px 0;
+}
+
+table#check_summary tbody tr {
+  font-size: 3em;
+}
+
+table#check_summary td, table#check_summary th {
+  text-align: center;
+}

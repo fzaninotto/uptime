@@ -10,7 +10,7 @@ var Check = require('../../../models/check').Check;
 module.exports = function(app) {
   
   app.get('/check', function(req, res) {
-    Check.byUptime().find({}).exclude('qos').run(function(err, checks) {
+    Check.byUptime().find({}).run(function(err, checks) {
       res.json(checks);
     });
   });

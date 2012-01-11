@@ -1,5 +1,6 @@
 <tr class="<%= check.isUp ? 'green' : 'red' %>">
   <td><%= link_to(check.name, route + '/check/' + check._id) %> <%= link_to(img_tag(route + '/images/external-link-ltr-icon.png', check.url), check.url) %></td>
   <td><span class="label <%= (check.isUp ? 'success' : 'important') %>"><%= (check.isUp ? 'yes' : 'no') %></span></td>
-  <td><%= (check.isUp ? check.uptime : check.downtime) %></td>
+  <td><%= ((check.qos.ups / check.qos.count) * 100).toFixed(3) %>%</td>
+  <td><%= check.isUp ? $.timeago.inWords(check.uptime) : 'Down for ' + $.timeago.inWords(check.downtime) %></td>
 </tr>
