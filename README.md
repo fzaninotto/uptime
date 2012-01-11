@@ -6,7 +6,7 @@ A simple remote monitoring utility using node.js and MongoDB.
 Installing Dependencies
 -----------------------
 
-Uptime requires [Mongoose](http://mongoosejs.com/), a JavaScript ODM for MongoDB. To install all dependencies in one command, use the Node Package Manager:
+Uptime requires [Mongoose](http://mongoosejs.com/), a JavaScript ODM for MongoDB, [ExpressJS](http://expressjs.com/index.html), a MVC framework for Node, and [EJS](https://github.com/visionmedia/ejs), a JavsScript templating engine. To install all dependencies in one command, use the Node Package Manager:
 
     > npm install
 
@@ -34,9 +34,8 @@ As of now, this starts the polling of all checks and the calculation of their qu
 TODO
 ----
 
-* Create a web API
-* Create a web GUI
 * Keep QoS history in checks (month per month)
+* Add groups API and GUI
 * Cleanup old pings automatically to save disk space
 * Allow email alerts in case of non-availability (not sure if this should be part of the lib)
 * Account for scheduled maintenance (and provide two QoS calculations: with and without scheduled maintenance)
