@@ -1,5 +1,5 @@
-<tr>
-  <td><%= check.name %></td>
+<tr class="<%= check.isUp ? 'green' : 'red' %>">
+  <td><%= link_to(check.name, '#') %> <%= link_to(img_tag(route + '/images/external-link-ltr-icon.png', check.url), check.url) %></td>
   <td><%= (check.isUp ? 'up' : 'down') %></td>
   <td><%= (check.isUp ? check.uptime : check.downtime) %></td>
 </tr>
