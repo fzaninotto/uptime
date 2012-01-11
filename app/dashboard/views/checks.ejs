@@ -5,13 +5,14 @@
     <tbody></tbody>
   </thead>
 </table>
+<script src="<%= route %>/javascripts/ejs_production.js"></script>
 <script>
 $(document).ready(function() {
   var updateChecks = function() {
     $.getJSON('/api/check', function(checks) {
       var lines = [];
       $.each(checks, function(key, check) {
-        lines.push('<tr><td>' + check.name + '</td><td>' + (check.isUp ? 'up' : 'down') + '</td><td>' + (check.isUp ? check.uptime : check.downtime)+ '</td></tr>');
+        lines.push(new EJS({ url: '<%= route %>/partials/check.ejs' }).render({ check: check }));
       });
       $('#checks tbody').html(lines.join(''));
     });

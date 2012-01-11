@@ -24,8 +24,8 @@ app.configure('production', function(){
 
 // Routes
 
-app.get('/', function(req, res) {
-  res.render('index');
+app.get('/checks', function(req, res) {
+  res.render('checks', { route: app.route });
 });
 
 if (!module.parent) {
