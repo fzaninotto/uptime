@@ -28,14 +28,15 @@ Ping.statics.createForCheck = function(check, status, time, callback) {
 
 Ping.statics.countForCheck = function(check, start, end, callback) {
   var mapFunction = function() {
-    emit(this.check, { count: 1, ups: this.isUp ? 1 : 0 , responsives: this.isResponsive ? 1 : 0 } )
+    emit(this.check, { count: 1, ups: this.isUp ? 1 : 0 , responsives: this.isResponsive ? 1 : 0, time: this.time } )
   }
   var reduceFunction = function(key, values) {
-    var result = { count: 0, ups: 0, responsives: 0 };
+    var result = { count: 0, ups: 0, responsives: 0, time: 0 };
     values.forEach(function(value) {
       result.count       += value.count;
       result.ups         += value.ups;
       result.responsives += value.responsives;
+      result.time        += value.time;
     });
     return result;
   }
