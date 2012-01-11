@@ -1,0 +1,25 @@
+<h1>
+  Check "<%= check.name %>"
+  <small><%= check.url %></small>
+</h1>
+<table id="pings">
+  <thead>
+    <tr><th>Date</th><th>Up?</th><th>Responsive?</th><th>Response time</th></tr>
+  </thead>
+  <tbody></tbody>
+</table>
+<script>
+$(document).ready(function() {
+  var updatePings = function() {
+    $.getJSON('/api/pings/check/<%= check._id %>', function(pings) {
+      var lines = [];
+      $.each(pings, function(key, ping) {
+        lines.push(new EJS({ url: '<%= route %>/partials/ping.ejs' }).render({ ping: ping }));
+      });
+      $('#pings tbody').html(lines.join(''));
+    });
+  }
+  updatePings();
+  window.setInterval(updatePings, 5000);
+});
+</script>

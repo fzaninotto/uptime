@@ -3,6 +3,8 @@
  */
 var express = require('express');
 
+var Check = require('../../models/check').Check;
+
 var app = module.exports = express.createServer();
 
 // middleware
@@ -26,6 +28,14 @@ app.configure('production', function(){
 
 app.get('/checks', function(req, res) {
   res.render('checks', { route: app.route });
+});
+
+app.get('/check/:id', function(req, res) {
+  Check.findOne({ _id: req.params.id }, function(err, check) {
+    if (err) return next(err);
+    if (!check) return next(new Error('failed to load check ' + req.params.id));
+    res.render('check', { route: app.route, check: check });
+  });
 });
 
 if (!module.parent) {

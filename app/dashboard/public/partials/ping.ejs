@@ -1,0 +1,6 @@
+<tr class="<%= ping.isUp ? 'green' : 'red' %>">
+  <td><%= ping.date %></td>
+  <td><span class="label <%= (ping.isUp ? 'success' : 'important') %>"><%= (ping.isUp ? 'yes' : 'no') %></span></td>
+  <td><span class="label <%= (ping.isResponsive ? 'success' : 'important') %>"><%= (ping.isResponsive ? 'yes' : 'no') %></span></td>
+  <td><%= ping.time %></td>
+</tr>
