@@ -5,6 +5,6 @@
   , "dependencies": {
         "mongoose" : "2.3.13"
       , "express": "2.5.0"
-      , "ejs": "0.5.0"
+      , "ejs": "0.6.1"
   }
 }

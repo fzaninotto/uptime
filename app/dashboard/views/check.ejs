@@ -27,7 +27,7 @@ $(document).ready(function() {
     $.getJSON('/api/pings/check/<%= check._id %>', function(pings) {
       var lines = [];
       $.each(pings, function(key, ping) {
-        lines.push(ejs.render(ping_template, { locals: { ping: ping }}));
+        lines.push(ejs.render(ping_template, { ping: ping }));
       });
       $('#pings tbody').html(lines.join(''));
     });
