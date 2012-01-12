@@ -14,16 +14,33 @@
   <tbody></tbody>
 </table>
 <script src="<%= route %>/javascripts/jquery.timeago.js"></script>
+<script src="<%= route %>/javascripts/ejs.min.js"></script>
+<script id="check_template" type="text/template">
+<tr>
+  <td>
+    <a href="{{=  route + '/check/' + check._id }}">{{= check.name }}</a>
+    <a href="{{= check.url }}"><img src="{{= route }}/images/external-link-ltr-icon.png"></a>
+  </td>
+  <td><span class="label {{= (check.isUp ? 'success' : 'important') }}">{{= (check.isUp ? 'yes' : 'no') }}</span></td>
+  <td>{{= ((check.qos.ups / check.qos.count) * 100).toFixed(3) }}%</td>
+  <td>{{= Math.round(check.qos.time / check.qos.count) }}ms</td>
+  <td class="{{= check.isUp ? 'green' : 'red' }}">{{= check.isUp ? $.timeago.inWords(check.uptime) : 'Down for ' + $.timeago.inWords(check.downtime) }}</td>
+</tr>
+</script>
 <script>
 jQuery(document).ready(function($) {
   $.timeago.settings.strings.suffixAgo = null;
+  var check_template = document.getElementById('check_template').innerHTML;
+  var ejs = require('ejs');
+  ejs.open = '{{';
+  ejs.close = '}}';
   var updateChecks = function() {
     $.getJSON('/api/check', function(checks) {
       var all_up = all_down = 0;
       var lines = [];
       $.each(checks, function(key, check) {
         if (check.isUp) all_up += 1; else all_down += 1;
-        lines.push(new EJS({ url: '<%= route %>/partials/check.ejs' }).render({ check: check, route: '<%= route %>' }));
+        lines.push(ejs.render(check_template, { locals: { check: check, route: '<%= route %>' }}));
       });
       $('#checks tbody').html(lines.join(''));
       $('#all_up').text(all_up);

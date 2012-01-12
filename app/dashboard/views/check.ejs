@@ -8,13 +8,26 @@
   </thead>
   <tbody></tbody>
 </table>
+<script src="<%= route %>/javascripts/ejs.min.js"></script>
+<script id="ping_template" type="text/template">
+<tr class="{{= ping.isUp ? 'green' : 'red' }}">
+  <td>{{= new Date(ping.date).toLocaleString() }}</td>
+  <td><span class="label {{= (ping.isUp ? 'success' : 'important') }}">{{= (ping.isUp ? 'yes' : 'no') }}</span></td>
+  <td><span class="label {{= (ping.isResponsive ? 'success' : 'important') }}">{{= (ping.isResponsive ? 'yes' : 'no') }}</span></td>
+  <td>{{= ping.time }}</td>
+</tr>
+</script>
 <script>
 $(document).ready(function() {
+  var ping_template = document.getElementById('ping_template').innerHTML;
+  var ejs = require('ejs');
+  ejs.open = '{{';
+  ejs.close = '}}';
   var updatePings = function() {
     $.getJSON('/api/pings/check/<%= check._id %>', function(pings) {
       var lines = [];
       $.each(pings, function(key, ping) {
-        lines.push(new EJS({ url: '<%= route %>/partials/ping.ejs' }).render({ ping: ping }));
+        lines.push(ejs.render(ping_template, { locals: { ping: ping }}));
       });
       $('#pings tbody').html(lines.join(''));
     });
