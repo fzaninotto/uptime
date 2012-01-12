@@ -22,6 +22,7 @@ var Check = new Schema({
   , uptime      : { type: Number, default: 0 }
   , downtime    : { type: Number, default: 0 }
   , qos         : {}
+  , qosPerHour  : {}
 });
 
 Check.methods.setLastTest = function(date, status) {
@@ -48,7 +49,7 @@ Check.methods.getQosPercentage = function() {
 
 Check.methods.updateQos = function(callback) {
   var check = this;
-  Ping.countForCheck(check, new Date() - (24 * 60 * 60 * 1000), new Date(), function(err, result) {
+  Ping.countForCheck(check, new Date(Date.now() - (24 * 60 * 60 * 1000)), new Date(), function(err, result) {
     if (err || !(0 in result)) return;
     check.qos = result[0].value;
     check.markModified('qos');

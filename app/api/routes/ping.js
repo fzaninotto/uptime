@@ -11,10 +11,10 @@ var Check = require('../../../models/check').Check,
 module.exports = function(app) {
   
   app.get('/pings/check/:id', function(req, res) {
-    Check.findOne({ _id: req.params.id }, function(err, check) {
-      if (err) return next(err);
-      if (!check) return next(new Error('failed to load check ' + req.params.id));
-      Ping.find({ check: check }).desc('date').limit(50).run(function(err, pings) {
+    Check.count({ _id: req.params.id}, function(err, nb_checks) {
+      if (err) return app.next(err);
+      if (!nb_checks) return app.next(new Error('failed to load check ' + req.params.id));
+      Ping.find({ check: req.params.id }).desc('date').limit(50).run(function(err, pings) {
         if (err) return next(err);
         res.json(pings);
       });
