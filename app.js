@@ -4,7 +4,8 @@
 
 var mongoose = require('mongoose'),
     express  = require('express'),
-    monitor  = require('./lib/monitor');
+    monitor  = require('./lib/monitor'),
+    port     = (process.env.PORT || 8081);
 
 // configure mongodb
 var mongodbUser = 'root';
@@ -40,5 +41,5 @@ app.configure('production', function(){
 app.use('/api',       require('./app/api/app'));
 app.use('/dashboard', require('./app/dashboard/app'));
 
-app.listen(3000);
+app.listen(port);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
