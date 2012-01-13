@@ -4,7 +4,7 @@
 </h1>
 <table id="pings">
   <thead>
-    <tr><th>Date</th><th>Up?</th><th>Responsive?</th><th>Response time</th></tr>
+    <tr><th>Date</th><th>Up?</th><th>Responsive?</th><th>Response time</th><th>Error</th></tr>
   </thead>
   <tbody></tbody>
 </table>
@@ -15,6 +15,7 @@
   <td><span class="label {{= (ping.isUp ? 'success' : 'important') }}">{{= (ping.isUp ? 'yes' : 'no') }}</span></td>
   <td><span class="label {{= (ping.isResponsive ? 'success' : 'important') }}">{{= (ping.isResponsive ? 'yes' : 'no') }}</span></td>
   <td>{{= ping.time }}</td>
+  <td>{{= ping.error || '' }}</td>
 </tr>
 </script>
 <script>

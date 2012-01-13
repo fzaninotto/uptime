@@ -14,8 +14,9 @@ var mongodbServer = 'localhost';
 var mongodbDatabase = 'uptime';
 mongoose.connect('mongodb://' + mongodbUser + ':' + mongodbPassword + '@' + mongodbServer +'/' + mongodbDatabase);
 
-// poll checks every 5 seconds and update the QoS score every 10 seconds
-m = monitor.createMonitor(5000, 10000);
+// see if a check needs a new poll every 10 seconds
+// and update the QoS score every minute
+m = monitor.createMonitor();
 m.start();
 
 var app = module.exports = express.createServer();

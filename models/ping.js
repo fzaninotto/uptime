@@ -7,13 +7,17 @@ var Ping = new Schema({
   , isResponsive : Boolean  // true if the ping time is less than the check max time 
   , time         : Number
   , check        : Schema.ObjectId
+  // for pings in error, more details need to be persisted
+  , downtime     : Number   // time since last ping if the ping is down
+  , error        : String
 });
 
 Ping.methods.findCheck = function(callback) {
   return this.db.model('Check').findById(this.check, callback);
 }
 
-Ping.statics.createForCheck = function(check, status, time, callback) {
+Ping.statics.createForCheck = function(check, status, time, error, callback) {
+  check.setLastTest(status).save();
   ping = new this();
   ping.check = check;
   ping.isUp = status;
@@ -23,20 +27,25 @@ Ping.statics.createForCheck = function(check, status, time, callback) {
   } else {
     ping.isResponsive = false;
   }
+  if (!status) {
+    ping.downtime = check.interval || 60000;
+    ping.error = error;
+  };
   ping.save(callback);
 }
 
 Ping.statics.mapCheck = function() {
-  emit(this.check, { count: 1, ups: this.isUp ? 1 : 0 , responsives: this.isResponsive ? 1 : 0, time: this.time } );
+  emit(this.check, { count: 1, ups: this.isUp ? 1 : 0 , responsives: this.isResponsive ? 1 : 0, time: this.time, downtime: this.downtime ? this.downtime : 0 } );
 }
 
 Ping.statics.reduce = function(key, values) {
-  var result = { count: 0, ups: 0, responsives: 0, time: 0 };
+  var result = { count: 0, ups: 0, responsives: 0, time: 0, downtime: 0 };
   values.forEach(function(value) {
     result.count       += value.count;
     result.ups         += value.ups;
     result.responsives += value.responsives;
     result.time        += value.time;
+    result.downtime    += value.downtime;
   });
   return result;
 }

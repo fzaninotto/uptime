@@ -14,7 +14,8 @@ var GroupMembership = new Schema({
 var Check = new Schema({
     name        : String
   , url         : String
-  , maxTime     : Number             // time under which a ping is considered responsive
+  , interval    : { type: Number, default: 60000 }  // interval between two pings
+  , maxTime     : { type: Number, default: 1500 }   // time under which a ping is considered responsive
   , groups      : [GroupMembership]
   , lastChanged : Date
   , lastTested  : Date
@@ -25,15 +26,15 @@ var Check = new Schema({
   , qosPerHour  : {}
 });
 
-Check.methods.setLastTest = function(date, status) {
-  this.lastTested = date;
+Check.methods.setLastTest = function(status) {
+  var now = new Date();
   if (this.isUp != status) {
-    this.lastChanged = date;
+    this.lastChanged = now;
     this.isUp = status;
     this.uptime = 0;
     this.downtime = 0;
   }
-  var durationSinceLastChange = date - this.lastChanged;
+  var durationSinceLastChange = now.getTime() - this.lastChanged.getTime();
   if (status) {
     this.uptime = durationSinceLastChange;
   } else {
@@ -74,6 +75,21 @@ Check.namedScope('byUptime', function(order) {
     return this.find({}).desc('uptime').asc('downtime');
   }
 });
+
+/**
+ * Calls a function for all checks that need to be polled.
+ *
+ * A check needs to be polled if it was last polled sine a longer time than its own interval.
+ * This method uses Mongoose streaming cursor interface (Query.each())
+ *
+ * @param {Function} Callback function to be called with each Check
+ * @api   public
+ */
+Check.statics.callForChecksNeedingPoll = function(callback) {
+  this.find().$where(function() {
+    return (Date.now() - this.lastTested.getTime()) > (this.interval || 60000);
+  }).each(callback);
+}
 
 Check.statics.updateAllQos = function(callback) {
   this.find({}).each(function (err, check) {

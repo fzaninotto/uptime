@@ -9,9 +9,12 @@
 </table>
 <table id="checks">
   <thead>
-    <tr><th>Name</th><th>Up?</th><th>Uptime</th><th>Avg. Response time</th><th>Up for</th></tr>
+    <tr><th>Name</th><th>Up?</th><th>Up for</th><th>Uptime</th><th>Downtime</th><th>Avg. Response time</th></tr>
   </thead>
   <tbody></tbody>
+  <tfoot>
+    <tr><td colspan="3"></td><td>Average of all checks<br/>in the last 24h</td><td>Total of all checks<br />in the last 24h</td><td>Average of all checks<br/>in the last 24h</td></tr>
+  </tfoot>
 </table>
 <script src="<%= route %>/javascripts/jquery.timeago.js"></script>
 <script src="<%= route %>/javascripts/ejs.min.js"></script>
@@ -22,9 +25,10 @@
     <a href="{{= check.url }}"><img src="{{= route }}/images/external-link-ltr-icon.png"></a>
   </td>
   <td><span class="label {{= (check.isUp ? 'success' : 'important') }}">{{= (check.isUp ? 'yes' : 'no') }}</span></td>
-  <td>{{= ((check.qos.ups / check.qos.count) * 100).toFixed(3) }}%</td>
-  <td>{{= Math.round(check.qos.time / check.qos.count) }}ms</td>
   <td class="{{= check.isUp ? 'green' : 'red' }}">{{= check.isUp ? $.timeago.inWords(check.uptime) : 'Down for ' + $.timeago.inWords(check.downtime) }}</td>
+  <td>{{= ((check.qos.ups / check.qos.count) * 100).toFixed(3) }}%</td>
+  <td>{{= (check.qos.downtime / 1000).toFixed() }}s</td>
+  <td>{{= Math.round(check.qos.time / check.qos.count) }}ms</td>
 </tr>
 </script>
 <script>
