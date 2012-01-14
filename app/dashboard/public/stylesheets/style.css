@@ -33,6 +33,6 @@ table#check_summary td, table#check_summary th {
   text-align: center;
 }
 
-table#checks tfoot {
+tfoot {
   color: #DDD;
 }

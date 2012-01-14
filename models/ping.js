@@ -7,6 +7,7 @@ var Ping = new Schema({
   , isResponsive : Boolean  // true if the ping time is less than the check max time 
   , time         : Number
   , check        : Schema.ObjectId
+  , tags         : [String]
   // for pings in error, more details need to be persisted
   , downtime     : Number   // time since last ping if the ping is down
   , error        : String
@@ -20,6 +21,7 @@ Ping.statics.createForCheck = function(check, status, time, error, callback) {
   check.setLastTest(status).save();
   ping = new this();
   ping.check = check;
+  ping.tags = check.tags;
   ping.isUp = status;
   ping.time = time;
   if (status && check.maxTime) {
@@ -34,8 +36,13 @@ Ping.statics.createForCheck = function(check, status, time, error, callback) {
   ping.save(callback);
 }
 
-Ping.statics.mapCheck = function() {
-  emit(this.check, { count: 1, ups: this.isUp ? 1 : 0 , responsives: this.isResponsive ? 1 : 0, time: this.time, downtime: this.downtime ? this.downtime : 0 } );
+Ping.statics.mapCheckAndTags = function() {
+  var qos = { count: 1, ups: this.isUp ? 1 : 0 , responsives: this.isResponsive ? 1 : 0, time: this.time, downtime: this.downtime ? this.downtime : 0 };
+  emit(this.check, qos);
+  if (!this.tags) return;
+  for (index in this.tags) {
+    emit(this.tags[index], qos);
+  }
 }
 
 Ping.statics.reduce = function(key, values) {
@@ -50,18 +57,9 @@ Ping.statics.reduce = function(key, values) {
   return result;
 }
 
-Ping.statics.countForCheck = function(check, start, end, callback) {
+Ping.statics.getQosForPeriod = function(start, end, callback) {
   this.collection.mapReduce(
-    this.mapCheck.toString(),
-    this.reduce.toString(),
-    { query: { check: check._id, date: { $gte: start, $lte: end } }, out: { inline: 1 } },
-    callback
-  );
-}
-
-Ping.statics.groupPeriodByCheck = function(start, end, callback) {
-  this.collection.mapReduce(
-    this.mapCheck.toString(),
+    this.mapCheckAndTags.toString(),
     this.reduce.toString(),
     { query: { date: { $gte: start, $lte: end } }, out: { inline: 1 } },
     callback
@@ -79,18 +77,56 @@ Ping.statics.updateLastHourQos = function(callback) {
   end.setUTCSeconds(59);
   end.setUTCMilliseconds(999);
   var Check = require('../models/check').Check;
-  this.groupPeriodByCheck(start, end, function(err, results) {
+  var Tag   = require('../models/tag').Tag;
+  this.getQosForPeriod(start, end, function(err, results) {
     if (err) return;
     results.forEach(function(result) {
-      Check.findById(result._id, function (err, check) {
-        if (!check.qosPerHour) check.qosPerHour = {};
-        check.qosPerHour[start.toString()] = result.value;
-        check.markModified('qosPerHour');
-        check.save(callback);
-      });
+      if (result._id.substr) {
+        // the key is a string, so it's a tag
+        Tag.findOneOrCreate({ name: result._id }, function(err, tag) {
+          if (!tag.qosPerHour) tag.qosPerHour = {};
+          tag.qosPerHour[start.toString()] = result.value;
+          tag.markModified('qosPerHour');
+          tag.save(callback);
+        });
+      } else {
+        // the key is a check
+        Check.findById(result._id, function (err, check) {
+          if (!check.qosPerHour) check.qosPerHour = {};
+          check.qosPerHour[start.toString()] = result.value;
+          check.markModified('qosPerHour');
+          check.save(callback);
+        });
+      }
     });
   });
 }
 
+Ping.statics.updateLast24HoursQos = function(callback) {
+  var start = new Date(Date.now() - (24 * 60 * 60 * 1000));
+  var end   = new Date();
+  var Check = require('../models/check').Check;
+  var Tag   = require('../models/tag').Tag;
+  this.getQosForPeriod(start, end, function(err, results) {
+    if (err) return;
+    results.forEach(function(result) {
+      if (result._id.substr) {
+        // the key is a string, so it's a tag
+        Tag.findOneOrCreate({ name: result._id }, function(err, tag) {
+          tag.qos = result.value;
+          tag.markModified('qos');
+          tag.save(callback);
+        });
+      } else {
+        // the key is a check
+        Check.findById(result._id, function (err, check) {
+          check.qos = result.value;
+          check.markModified('qos');
+          check.save(callback);
+        });
+      }
+    })
+  });
+}
 
 exports.Ping = mongoose.model('Ping', Ping);

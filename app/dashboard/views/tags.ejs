@@ -1,0 +1,41 @@
+<h1>Tags <small id="last_update"></small></h1>
+<table id="tags">
+  <thead>
+    <tr><th>Name</th><th>Uptime</th><th>Downtime</th><th>Avg. Response time</th></tr>
+  </thead>
+  <tbody></tbody>
+  <tfoot>
+    <tr><td></td><td>Average of all checks<br/>in the last 24h</td><td>Total of all checks<br />in the last 24h</td><td>Average of all checks<br/>in the last 24h</td></tr>
+  </tfoot>
+</table>
+<script src="<%= route %>/javascripts/jquery.timeago.js"></script>
+<script src="<%= route %>/javascripts/ejs.min.js"></script>
+<script id="tag_template" type="text/template">
+<tr>
+  <td><a href="{{=  route + '/tag/' + tag.name }}">{{= tag.name }}</a></td>
+  <td>{{= ((tag.qos.ups / tag.qos.count) * 100).toFixed(3) }}%</td>
+  <td>{{= (tag.qos.downtime / 1000).toFixed() }}s</td>
+  <td>{{= Math.round(tag.qos.time / tag.qos.count) }}ms</td>
+</tr>
+</script>
+<script>
+jQuery(document).ready(function($) {
+  $.timeago.settings.strings.suffixAgo = null;
+  var tag_template = document.getElementById('tag_template').innerHTML;
+  var ejs = require('ejs');
+  ejs.open = '{{';
+  ejs.close = '}}';
+  var updateTags = function() {
+    $.getJSON('/api/tag', function(tags) {
+      var lines = [];
+      $.each(tags, function(key, tag) {
+        lines.push(ejs.render(tag_template, { tag: tag, route: '<%= route %>' }));
+      });
+      $('#tags tbody').html(lines.join(''));
+      $('#last_update').text('Last updated on ' + new Date().toLocaleString());
+    });
+  }
+  updateTags();
+  window.setInterval(updateTags, 5000);
+});
+</script>

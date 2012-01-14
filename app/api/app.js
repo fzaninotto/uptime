@@ -15,6 +15,7 @@ app.configure(function(){
 // Routes
 
 require('./routes/check')(app);
+require('./routes/tag')(app);
 require('./routes/ping')(app);
 
 if (!module.parent) {

@@ -4,19 +4,13 @@ var mongoose = require('mongoose'),
 // models dependencies
 var Ping   = require('../models/ping').Ping;
 
-// embedded document
-var GroupMembership = new Schema({
-    name   : { type: String, default: 'all' }
-  , weight : { type: Number, default: 1 }
-});
-
 // main model
 var Check = new Schema({
     name        : String
   , url         : String
   , interval    : { type: Number, default: 60000 }  // interval between two pings
   , maxTime     : { type: Number, default: 1500 }   // time under which a ping is considered responsive
-  , groups      : [GroupMembership]
+  , tags        : [String]
   , lastChanged : Date
   , lastTested  : Date
   , isUp        : Boolean
@@ -96,30 +90,6 @@ Check.statics.updateAllQos = function(callback) {
     if(err || !check) return;
     check.updateQos(callback);
   });
-}
-
-Check.statics.countForGroups = function(callback) {
-  var mapFunction = function() {
-    var check = this;
-    this.groups.forEach(function(group) {
-      emit(group.name, { qos: check.qos } )
-    });
-  }
-  var reduceFunction = function(key, values) {
-    var result = { qos: { count: 0, ups: 0, responsives: 0 } };
-    values.forEach(function(value) {
-      result.qos.count       += value.qos.count;
-      result.qos.ups         += value.qos.ups;
-      result.qos.responsives += value.qos.responsives;
-    });
-    return result;
-  }
-  this.collection.mapReduce(
-    mapFunction.toString(),
-    reduceFunction.toString(),
-    { out: { inline: 1 } },
-    callback
-  );
 }
 
 exports.Check = mongoose.model('Check', Check);

@@ -38,6 +38,10 @@ app.get('/check/:id', function(req, res, next) {
   });
 });
 
+app.get('/tags', function(req, res) {
+  res.render('tags', { route: app.route });
+});
+
 if (!module.parent) {
   app.listen(3000);
   console.log('Express started on port 3000');
