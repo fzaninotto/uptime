@@ -2,8 +2,8 @@
  * Module dependencies.
  */
 
-var Check = require('../../../models/check').Check,
-    Ping  = require('../../../models/ping').Ping;
+var Check = require('../../../models/check'),
+    Ping  = require('../../../models/ping');
 
 /**
  * Check Routes

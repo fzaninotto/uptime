@@ -2,7 +2,7 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
 // models dependencies
-var Ping   = require('../models/ping').Ping;
+var Ping   = require('../models/ping');
 
 // main model
 var Check = new Schema({
@@ -92,4 +92,4 @@ Check.statics.updateAllQos = function(callback) {
   });
 }
 
-exports.Check = mongoose.model('Check', Check);
+module.exports = mongoose.model('Check', Check);

@@ -19,4 +19,4 @@ Tag.statics.findOneOrCreate = function(query, callback) {
   });
 }
 
-exports.Tag = mongoose.model('Tag', Tag);
+module.exports = mongoose.model('Tag', Tag);

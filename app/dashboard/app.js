@@ -3,7 +3,7 @@
  */
 var express = require('express');
 
-var Check = require('../../models/check').Check;
+var Check = require('../../models/check');
 
 var app = module.exports = express.createServer();
 

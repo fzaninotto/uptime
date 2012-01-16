@@ -2,7 +2,7 @@
  * Module dependencies.
  */
 
-var Tag = require('../../../models/tag').Tag;
+var Tag = require('../../../models/tag');
 
 /**
  * Check Routes

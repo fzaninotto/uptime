@@ -76,8 +76,8 @@ Ping.statics.updateLastHourQos = function(callback) {
   end.setUTCMinutes(59);
   end.setUTCSeconds(59);
   end.setUTCMilliseconds(999);
-  var Check = require('../models/check').Check;
-  var Tag   = require('../models/tag').Tag;
+  var Check = require('../models/check');
+  var Tag   = require('../models/tag');
   this.getQosForPeriod(start, end, function(err, results) {
     if (err) return;
     results.forEach(function(result) {
@@ -105,8 +105,8 @@ Ping.statics.updateLastHourQos = function(callback) {
 Ping.statics.updateLast24HoursQos = function(callback) {
   var start = new Date(Date.now() - (24 * 60 * 60 * 1000));
   var end   = new Date();
-  var Check = require('../models/check').Check;
-  var Tag   = require('../models/tag').Tag;
+  var Check = require('../models/check');
+  var Tag   = require('../models/tag');
   this.getQosForPeriod(start, end, function(err, results) {
     if (err) return;
     results.forEach(function(result) {
@@ -129,4 +129,4 @@ Ping.statics.updateLast24HoursQos = function(callback) {
   });
 }
 
-exports.Ping = mongoose.model('Ping', Ping);
+module.exports = mongoose.model('Ping', Ping);

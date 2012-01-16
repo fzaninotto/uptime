@@ -2,7 +2,7 @@
  * Module dependencies.
  */
 
-var Check = require('../../../models/check').Check;
+var Check = require('../../../models/check');
 
 /**
  * Check Routes
