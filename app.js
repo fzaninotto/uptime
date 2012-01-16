@@ -4,15 +4,11 @@
 
 var mongoose = require('mongoose'),
     express  = require('express'),
-    monitor  = require('./lib/monitor'),
-    port     = (process.env.PORT || 8081);
+    config   = require('./config/config.js'),
+    monitor  = require('./lib/monitor');
 
 // configure mongodb
-var mongodbUser = 'root';
-var mongodbPassword = '';
-var mongodbServer = 'localhost';
-var mongodbDatabase = 'uptime';
-mongoose.connect('mongodb://' + mongodbUser + ':' + mongodbPassword + '@' + mongodbServer +'/' + mongodbDatabase);
+mongoose.connect('mongodb://' + config.mongodbUser + ':' + config.mongodbPassword + '@' + config.mongodbServer +'/' + config.mongodbDatabase);
 
 // see if a check needs a new poll every 10 seconds
 // and update the QoS score every minute
@@ -42,5 +38,5 @@ app.configure('production', function(){
 app.use('/api',       require('./app/api/app'));
 app.use('/dashboard', require('./app/dashboard/app'));
 
-app.listen(port);
+app.listen(config.web_port);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
