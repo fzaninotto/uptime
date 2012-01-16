@@ -10,7 +10,7 @@ var Tag = require('../../../models/tag');
 module.exports = function(app) {
   
   app.get('/tag', function(req, res) {
-    Tag.find({}).exclude('qosPerHour').run(function(err, tags) {
+    Tag.find({}).asc('name').exclude('qosPerHour').run(function(err, tags) {
       res.json(tags);
     });
   });

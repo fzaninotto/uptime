@@ -10,7 +10,7 @@ var Check = require('../../../models/check');
 module.exports = function(app) {
   
   app.get('/check', function(req, res) {
-    Check.byUptime().find({}).exclude('qosPerHour').run(function(err, checks) {
+    Check.byUptime().find({}).asc('isUp').desc('lastChanged').exclude('qosPerHour').run(function(err, checks) {
       res.json(checks);
     });
   });

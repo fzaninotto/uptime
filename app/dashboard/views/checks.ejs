@@ -26,9 +26,9 @@
   </td>
   <td><span class="label {{= (check.isUp ? 'success' : 'important') }}">{{= (check.isUp ? 'yes' : 'no') }}</span></td>
   <td class="{{= check.isUp ? 'green' : 'red' }}">{{= check.isUp ? $.timeago.inWords(check.uptime) : 'Down for ' + $.timeago.inWords(check.downtime) }}</td>
-  <td>{{= ((check.qos.ups / check.qos.count) * 100).toFixed(3) }}%</td>
-  <td>{{= (check.qos.downtime / 1000).toFixed() }}s</td>
-  <td>{{= Math.round(check.qos.time / check.qos.count) }}ms</td>
+  <td>{{= check.qos ? ((check.qos.ups / check.qos.count) * 100).toFixed(3) : '' }}%</td>
+  <td>{{= check.qos ? (check.qos.downtime / 1000).toFixed() : '' }}s</td>
+  <td>{{= check.qos ? Math.round(check.qos.time / check.qos.count) : '' }}ms</td>
 </tr>
 </script>
 <script>

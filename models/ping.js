@@ -84,6 +84,7 @@ Ping.statics.updateLastHourQos = function(callback) {
       if (result._id.substr) {
         // the key is a string, so it's a tag
         Tag.findOneOrCreate({ name: result._id }, function(err, tag) {
+          if (err || !tag) return;
           if (!tag.qosPerHour) tag.qosPerHour = {};
           tag.qosPerHour[start.toString()] = result.value;
           tag.markModified('qosPerHour');
@@ -92,6 +93,7 @@ Ping.statics.updateLastHourQos = function(callback) {
       } else {
         // the key is a check
         Check.findById(result._id, function (err, check) {
+          if (err || !check) return;
           if (!check.qosPerHour) check.qosPerHour = {};
           check.qosPerHour[start.toString()] = result.value;
           check.markModified('qosPerHour');
@@ -113,6 +115,7 @@ Ping.statics.updateLast24HoursQos = function(callback) {
       if (result._id.substr) {
         // the key is a string, so it's a tag
         Tag.findOneOrCreate({ name: result._id }, function(err, tag) {
+          if (err || !tag) return;
           tag.qos = result.value;
           tag.markModified('qos');
           tag.save(callback);
@@ -120,6 +123,7 @@ Ping.statics.updateLast24HoursQos = function(callback) {
       } else {
         // the key is a check
         Check.findById(result._id, function (err, check) {
+          if (err || !check) return;
           check.qos = result.value;
           check.markModified('qos');
           check.save(callback);

@@ -81,7 +81,7 @@ Check.namedScope('byUptime', function(order) {
  */
 Check.statics.callForChecksNeedingPoll = function(callback) {
   this.find().$where(function() {
-    return (Date.now() - this.lastTested.getTime()) > (this.interval || 60000);
+    return !this.lastTested || (Date.now() - this.lastTested.getTime()) > (this.interval || 60000);
   }).each(callback);
 }
 
