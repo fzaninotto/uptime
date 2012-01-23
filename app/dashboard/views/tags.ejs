@@ -13,9 +13,9 @@
 <script id="tag_template" type="text/template">
 <tr>
   <td><a href="{{=  route + '/tag/' + tag.name }}">{{= tag.name }}</a></td>
-  <td>{{= ((tag.qos.ups / tag.qos.count) * 100).toFixed(3) }}%</td>
-  <td>{{= (tag.qos.downtime / 1000).toFixed() }}s</td>
-  <td>{{= Math.round(tag.qos.time / tag.qos.count) }}ms</td>
+  <td>{{= ((tag.ups / tag.count) * 100).toFixed(3) }}%</td>
+  <td>{{= (tag.downtime / 1000).toFixed() }}s</td>
+  <td>{{= Math.round(tag.time / tag.count) }}ms</td>
 </tr>
 </script>
 <script>
@@ -28,11 +28,13 @@ jQuery(document).ready(function($) {
   var updateTags = function() {
     $.getJSON('/api/tag', function(tags) {
       var lines = [];
+      var lastUpdated;
       $.each(tags, function(key, tag) {
         lines.push(ejs.render(tag_template, { tag: tag, route: '<%= route %>' }));
+        lastUpdated = tag.lastUpdated;
       });
       $('#tags tbody').html(lines.join(''));
-      $('#last_update').text('Last updated on ' + new Date().toLocaleString());
+      $('#last_update').text('Last updated on ' + lastUpdated.toLocaleString());
     });
   }
   updateTags();

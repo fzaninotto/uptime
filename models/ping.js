@@ -12,6 +12,7 @@ var Ping = new Schema({
   , downtime     : Number   // time since last ping if the ping is down
   , error        : String
 });
+Ping.index({ date: -1 });
 
 Ping.methods.findCheck = function(callback) {
   return this.db.model('Check').findById(this.check, callback);
@@ -67,6 +68,10 @@ Ping.statics.getQosForPeriod = function(start, end, callback) {
 }
 
 Ping.statics.updateLastHourQos = function(callback) {
+  if ('undefined' == typeof callback) {
+    // Mogoose Model.update() implementation requires a callback
+    callback = function(err) { if (err) console.dir(err); };
+  }
   var now = new Date(Date.now() - 1000 * 60 * 6); // 6 minutes in the past, to accomodate script running every 5 minutes
   var start = new Date(now);
   start.setUTCMinutes(0);
@@ -76,35 +81,28 @@ Ping.statics.updateLastHourQos = function(callback) {
   end.setUTCMinutes(59);
   end.setUTCSeconds(59);
   end.setUTCMilliseconds(999);
-  var Check = require('../models/check');
-  var Tag   = require('../models/tag');
+  var CheckHourlyStat = require('../models/checkHourlyStat');
+  var TagHourlyStat   = require('../models/TagHourlyStat');
   this.getQosForPeriod(start, end, function(err, results) {
     if (err) return;
     results.forEach(function(result) {
+      var stat = result.value;
       if (result._id.substr) {
         // the key is a string, so it's a tag
-        Tag.findOneOrCreate({ name: result._id }, function(err, tag) {
-          if (err || !tag) return;
-          if (!tag.qosPerHour) tag.qosPerHour = {};
-          tag.qosPerHour[start.toString()] = result.value;
-          tag.markModified('qosPerHour');
-          tag.save(callback);
-        });
+        TagHourlyStat.update({ name: result._id, timestamp: start }, { $set: { count: stat.count, ups: stat.ups, responsives: stat.responsives, time: stat.time, downtime: stat.downtime } }, { upsert: true }, callback);
       } else {
         // the key is a check
-        Check.findById(result._id, function (err, check) {
-          if (err || !check) return;
-          if (!check.qosPerHour) check.qosPerHour = {};
-          check.qosPerHour[start.toString()] = result.value;
-          check.markModified('qosPerHour');
-          check.save(callback);
-        });
+        CheckHourlyStat.update({ check: result._id, timestamp: start }, { $set: { count: stat.count, ups: stat.ups, responsives: stat.responsives, time: stat.time, downtime: stat.downtime } }, { upsert: true }, callback);
       }
     });
   });
 }
 
 Ping.statics.updateLast24HoursQos = function(callback) {
+  if ('undefined' == typeof callback) {
+    // Mogoose Model.update() implementation requires a callback
+    callback = function(err) { if (err) console.dir(err); };
+  }
   var start = new Date(Date.now() - (24 * 60 * 60 * 1000));
   var end   = new Date();
   var Check = require('../models/check');
@@ -114,12 +112,8 @@ Ping.statics.updateLast24HoursQos = function(callback) {
     results.forEach(function(result) {
       if (result._id.substr) {
         // the key is a string, so it's a tag
-        Tag.findOneOrCreate({ name: result._id }, function(err, tag) {
-          if (err || !tag) return;
-          tag.qos = result.value;
-          tag.markModified('qos');
-          tag.save(callback);
-        });
+        var stat = result.value;
+        Tag.update({ name: result._id }, { $set: { lastUpdated: end, count: stat.count, ups: stat.ups, responsives: stat.responsives, time: stat.time, downtime: stat.downtime } }, { upsert: true }, callback);
       } else {
         // the key is a check
         Check.findById(result._id, function (err, check) {
