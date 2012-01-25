@@ -81,8 +81,8 @@ Ping.statics.updateLastHourQos = function(callback) {
   end.setUTCMinutes(59);
   end.setUTCSeconds(59);
   end.setUTCMilliseconds(999);
-  var CheckHourlyStat = require('../models/checkHourlyStat');
-  var TagHourlyStat   = require('../models/TagHourlyStat');
+  var CheckHourlyStat = require('./checkHourlyStat');
+  var TagHourlyStat   = require('./tagHourlyStat');
   this.getQosForPeriod(start, end, function(err, results) {
     if (err) return;
     results.forEach(function(result) {
