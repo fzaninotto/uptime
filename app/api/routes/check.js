@@ -2,7 +2,8 @@
  * Module dependencies.
  */
 
-var Check = require('../../../models/check');
+var Check           = require('../../../models/check');
+var CheckHourlyStat = require('../../../models/checkHourlyStat');
 
 /**
  * Check Routes
@@ -22,5 +23,17 @@ module.exports = function(app) {
       res.json(check);
     });
   });
-  
+
+  app.get('/check/:name/stat', function(req, res) {
+    Check.find({ name: req.params.name }).exclude('qosPerHour').findOne(function(err, check) {
+      if (err) return next(err);
+      if (!check) return next(new Error('failed to load check ' + req.params.name));
+      CheckHourlyStat.find({ check: check }).asc('timestamp').run(function(err, stats) {
+        if (err) return next(err);
+        if (!stats) return next(new Error('failed to load stats for check ' + req.params.name));
+        res.json(stats);
+      })
+    });
+  });
+
 };

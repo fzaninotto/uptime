@@ -2,7 +2,8 @@
  * Module dependencies.
  */
 
-var Tag = require('../../../models/tag');
+var Tag           = require('../../../models/tag');
+var TagHourlyStat = require('../../../models/tagHourlyStat');
 
 /**
  * Check Routes
@@ -22,5 +23,13 @@ module.exports = function(app) {
       res.json(tag);
     });
   });
-  
+
+  app.get('/tag/:name/stat', function(req, res, next) {
+    TagHourlyStat.find({ name: req.params.name }).asc('timestamp').run(function(err, stats) {
+      if (err) return next(err);
+      if (!stats) return next(new Error('failed to load stats for tag ' + req.params.name));
+      res.json(stats);
+    });
+  });
+
 };
