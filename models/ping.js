@@ -67,12 +67,11 @@ Ping.statics.getQosForPeriod = function(start, end, callback) {
   );
 }
 
-Ping.statics.updateLastHourQos = function(callback) {
+Ping.statics.updateHourlyQos = function(now, callback) {
   if ('undefined' == typeof callback) {
     // Mogoose Model.update() implementation requires a callback
     callback = function(err) { if (err) console.dir(err); };
   }
-  var now = new Date(Date.now() - 1000 * 60 * 6); // 6 minutes in the past, to accomodate script running every 5 minutes
   var start = new Date(now);
   start.setUTCMinutes(0);
   start.setUTCSeconds(0);
@@ -96,6 +95,11 @@ Ping.statics.updateLastHourQos = function(callback) {
       }
     });
   });
+}
+
+Ping.statics.updateLastHourQos = function(callback) {
+  var now = new Date(Date.now() - 1000 * 60 * 6); // 6 minutes in the past, to accomodate script running every 5 minutes
+  this.updateHourlyQos(now, callback);
 }
 
 Ping.statics.updateLast24HoursQos = function(callback) {
