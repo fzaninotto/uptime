@@ -1,5 +1,6 @@
 <script src="<%= route %>/javascripts/bootstrap-tabs.js"></script>
 <script src="<%= route %>/javascripts/ejs.min.js"></script>
+<script src="<%= route %>/javascripts/highcharts.js"></script>
 <h1>
   Check "<%= check.name %>"
   <small><%= check.url %></small>
@@ -7,6 +8,7 @@
 <ul class="tabs">
   <li class="active"><a href="#pings">Pings</a></li>
   <li><a href="#stats">Stats</a></li>
+  <li><a href="#charts">Charts</a></li>
   <li><a href="#details">Details</a></li>
 </ul>
 <div class="pill-content">
@@ -40,6 +42,13 @@
       <tbody></tbody>
     </table>
   </div>
+  <div id="charts">
+    <div>
+      <a class="btn active" id="uptime_btn" href="#">Uptime</a>
+      <a class="btn" id='reponse_time_btn' href="#">Average Response Time</a>
+    </div>
+    <div id="chart" style="width:920px;height: 400px"></div>
+  </div>
   <div id="details">
     <table>
       <tr><td>Name</td><td><%= check.name %></td></tr>
@@ -62,7 +71,7 @@
 </script>
 <script id="stat_template" type="text/template">
 <tr>
-  <td>{{= stat.timestamp.toLocaleString() }}</td>
+  <td>{{= new Date(stat.timestamp).toLocaleString() }}</td>
   <td>{{= ((stat.ups / stat.count) * 100).toFixed(3) }}%</td>
   <td>{{= (stat.downtime / 1000).toFixed() }}s</td>
   <td>{{= Math.round(stat.time / stat.count) }}ms</td>
@@ -92,19 +101,67 @@ var updatePingsToggle = function() {
     interval = window.setInterval(updatePings, 5000);
   }
 }
+var chart;
+var uptime = [];
+var avgResponseTime = [];
+var chartType = 'uptime';
+var updateCharts = function() {
+  if (chartType == 'uptime') {
+    chart = null;
+    chart = new Highcharts.Chart({
+      chart: {
+        renderTo: 'chart',
+        zoomType: 'x',
+      },
+      title: null,
+      legend: { enabled: false },
+      xAxis: { type: 'datetime' },
+      yAxis: { title: { text: 'Uptime'} },
+      series: [{ name: "Uptime", data: uptime }],
+      tooltip: {
+        formatter: function() {
+          return '<b>'+ this.series.name +'</b><br/>'+
+             Highcharts.dateFormat('%e. %b %Y, %H:00', this.x) +'<br/>'+ this.y.toFixed(3) + '%';
+        }
+      },
+    });
+  } else {
+    chart = null;
+    chart = new Highcharts.Chart({
+      chart: {
+        renderTo: 'chart',
+        zoomType: 'x',
+      },
+      title: null,
+      legend: { enabled: false },
+      xAxis: { type: 'datetime' },
+      yAxis:  { title: { text: 'Average Response Time', style: { color: '#89A54E' } } },
+      series: [{ name: "Average Response Time", data: avgResponseTime, color: '#89A54E' }],
+      tooltip: {
+        formatter: function() {
+          return '<b>'+ this.series.name +'</b><br/>'+
+             Highcharts.dateFormat('%e. %b %Y, %H:00', this.x) +'<br/>'+ this.y.toFixed(0) + 'ms';
+        }
+      },
+    });
+  }
+}
 var updateStats = function() {
   $.getJSON('/api/check/<%= check.name %>/stat', function(stats) {
     var lines = [];
     $.each(stats, function(key, stat) {
       lines.push(ejs.render(stat_template, { stat: stat }));
+      uptime.push([Date.parse(stat.timestamp), (stat.ups / stat.count) * 100]);
+      avgResponseTime.push([Date.parse(stat.timestamp), stat.time / stat.count]);
     });
     $('#stats tbody').html(lines.join(''));
+    updateCharts();
   });
 }
 $(document).ready(function() {
   $('.tabs').tabs();
+
   updatePings();
-  updateStats();
   $('.recent').hide();
   $('.old').click(function(){
     page++;
@@ -123,6 +180,21 @@ $(document).ready(function() {
     page = 0;
     updatePings();
     $(this).hide();
+  });
+  
+  updateStats();
+  
+  $('#reponse_time_btn').click(function(){
+    chartType='responseTime';
+    updateCharts();
+    $(this).addClass('active');
+    $('#uptime_btn').removeClass('active');
+  });
+  $('#uptime_btn').click(function(){
+    chartType='uptime';
+    updateCharts();
+    $(this).addClass('active');
+    $('#reponse_time_btn').removeClass('active');
   });
 });
 </script>
