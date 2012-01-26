@@ -2,13 +2,13 @@
   Check "<%= check.name %>"
   <small><%= check.url %></small>
 </h1>
-<form style="float:right;margin-bottom:0;height:28px">
+<div style="float:right;margin-bottom:0;height:28px">
 <label>
   <input type="checkbox" name="optionsCheckboxes" value="option1" onclick="updatePingsToggle()">
   <span>Auto-update pings</span>
 </label>
-</form>
-<div class="recent_old">
+</div>
+<div>
   <a class="recent btn" href="#">&lt; More Recent</a>
   <a class="old btn" href="#">Older &gt;</a>
 </div>
@@ -37,7 +37,7 @@ var ping_template = document.getElementById('ping_template').innerHTML;
 var ejs = require('ejs');
 ejs.open = '{{';
 ejs.close = '}}';
-var page = 1;
+var page = 0;
 var updatePings = function() {
   $.getJSON('/api/pings/check/<%= check._id %>/' + page, function(pings) {
     var lines = [];
@@ -49,13 +49,10 @@ var updatePings = function() {
 };
 var interval;
 var updatePingsToggle = function() {
-  page = 1;
   if (interval) {
     window.clearInterval(interval);
-    $('.recent_old').toggle();
   } else {
     interval = window.setInterval(updatePings, 5000);
-    $('.recent_old').toggle();
   }
 }
 $(document).ready(function() {
@@ -74,6 +71,10 @@ $(document).ready(function() {
       $(this).hide();
     };
     return false;
+  }).dblclick(function(){
+    page = 0;
+    updatePings();
+    $(this).hide();
   });
 });
 </script>
