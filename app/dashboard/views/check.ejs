@@ -1,28 +1,56 @@
+<script src="<%= route %>/javascripts/bootstrap-tabs.js"></script>
+<script src="<%= route %>/javascripts/ejs.min.js"></script>
 <h1>
   Check "<%= check.name %>"
   <small><%= check.url %></small>
 </h1>
-<div style="float:right;margin-bottom:0;height:28px">
-<label>
-  <input type="checkbox" name="optionsCheckboxes" value="option1" onclick="updatePingsToggle()">
-  <span>Auto-update pings</span>
-</label>
+<ul class="tabs">
+  <li class="active"><a href="#pings">Pings</a></li>
+  <li><a href="#stats">Stats</a></li>
+  <li><a href="#details">Details</a></li>
+</ul>
+<div class="pill-content">
+  <div class="active" id="pings">
+    <div style="float:right;margin-bottom:0;height:28px">
+    <label>
+      <input type="checkbox" name="optionsCheckboxes" value="option1" onclick="updatePingsToggle()">
+      <span>Auto-update pings</span>
+    </label>
+    </div>
+    <div>
+      <a class="recent btn" href="#">&lt; More Recent</a>
+      <a class="old btn" href="#">Older &gt;</a>
+    </div>
+    <table>
+      <thead>
+        <tr><th>Date</th><th>Up?</th><th>Responsive?</th><th>Response time</th><th>Error</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <div class="recent_old">
+      <a class="recent btn" href="#">&lt; More Recent</a>
+      <a class="old btn" href="#">Older &gt;</a>
+    </div>
+  </div>
+  <div id="stats">
+    <table>
+      <thead>
+        <tr><th>Date</th><th>Uptime</th><th>Downtime</th><th>Avg. Response time</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <div id="details">
+    <table>
+      <tr><td>Name</td><td><%= check.name %></td></tr>
+      <tr><td>URL</td><td><a href="<%= check.url %>"><%= check.url %></a></td></tr>
+      <tr><td>Polling interval</td><td><%= check.interval / 1000 %>s</td></tr>
+      <tr><td>Max request time</td><td><%= check.maxTime %>ms</td></tr>
+      <tr><td>Tags</td><td><%= check.tags.join(', ') %></td></tr>
+      <tr><td>Last tested on</td><td><%= check.lastTested.toLocaleString() %></td></tr>
+    </table>
+  </div>
 </div>
-<div>
-  <a class="recent btn" href="#">&lt; More Recent</a>
-  <a class="old btn" href="#">Older &gt;</a>
-</div>
-<table id="pings">
-  <thead>
-    <tr><th>Date</th><th>Up?</th><th>Responsive?</th><th>Response time</th><th>Error</th></tr>
-  </thead>
-  <tbody></tbody>
-</table>
-<div class="recent_old">
-  <a class="recent btn" href="#">&lt; More Recent</a>
-  <a class="old btn" href="#">Older &gt;</a>
-</div>
-<script src="<%= route %>/javascripts/ejs.min.js"></script>
 <script id="ping_template" type="text/template">
 <tr class="{{= ping.isUp ? 'green' : 'red' }}">
   <td>{{= new Date(ping.date).toLocaleString() }}</td>
@@ -32,8 +60,17 @@
   <td>{{= ping.error || '' }}</td>
 </tr>
 </script>
+<script id="stat_template" type="text/template">
+<tr>
+  <td>{{= stat.timestamp.toLocaleString() }}</td>
+  <td>{{= ((stat.ups / stat.count) * 100).toFixed(3) }}%</td>
+  <td>{{= (stat.downtime / 1000).toFixed() }}s</td>
+  <td>{{= Math.round(stat.time / stat.count) }}ms</td>
+</tr>
+</script>
 <script>
 var ping_template = document.getElementById('ping_template').innerHTML;
+var stat_template = document.getElementById('stat_template').innerHTML;
 var ejs = require('ejs');
 ejs.open = '{{';
 ejs.close = '}}';
@@ -55,8 +92,19 @@ var updatePingsToggle = function() {
     interval = window.setInterval(updatePings, 5000);
   }
 }
+var updateStats = function() {
+  $.getJSON('/api/check/<%= check.name %>/stat', function(stats) {
+    var lines = [];
+    $.each(stats, function(key, stat) {
+      lines.push(ejs.render(stat_template, { stat: stat }));
+    });
+    $('#stats tbody').html(lines.join(''));
+  });
+}
 $(document).ready(function() {
+  $('.tabs').tabs();
   updatePings();
+  updateStats();
   $('.recent').hide();
   $('.old').click(function(){
     page++;
