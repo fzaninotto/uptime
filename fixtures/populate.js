@@ -10,19 +10,24 @@ var Ping   = require('../models/ping');
 
 // remove existing checks
 Check.collection.drop(function(err) {
-  createFixtures();
+  createFixtures(function() { 
+    setTimeout(function() { mongoose.connection.close(); }, 1000);
+  });
   console.log('Waiting for creation to finish...');
-  setTimeout(function() { 
-    mongoose.connection.close();
-  }, 1000)
 });
 
-function createFixtures() {
-  createPingsForCheck(createDummyCheck(99.95, 'Top Quality', ['good', 'all']));
-  createPingsForCheck(createDummyCheck(99.85, 'Good Quality', ['good', 'all']));
-  createPingsForCheck(createDummyCheck(99, 'Neun und neunzig Luftballons', ['average', 'all']));
-  createPingsForCheck(createDummyCheck(80, 'My Crappy Site', ['average', 'all']));
-  createPingsForCheck(createDummyCheck(99, 'The Crappy site I built for Al', ['low', 'all']));
+function createFixtures(callback) {
+  var calls = 0;
+  var countCalls = function(check) {
+    calls++;
+    console.dir('Finished creation of pings for check ' + check.name);
+    if (calls == 5) callback(); 
+  }
+  createPingsForCheck(createDummyCheck(99.95, 'Top Quality', ['good', 'all']), undefined, undefined, countCalls);
+  createPingsForCheck(createDummyCheck(99.85, 'Good Quality', ['good', 'all']), undefined, undefined, countCalls);
+  createPingsForCheck(createDummyCheck(99, 'Neun und neunzig Luftballons', ['average', 'all']), undefined, undefined, countCalls);
+  createPingsForCheck(createDummyCheck(80, 'My Crappy Site', ['average', 'all']), undefined, undefined, countCalls);
+  createPingsForCheck(createDummyCheck(70, 'The Crappy site I built for Al', ['low', 'all']), undefined, undefined, countCalls);
 }
 
 function createDummyCheck(quality, name, tags) {
@@ -38,7 +43,7 @@ function createDummyCheck(quality, name, tags) {
   return check;
 }
 
-function createPingsForCheck(check, startDate, quality) {
+function createPingsForCheck(check, startDate, quality, callback) {
   var now = Date.now();
   var date = startDate || (now - 15 * 24 * 60 * 60 * 1000); // defaults to 15 days ago
   quality = quality || parseFloat(check.url.substr(22));
@@ -57,7 +62,9 @@ function createPingsForCheck(check, startDate, quality) {
     } else {
       ping.isResponsive = ping.time < check.maxTime;
     }
-    ping.save();
+    ping.save(function(scopedDate, scopedCheck, scopedNow) { return function(err) {
+      if((scopedDate + scopedCheck.interval) >= scopedNow) callback(scopedCheck);
+    }}(date, check, now));
     nbPings++;
     if (nbPings % 10000 == 0) {
       console.log('Creating ' + nbPings + ' pings for check "' + check.name + '" (' + ping.date + ')');
