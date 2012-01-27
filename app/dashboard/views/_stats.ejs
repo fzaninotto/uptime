@@ -44,7 +44,7 @@ var updateChart = function(uptime, responseTime) {
   chart = new Highcharts.Chart({
     chart: {
       renderTo: 'chart',
-      zoomType: 'x'
+      zoomType: 'x', 
     },
     title: null,
     legend: { enabled: false },
@@ -60,8 +60,12 @@ var updateChart = function(uptime, responseTime) {
     }],
     series: [
       { name: "Uptime", data: uptime, color: '#4572A7' }, 
-      { name: "Response Time", data: responseTime, yAxis: 1, color: '#89A54E' }
+      { name: "Response Time", data: responseTime, yAxis: 1, type: 'spline', color: '#89A54E' }
     ],
+    plotOptions: { 
+      spline: { marker: { enabled: false, states: { hover: { enabled: true }} }},
+      line: { marker: { enabled: false, states: { hover: { enabled: true }} }}
+    },
     tooltip: {
       formatter: function() {
         return Highcharts.dateFormat('%e. %b %Y, %H:00', this.x) +'<br/>' 
