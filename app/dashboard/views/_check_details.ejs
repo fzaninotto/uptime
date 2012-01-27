@@ -1,0 +1,10 @@
+<div id="details">
+  <table>
+    <tr><td>Name</td><td><%= check.name %></td></tr>
+    <tr><td>URL</td><td><a href="<%= check.url %>"><%= check.url %></a></td></tr>
+    <tr><td>Polling interval</td><td><%= check.interval / 1000 %>s</td></tr>
+    <tr><td>Max request time</td><td><%= check.maxTime %>ms</td></tr>
+    <tr><td>Tags</td><td><%= check.tags.join(', ') %></td></tr>
+    <tr><td>Last tested on</td><td><%= check.lastTested.toLocaleString() %></td></tr>
+  </table>
+</div>

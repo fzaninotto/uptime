@@ -1,0 +1,75 @@
+<div id="pings">
+  <div style="float:right;margin-bottom:0;height:28px">
+  <label>
+    <input type="checkbox" name="optionsCheckboxes" value="option1" onclick="updatePingsToggle()">
+    <span>Auto-update pings</span>
+  </label>
+  </div>
+  <div>
+    <a class="recent btn" href="#">&lt; More Recent</a>
+    <a class="old btn" href="#">Older &gt;</a>
+  </div>
+  <table>
+    <thead>
+      <tr><th>Date</th><th>Up?</th><th>Responsive?</th><th>Response time</th><th>Error</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <div class="recent_old">
+    <a class="recent btn" href="#">&lt; More Recent</a>
+    <a class="old btn" href="#">Older &gt;</a>
+  </div>
+</div>
+<script id="ping_template" type="text/template">
+<tr class="{{= ping.isUp ? 'green' : 'red' }}">
+  <td>{{= new Date(ping.date).toLocaleString() }}</td>
+  <td><span class="label {{= (ping.isUp ? 'success' : 'important') }}">{{= (ping.isUp ? 'yes' : 'no') }}</span></td>
+  <td><span class="label {{= (ping.isResponsive ? 'success' : 'important') }}">{{= (ping.isResponsive ? 'yes' : 'no') }}</span></td>
+  <td>{{= ping.time }}</td>
+  <td>{{= ping.error || '' }}</td>
+</tr>
+</script>
+<script>
+var ping_template = document.getElementById('ping_template').innerHTML;
+var page = 0;
+var updatePings = function() {
+  $.getJSON('/api/pings/check/<%= check._id %>/' + page, function(pings) {
+    var lines = [];
+    $.each(pings, function(key, ping) {
+      lines.push(ejs.render(ping_template, { ping: ping }));
+    });
+    $('#pings tbody').html(lines.join(''));
+  });
+};
+var interval;
+var updatePingsToggle = function() {
+  if (interval) {
+    window.clearInterval(interval);
+  } else {
+    interval = window.setInterval(updatePings, 5000);
+  }
+}
+$(document).ready(function() {
+  updatePings();
+  $('.recent').hide();
+  $('.old').click(function(){
+    page++;
+    updatePings();
+    $('.recent').show();
+    return false;
+  });
+  $('.recent').click(function(){
+    page--;
+    updatePings();
+    if (page == 1) {
+      $(this).hide();
+    };
+    return false;
+  }).dblclick(function(){
+    page = 0;
+    updatePings();
+    $(this).hide();
+  });
+});
+</script>
+

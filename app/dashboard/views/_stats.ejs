@@ -1,0 +1,85 @@
+<div id="history">
+  <div id="chart" style="width:920px;height: 400px"></div>
+  <table>
+    <thead>
+      <tr><th>Date</th><th>Uptime</th><th>Downtime</th><th>Avg. Response time</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+<script id="stat_template" type="text/template">
+<tr class="{{= (stat.ups / stat.count == 1) ? 'green' : 'red' }}">
+  <td>{{= new Date(stat.timestamp).toLocaleString() }}</td>
+  <td>{{= ((stat.ups / stat.count) * 100).toFixed(3) }}%</td>
+  <td>{{= (stat.downtime / 1000).toFixed() }}s</td>
+  <td>{{= Math.round(stat.time / stat.count) }}ms</td>
+</tr>
+</script>
+<script>
+var stat_template = document.getElementById('stat_template').innerHTML;
+var updateStats = function() {
+  $.getJSON('/api/check/<%= check._id %>/stat', function(stats) {
+    var lines = [];
+    $.each(stats, function(key, stat) {
+      lines.push(ejs.render(stat_template, { stat: stat }));
+    });
+    $('#history tbody').html(lines.join(''));
+  });
+}
+var chart;
+var MeetupForChart = function() {
+  this.uptime = false;
+  this.downtime = false;
+}
+MeetupForChart.prototype.send = function(object, callback) {
+  if (object.uptime) this.uptime = object.uptime;
+  if (object.responseTime) this.responseTime = object.responseTime;
+  if (this.uptime && this.responseTime) {
+    callback(this.uptime, this.responseTime);
+    this.uptime = false;
+    this.responseTime = false;
+  }
+}
+var updateChart = function(uptime, responseTime) {
+  chart = new Highcharts.Chart({
+    chart: {
+      renderTo: 'chart',
+      zoomType: 'x'
+    },
+    title: null,
+    legend: { enabled: false },
+    xAxis: { type: 'datetime' },
+    yAxis: [{
+       title: { text: 'Uptime', style: { color: '#4572A7' }},
+       labels: { style: { color: '#4572A7' }},
+       max: 100
+    }, { 
+      title: { text: 'Response Time', style: { color: '#89A54E' }},
+      labels: { style: { color: '#89A54E' }},
+      opposite: true
+    }],
+    series: [
+      { name: "Uptime", data: uptime, color: '#4572A7' }, 
+      { name: "Response Time", data: responseTime, yAxis: 1, color: '#89A54E' }
+    ],
+    tooltip: {
+      formatter: function() {
+        return Highcharts.dateFormat('%e. %b %Y, %H:00', this.x) +'<br/>' 
+           + (this.series.name == 'Uptime' ? 'Uptime: ' : 'Response Time: ')
+           + this.y
+           + (this.series.name == 'Uptime' ? '%' : 'ms');
+      }
+    },
+  });
+}
+$(document).ready(function() {
+  var meetup = new MeetupForChart();
+  $.getJSON('/api/check/<%= check._id %>/hourlyUptime', function(uptime) {
+    meetup.send({uptime: uptime}, updateChart);
+  });
+  $.getJSON('/api/check/<%= check._id %>/hourlyResponseTime', function(responseTime) {
+    meetup.send({responseTime: responseTime}, updateChart);
+  });
+  updateStats();
+});
+</script>

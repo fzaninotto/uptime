@@ -24,14 +24,46 @@ module.exports = function(app) {
     });
   });
 
-  app.get('/check/:name/stat', function(req, res) {
-    Check.find({ name: req.params.name }).exclude('qosPerHour').findOne(function(err, check) {
+  app.get('/check/:id/stat/:page?', function(req, res) {
+    Check.find({ _id: req.params.id }).exclude('qosPerHour').findOne(function(err, check) {
       if (err) return next(err);
-      if (!check) return next(new Error('failed to load check ' + req.params.name));
-      CheckHourlyStat.find({ check: check }).asc('timestamp').run(function(err, stats) {
+      if (!check) return next(new Error('failed to load check ' + req.params.id));
+      CheckHourlyStat.find({ check: check }).desc('timestamp').limit(50).skip(req.params.page * 50).run(function(err, stats) {
         if (err) return next(err);
-        if (!stats) return next(new Error('failed to load stats for check ' + req.params.name));
+        if (!stats) return next(new Error('failed to load stats for check ' + req.params.id));
         res.json(stats);
+      })
+    });
+  });
+
+  app.get('/check/:id/hourlyUptime', function(req, res) {
+    Check.find({ _id: req.params.id }).exclude('qosPerHour').findOne(function(err, check) {
+      if (err) return next(err);
+      if (!check) return next(new Error('failed to load check ' + req.params.id));
+      var uptimes = [];
+      CheckHourlyStat.find({ check: check, timestamp: { $gte: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000) } }).asc('timestamp').each(function(err, stat) {
+        if (err) return next(err);
+        if (stat) {
+          uptimes.push([Date.parse(stat.timestamp), (stat.ups / stat.count).toFixed(5) * 100]);
+        } else {
+          res.json(uptimes);
+        }
+      })
+    });
+  });
+
+  app.get('/check/:id/hourlyResponseTime', function(req, res) {
+    Check.find({ _id: req.params.id }).exclude('qosPerHour').findOne(function(err, check) {
+      if (err) return next(err);
+      if (!check) return next(new Error('failed to load check ' + req.params.id));
+      var responseTimes = [];
+      CheckHourlyStat.find({ check: check, timestamp: { $gte: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000) } }).asc('timestamp').each(function(err, stat) {
+        if (err) return next(err);
+        if (stat) {
+          responseTimes.push([Date.parse(stat.timestamp), Math.round(stat.time / stat.count)]);
+        } else {
+          res.json(responseTimes);
+        }
       })
     });
   });

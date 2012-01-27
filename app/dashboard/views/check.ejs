@@ -1,200 +1,28 @@
 <script src="<%= route %>/javascripts/bootstrap-tabs.js"></script>
 <script src="<%= route %>/javascripts/ejs.min.js"></script>
 <script src="<%= route %>/javascripts/highcharts.js"></script>
+<script>
+var ejs = require('ejs');
+ejs.open = '{{';
+ejs.close = '}}';
+</script>
 <h1>
   Check "<%= check.name %>"
   <small><%= check.url %></small>
 </h1>
 <ul class="tabs">
   <li class="active"><a href="#pings">Pings</a></li>
-  <li><a href="#stats">Stats</a></li>
-  <li><a href="#charts">Charts</a></li>
+  <li><a href="#history">History</a></li>
   <li><a href="#details">Details</a></li>
 </ul>
 <div class="pill-content">
-  <div class="active" id="pings">
-    <div style="float:right;margin-bottom:0;height:28px">
-    <label>
-      <input type="checkbox" name="optionsCheckboxes" value="option1" onclick="updatePingsToggle()">
-      <span>Auto-update pings</span>
-    </label>
-    </div>
-    <div>
-      <a class="recent btn" href="#">&lt; More Recent</a>
-      <a class="old btn" href="#">Older &gt;</a>
-    </div>
-    <table>
-      <thead>
-        <tr><th>Date</th><th>Up?</th><th>Responsive?</th><th>Response time</th><th>Error</th></tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <div class="recent_old">
-      <a class="recent btn" href="#">&lt; More Recent</a>
-      <a class="old btn" href="#">Older &gt;</a>
-    </div>
-  </div>
-  <div id="stats">
-    <table>
-      <thead>
-        <tr><th>Date</th><th>Uptime</th><th>Downtime</th><th>Avg. Response time</th></tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-  <div id="charts">
-    <div>
-      <a class="btn active" id="uptime_btn" href="#">Uptime</a>
-      <a class="btn" id='reponse_time_btn' href="#">Average Response Time</a>
-    </div>
-    <div id="chart" style="width:920px;height: 400px"></div>
-  </div>
-  <div id="details">
-    <table>
-      <tr><td>Name</td><td><%= check.name %></td></tr>
-      <tr><td>URL</td><td><a href="<%= check.url %>"><%= check.url %></a></td></tr>
-      <tr><td>Polling interval</td><td><%= check.interval / 1000 %>s</td></tr>
-      <tr><td>Max request time</td><td><%= check.maxTime %>ms</td></tr>
-      <tr><td>Tags</td><td><%= check.tags.join(', ') %></td></tr>
-      <tr><td>Last tested on</td><td><%= check.lastTested.toLocaleString() %></td></tr>
-    </table>
-  </div>
+  <%- partial('_pings', { object: check, as: 'check' }) %>
+  <%- partial('_stats', { object: check, as: 'check' }) %>
+  <%- partial('_check_details', { object: check, as: 'check' }) %>
 </div>
-<script id="ping_template" type="text/template">
-<tr class="{{= ping.isUp ? 'green' : 'red' }}">
-  <td>{{= new Date(ping.date).toLocaleString() }}</td>
-  <td><span class="label {{= (ping.isUp ? 'success' : 'important') }}">{{= (ping.isUp ? 'yes' : 'no') }}</span></td>
-  <td><span class="label {{= (ping.isResponsive ? 'success' : 'important') }}">{{= (ping.isResponsive ? 'yes' : 'no') }}</span></td>
-  <td>{{= ping.time }}</td>
-  <td>{{= ping.error || '' }}</td>
-</tr>
-</script>
-<script id="stat_template" type="text/template">
-<tr>
-  <td>{{= new Date(stat.timestamp).toLocaleString() }}</td>
-  <td>{{= ((stat.ups / stat.count) * 100).toFixed(3) }}%</td>
-  <td>{{= (stat.downtime / 1000).toFixed() }}s</td>
-  <td>{{= Math.round(stat.time / stat.count) }}ms</td>
-</tr>
-</script>
 <script>
-var ping_template = document.getElementById('ping_template').innerHTML;
-var stat_template = document.getElementById('stat_template').innerHTML;
-var ejs = require('ejs');
-ejs.open = '{{';
-ejs.close = '}}';
-var page = 0;
-var updatePings = function() {
-  $.getJSON('/api/pings/check/<%= check._id %>/' + page, function(pings) {
-    var lines = [];
-    $.each(pings, function(key, ping) {
-      lines.push(ejs.render(ping_template, { ping: ping }));
-    });
-    $('#pings tbody').html(lines.join(''));
-  });
-};
-var interval;
-var updatePingsToggle = function() {
-  if (interval) {
-    window.clearInterval(interval);
-  } else {
-    interval = window.setInterval(updatePings, 5000);
-  }
-}
-var chart;
-var uptime = [];
-var avgResponseTime = [];
-var chartType = 'uptime';
-var updateCharts = function() {
-  if (chartType == 'uptime') {
-    chart = null;
-    chart = new Highcharts.Chart({
-      chart: {
-        renderTo: 'chart',
-        zoomType: 'x',
-      },
-      title: null,
-      legend: { enabled: false },
-      xAxis: { type: 'datetime' },
-      yAxis: { title: { text: 'Uptime'} },
-      series: [{ name: "Uptime", data: uptime }],
-      tooltip: {
-        formatter: function() {
-          return '<b>'+ this.series.name +'</b><br/>'+
-             Highcharts.dateFormat('%e. %b %Y, %H:00', this.x) +'<br/>'+ this.y.toFixed(3) + '%';
-        }
-      },
-    });
-  } else {
-    chart = null;
-    chart = new Highcharts.Chart({
-      chart: {
-        renderTo: 'chart',
-        zoomType: 'x',
-      },
-      title: null,
-      legend: { enabled: false },
-      xAxis: { type: 'datetime' },
-      yAxis:  { title: { text: 'Average Response Time', style: { color: '#89A54E' } } },
-      series: [{ name: "Average Response Time", data: avgResponseTime, color: '#89A54E' }],
-      tooltip: {
-        formatter: function() {
-          return '<b>'+ this.series.name +'</b><br/>'+
-             Highcharts.dateFormat('%e. %b %Y, %H:00', this.x) +'<br/>'+ this.y.toFixed(0) + 'ms';
-        }
-      },
-    });
-  }
-}
-var updateStats = function() {
-  $.getJSON('/api/check/<%= check.name %>/stat', function(stats) {
-    var lines = [];
-    $.each(stats, function(key, stat) {
-      lines.push(ejs.render(stat_template, { stat: stat }));
-      uptime.push([Date.parse(stat.timestamp), (stat.ups / stat.count) * 100]);
-      avgResponseTime.push([Date.parse(stat.timestamp), stat.time / stat.count]);
-    });
-    $('#stats tbody').html(lines.join(''));
-    updateCharts();
-  });
-}
 $(document).ready(function() {
+  $('#pings').addClass('active');
   $('.tabs').tabs();
-
-  updatePings();
-  $('.recent').hide();
-  $('.old').click(function(){
-    page++;
-    updatePings();
-    $('.recent').show();
-    return false;
-  });
-  $('.recent').click(function(){
-    page--;
-    updatePings();
-    if (page == 1) {
-      $(this).hide();
-    };
-    return false;
-  }).dblclick(function(){
-    page = 0;
-    updatePings();
-    $(this).hide();
-  });
-  
-  updateStats();
-  
-  $('#reponse_time_btn').click(function(){
-    chartType='responseTime';
-    updateCharts();
-    $(this).addClass('active');
-    $('#uptime_btn').removeClass('active');
-  });
-  $('#uptime_btn').click(function(){
-    chartType='uptime';
-    updateCharts();
-    $(this).addClass('active');
-    $('#reponse_time_btn').removeClass('active');
-  });
 });
 </script>
