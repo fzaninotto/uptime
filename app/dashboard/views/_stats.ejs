@@ -27,7 +27,7 @@
 var stat_template = document.getElementById('stat_template').innerHTML;
 page.stat = 0;
 var updateStats = function() {
-  $.getJSON('/api/check/<%= check._id %>/stat/' + page.stat, function(stats) {
+  $.getJSON('<%= url.updateStat %>' + page.stat, function(stats) {
     var lines = [];
     $.each(stats, function(key, stat) {
       lines.push(ejs.render(stat_template, { stat: stat }));
@@ -87,10 +87,10 @@ var updateChart = function(uptime, responseTime) {
 }
 $(document).ready(function() {
   var meetup = new MeetupForChart();
-  $.getJSON('/api/check/<%= check._id %>/hourlyUptime', function(uptime) {
+  $.getJSON('<%= url.uptime %>', function(uptime) {
     meetup.send({uptime: uptime}, updateChart);
   });
-  $.getJSON('/api/check/<%= check._id %>/hourlyResponseTime', function(responseTime) {
+  $.getJSON('<%= url.responseTime %>', function(responseTime) {
     meetup.send({responseTime: responseTime}, updateChart);
   });
   handlePagination('stat', '#stats', updateStats);

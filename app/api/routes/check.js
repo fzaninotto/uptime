@@ -15,6 +15,13 @@ module.exports = function(app) {
       res.json(checks);
     });
   });
+
+  app.get('/check/tag/:name', function(req, res, next) {
+    Check.find({ tags: req.params.name }).exclude('qosPerHour').find(function(err, checks) {
+      if (err) return next(err);
+      res.json(checks);
+    });
+  });
   
   app.get('/check/:id', function(req, res, next) {
     Check.find({ _id: req.params.id }).exclude('qosPerHour').findOne(function(err, check) {

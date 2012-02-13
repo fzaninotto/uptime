@@ -4,6 +4,7 @@
 var express = require('express');
 
 var Check = require('../../models/check');
+var Tag = require('../../models/tag');
 
 var app = module.exports = express.createServer();
 
@@ -40,6 +41,14 @@ app.get('/check/:id', function(req, res, next) {
 
 app.get('/tags', function(req, res) {
   res.render('tags', { route: app.route });
+});
+
+app.get('/tag/:name', function(req, res, next) {
+  Tag.findOne({ name: req.params.name }, function(err, tag) {
+    if (err) return next(err);
+    if (!tag) return next(new Error('failed to load tag ' + req.params.name));
+    res.render('tag', { route: app.route, tag: tag });
+  });
 });
 
 if (!module.parent) {

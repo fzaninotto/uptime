@@ -13,4 +13,9 @@ var Tag = new Schema({
 });
 Tag.index({ name: 1 }, { unique: true });
 
+Tag.methods.getChecks = function(callback) {
+  var Check   = require('./check')
+  Check.find({ tags: this.name }, callback);
+}
+
 module.exports = mongoose.model('Tag', Tag);

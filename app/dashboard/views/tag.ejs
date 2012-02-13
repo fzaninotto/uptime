@@ -9,26 +9,23 @@ ejs.close = '}}';
 var page = {};
 </script>
 <h1>
-  Check "<%= check.name %>"
-  <small><%= check.url %></small>
+  Tag "<%= tag.name %>"
 </h1>
 <ul class="tabs">
-  <li class="active"><a href="#pings">Pings</a></li>
-  <li><a href="#stats">History</a></li>
+  <li class="active"><a href="#stats">History</a></li>
   <li><a href="#details">Details</a></li>
 </ul>
 <div class="pill-content">
-  <%- partial('_pings', { check: check }) %>
   <%- partial('_stats', { url: { 
-    updateStat:   '/api/check/' + check._id + '/stat/',
-    uptime:       '/api/check/' + check._id + '/hourlyUptime',
-    responseTime: '/api/check/' + check._id + '/hourlyResponseTime'
+    updateStat:   '/api/tag/' + tag.name + '/stat/',
+    uptime:       '/api/tag/' + tag.name + '/hourlyUptime',
+    responseTime: '/api/tag/' + tag.name + '/hourlyResponseTime'
   }} ) %>
-  <%- partial('_check_details', { check: check }) %>
+  <%- partial('_tag_details', { tag: tag }) %>
 </div>
 <script>
 $(document).ready(function() {
-  $('#pings').addClass('active');
+  $('#stats').addClass('active');
   $('.tabs').tabs();
 });
 </script>
