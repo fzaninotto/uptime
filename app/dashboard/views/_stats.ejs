@@ -1,11 +1,19 @@
-<div id="history">
+<div id="stats">
   <div id="chart" style="width:920px;height: 400px"></div>
+  <div>
+    <a class="recent btn" href="#">&lt; More Recent</a>
+    <a class="old btn" href="#">Older &gt;</a>
+  </div>
   <table>
     <thead>
       <tr><th>Date</th><th>Uptime</th><th>Downtime</th><th>Avg. Response time</th></tr>
     </thead>
     <tbody></tbody>
   </table>
+  <div>
+    <a class="recent btn" href="#">&lt; More Recent</a>
+    <a class="old btn" href="#">Older &gt;</a>
+  </div>
 </div>
 <script id="stat_template" type="text/template">
 <tr class="{{= (stat.ups / stat.count == 1) ? 'green' : 'red' }}">
@@ -17,13 +25,14 @@
 </script>
 <script>
 var stat_template = document.getElementById('stat_template').innerHTML;
+var stat_page = 0;
 var updateStats = function() {
-  $.getJSON('/api/check/<%= check._id %>/stat', function(stats) {
+  $.getJSON('/api/check/<%= check._id %>/stat/' + stat_page, function(stats) {
     var lines = [];
     $.each(stats, function(key, stat) {
       lines.push(ejs.render(stat_template, { stat: stat }));
     });
-    $('#history tbody').html(lines.join(''));
+    $('#stats tbody').html(lines.join(''));
   });
 }
 var chart;
@@ -85,5 +94,24 @@ $(document).ready(function() {
     meetup.send({responseTime: responseTime}, updateChart);
   });
   updateStats();
+  $('#stats .recent').hide();
+  $('#stats .old').click(function(){
+    stat_page++;
+    updateStats();
+    $('#stats .recent').show();
+    return false;
+  });
+  $('#stats .recent').click(function(){
+    stat_page--;
+    updateStats();
+    if (stat_page == 0) {
+      $(this).hide();
+    };
+    return false;
+  }).dblclick(function(){
+    stat_page = 0;
+    updateStats();
+    $(this).hide();
+  });
 });
 </script>

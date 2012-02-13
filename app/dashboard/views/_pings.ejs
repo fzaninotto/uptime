@@ -15,7 +15,7 @@
     </thead>
     <tbody></tbody>
   </table>
-  <div class="recent_old">
+  <div>
     <a class="recent btn" href="#">&lt; More Recent</a>
     <a class="old btn" href="#">Older &gt;</a>
   </div>
@@ -31,9 +31,9 @@
 </script>
 <script>
 var ping_template = document.getElementById('ping_template').innerHTML;
-var page = 0;
+var ping_page = 0;
 var updatePings = function() {
-  $.getJSON('/api/pings/check/<%= check._id %>/' + page, function(pings) {
+  $.getJSON('/api/pings/check/<%= check._id %>/' + ping_page, function(pings) {
     var lines = [];
     $.each(pings, function(key, ping) {
       lines.push(ejs.render(ping_template, { ping: ping }));
@@ -51,22 +51,22 @@ var updatePingsToggle = function() {
 }
 $(document).ready(function() {
   updatePings();
-  $('.recent').hide();
-  $('.old').click(function(){
-    page++;
+  $('#pings .recent').hide();
+  $('#pings .old').click(function(){
+    ping_page++;
     updatePings();
-    $('.recent').show();
+    $('#pings .recent').show();
     return false;
   });
-  $('.recent').click(function(){
-    page--;
+  $('#pings .recent').click(function(){
+    ping_page--;
     updatePings();
-    if (page == 1) {
+    if (ping_page == 0) {
       $(this).hide();
     };
     return false;
   }).dblclick(function(){
-    page = 0;
+    ping_page = 0;
     updatePings();
     $(this).hide();
   });
