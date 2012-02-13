@@ -25,9 +25,9 @@
 </script>
 <script>
 var stat_template = document.getElementById('stat_template').innerHTML;
-var stat_page = 0;
+page.stat = 0;
 var updateStats = function() {
-  $.getJSON('/api/check/<%= check._id %>/stat/' + stat_page, function(stats) {
+  $.getJSON('/api/check/<%= check._id %>/stat/' + page.stat, function(stats) {
     var lines = [];
     $.each(stats, function(key, stat) {
       lines.push(ejs.render(stat_template, { stat: stat }));
@@ -93,25 +93,6 @@ $(document).ready(function() {
   $.getJSON('/api/check/<%= check._id %>/hourlyResponseTime', function(responseTime) {
     meetup.send({responseTime: responseTime}, updateChart);
   });
-  updateStats();
-  $('#stats .recent').hide();
-  $('#stats .old').click(function(){
-    stat_page++;
-    updateStats();
-    $('#stats .recent').show();
-    return false;
-  });
-  $('#stats .recent').click(function(){
-    stat_page--;
-    updateStats();
-    if (stat_page == 0) {
-      $(this).hide();
-    };
-    return false;
-  }).dblclick(function(){
-    stat_page = 0;
-    updateStats();
-    $(this).hide();
-  });
+  handlePagination('stat', '#stats', updateStats);
 });
 </script>

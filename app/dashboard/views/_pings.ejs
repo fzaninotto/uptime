@@ -31,9 +31,9 @@
 </script>
 <script>
 var ping_template = document.getElementById('ping_template').innerHTML;
-var ping_page = 0;
+page.ping = 0;
 var updatePings = function() {
-  $.getJSON('/api/pings/check/<%= check._id %>/' + ping_page, function(pings) {
+  $.getJSON('/api/pings/check/<%= check._id %>/' + page.ping, function(pings) {
     var lines = [];
     $.each(pings, function(key, ping) {
       lines.push(ejs.render(ping_template, { ping: ping }));
@@ -50,26 +50,7 @@ var updatePingsToggle = function() {
   }
 }
 $(document).ready(function() {
-  updatePings();
-  $('#pings .recent').hide();
-  $('#pings .old').click(function(){
-    ping_page++;
-    updatePings();
-    $('#pings .recent').show();
-    return false;
-  });
-  $('#pings .recent').click(function(){
-    ping_page--;
-    updatePings();
-    if (ping_page == 0) {
-      $(this).hide();
-    };
-    return false;
-  }).dblclick(function(){
-    ping_page = 0;
-    updatePings();
-    $(this).hide();
-  });
+  handlePagination('ping', '#pings', updatePings);
 });
 </script>
 
