@@ -12,13 +12,17 @@ var page = {};
   Check "<%= check.name %>"
   <small><%= check.url %></small>
 </h1>
+<% if (info.length) { %>
+<div class="alert alert-success"><%= info %></div>
+<% } %>
+
 <ul class="nav nav-tabs">
-  <li class="active"><a href="#pings" data-toggle="tab">Pings</a></li>
+  <li><a href="#pings" data-toggle="tab">Pings</a></li>
   <li><a href="#stats" data-toggle="tab">History</a></li>
   <li><a href="#details" data-toggle="tab">Details</a></li>
 </ul>
 <div class="tab-content">
-  <%- partial('_pings', { check: check }) %>
+  <%- partial('_pings', { check: check, route: route }) %>
   <%- partial('_stats', { url: { 
     updateStat:   '/api/check/' + check._id + '/stat/',
     uptime:       '/api/check/' + check._id + '/hourlyUptime',
@@ -28,6 +32,10 @@ var page = {};
 </div>
 <script>
 $(document).ready(function() {
-  $('#pings').addClass('active');
+<% if (info.length) { %>
+  $('.nav-tabs a:last').tab('show');
+<% } else { %>
+  $('.nav-tabs a:first').tab('show');
+<% } %>
 });
 </script>

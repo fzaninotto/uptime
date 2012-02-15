@@ -21,6 +21,10 @@ var app = module.exports = express.createServer();
 
 app.configure(function(){
   app.use(app.router);
+  app.use(express.bodyParser());
+  app.use(express.methodOverride());
+  app.use(express.cookieParser());
+  app.use(express.session({ secret: 'qdfegsgkjhflkquhfskqdjfhskjdfh' }));
 });
 
 app.configure('development', function(){

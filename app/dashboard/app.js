@@ -15,6 +15,8 @@ app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'ejs');
   app.use(express.static(__dirname + '/public'));
+  app.use(express.bodyParser());
+  app.use(express.methodOverride());
 });
 
 app.configure('development', function(){
@@ -35,7 +37,22 @@ app.get('/check/:id', function(req, res, next) {
   Check.findOne({ _id: req.params.id }, function(err, check) {
     if (err) return next(err);
     if (!check) return next(new Error('failed to load check ' + req.params.id));
-    res.render('check', { route: app.route, check: check });
+    res.render('check', { route: app.route, check: check, info: req.flash('info') });
+  });
+});
+
+app.put('/check/:id', function(req, res, next) {
+  Check.findOne({ _id: req.params.id }, function(err, check) {
+    if (err) return next(err);
+    if (!check) return next(new Error('failed to load check ' + req.params.id));
+    check.name = req.body.name;
+    check.url = req.body.url;
+    check.interval = req.body.interval;
+    check.maxTime = req.body.maxTime;
+    check.tags = req.body.tags.replace(/\s*,\s*/g, ',').split(',');
+    check.save();
+    req.flash('info', 'Changes have been saved');
+    res.redirect('/check/' + req.params.id);
   });
 });
 

@@ -1,15 +1,68 @@
 <div class="tab-pane" id="details">
-  <table class="table">
-    <tr><td>Name</td><td><%= check.name %></td></tr>
-    <tr><td>URL</td><td><a href="<%= check.url %>"><%= check.url %></a></td></tr>
-    <tr><td>Polling interval</td><td><%= check.interval / 1000 %>s</td></tr>
-    <tr><td>Max request time</td><td><%= check.maxTime %>ms</td></tr>
-    <tr><td>Tags</td><td id="check_tags"></td></tr>
-    <tr><td>Last tested on</td><td><%= check.lastTested.toLocaleString() %></td></tr>
-  </table>
+  <form method="post" class="form-horizontal">
+    <input type="hidden" name="_method" value="put" />
+    <fieldset>
+      <div class="control-group">
+        <label class="control-label">Name</label>
+        <div class="controls">
+          <input type="text" name="name" value="<%= check.name %>" class="span8"/>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label">Url</label>
+        <div class="controls">
+          <input type="text" name="url" value="<%= check.url %>" class="span8" />
+          <span class="help-inline"><a href="<%= check.url %>"><img src="<%= route %>/images/external-link-ltr-icon.png"></a></span>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label">Polling interval</label>
+        <div class="controls">
+          <input type="text" name="interval" value="<%= check.interval %>" class="span2" />
+          <span class="help-inline">ms</span>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label">Max request time</label>
+        <div class="controls">
+          <input type="text" name="maxTime" value="<%= check.maxTime %>" class="span2" />
+          <span class="help-inline">ms</span>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label">Tags</label>
+        <div class="controls">
+          <input type="text" name="tags" value="<%= check.tags.join(', ') %>" class="span2" />
+          <span class="help-inline" id="check_tags">ms</span>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label">Last edited on</label>
+        <div class="controls">
+          <span class="span4 uneditable-input"><%= check.lastTested.toLocaleString() %></span>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Save changes</button>
+      </div>
+    </fieldset>
+  </form>
 </div>
 <script>
+function updatePollingIntervalTooltip() {
+  var value = $('form input[name="interval"]').val() / 1000;
+  if (value > 60 ) {
+    value = (value / 60).toFixed();
+    unit = 'minute' + (value > 1 ? 's' : '');
+  } else {
+    value = value.toFixed();
+    unit = 'second' + (value > 1 ? 's' : '');
+  }
+  $('form input[name="interval"] + span').html('ms (' + value + ' ' + unit + ')');
+}
 $(document).ready(function() {
+  updatePollingIntervalTooltip();
+  $('form input[name="interval"]').bind('keypress keyup', updatePollingIntervalTooltip);
   var tag_links  = [];
   $.each([<%= check.tags.map(function(tag) { return "'" + tag + "'"}).join(', ') %>], function(key, tag) {
       tag_links.push('<a href="/dashboard/tag/' + tag + '">' + tag + '</a>');
