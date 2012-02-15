@@ -1,7 +1,7 @@
 <h1>Checks <small id="last_update"></small></h1>
 <table id="check_summary">
   <thead>
-    <tr><th><span class="label success">Up</span></th><th><span class="label important">Down</label></th></tr>
+    <tr><th><span class="label label-success">Up</span></th><th><span class="label label-important">Down</label></th></tr>
   </thead>
   <tbody>
     <tr><td id="all_up" class="green"></td><td id="all_down" class="red"></td></tr>
@@ -24,7 +24,7 @@
     <a href="{{=  route + '/check/' + check._id }}">{{= check.name }}</a>
     <a href="{{= check.url }}"><img src="{{= route }}/images/external-link-ltr-icon.png"></a>
   </td>
-  <td><span class="label {{= (check.isUp ? 'success' : 'important') }}">{{= (check.isUp ? 'yes' : 'no') }}</span></td>
+  <td><span class="label {{= (check.isUp ? 'label-success' : 'label-important') }}">{{= (check.isUp ? 'yes' : 'no') }}</span></td>
   <td class="{{= check.isUp ? 'green' : 'red' }}">{{= check.isUp ? $.timeago.inWords(check.uptime) : 'Down for ' + $.timeago.inWords(check.downtime) }}</td>
   <td>{{= check.qos ? ((check.qos.ups / check.qos.count) * 100).toFixed(3) : '' }}%</td>
   <td>{{= check.qos ? (check.qos.downtime / 1000).toFixed() : '' }}s</td>
