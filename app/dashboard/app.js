@@ -40,15 +40,10 @@ app.get('/check/:id', function(req, res, next) {
 });
 
 app.put('/check/:id', function(req, res, next) {
-  Check.findOne({ _id: req.params.id }, function(err, check) {
+  var check = req.body.check;
+  check.tags = check.tags.replace(/\s*,\s*/g, ',').split(',');
+  Check.update({ _id: req.params.id }, { $set: check }, { upsert: true }, function(err) {
     if (err) return next(err);
-    if (!check) return next(new Error('failed to load check ' + req.params.id));
-    check.name = req.body.name;
-    check.url = req.body.url;
-    check.interval = req.body.interval;
-    check.maxTime = req.body.maxTime;
-    check.tags = req.body.tags.replace(/\s*,\s*/g, ',').split(',');
-    check.save();
     req.flash('info', 'Changes have been saved');
     res.redirect('/check/' + req.params.id);
   });
