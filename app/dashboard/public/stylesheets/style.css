@@ -2,10 +2,6 @@ html, body {
   background-color: #eee;
 }
 
-body {
-  padding-top: 50px;
-}
-
 .container > section {
   background-color: #fff;
   padding: 20px;
@@ -27,6 +23,14 @@ table#check_summary {
 
 table#check_summary tbody tr {
   font-size: 3em;
+}
+
+.green {
+  color: #468847;
+}
+
+.red {
+  color: #B94A48;
 }
 
 table#check_summary td, table#check_summary th {

@@ -1,4 +1,4 @@
-<script src="<%= route %>/javascripts/bootstrap-tabs.js"></script>
+<script src="<%= route %>/javascripts/bootstrap-tab.js"></script>
 <script src="<%= route %>/javascripts/ejs.min.js"></script>
 <script src="<%= route %>/javascripts/highcharts.js"></script>
 <script src="<%= route %>/javascripts/pagination.js"></script>
@@ -11,11 +11,11 @@ var page = {};
 <h1>
   Tag "<%= tag.name %>"
 </h1>
-<ul class="tabs">
-  <li class="active"><a href="#stats">History</a></li>
-  <li><a href="#details">Details</a></li>
+<ul class="nav nav-tabs">
+  <li class="active"><a href="#stats" data-toggle="tab">History</a></li>
+  <li><a href="#details" data-toggle="tab">Details</a></li>
 </ul>
-<div class="pill-content">
+<div class="tab-content">
   <%- partial('_stats', { url: { 
     updateStat:   '/api/tag/' + tag.name + '/stat/',
     uptime:       '/api/tag/' + tag.name + '/hourlyUptime',
@@ -26,6 +26,5 @@ var page = {};
 <script>
 $(document).ready(function() {
   $('#stats').addClass('active');
-  $('.tabs').tabs();
 });
 </script>
