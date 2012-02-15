@@ -33,6 +33,7 @@
 </script>
 <script>
 jQuery(document).ready(function($) {
+  $('.navbar-inner li:first').addClass('active');
   $.timeago.settings.strings.suffixAgo = null;
   var check_template = document.getElementById('check_template').innerHTML;
   var ejs = require('ejs');

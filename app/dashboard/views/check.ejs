@@ -32,6 +32,7 @@ var page = {};
 </div>
 <script>
 $(document).ready(function() {
+  $('.navbar-inner li:first').addClass('active');
 <% if (info.length) { %>
   $('.nav-tabs a:last').tab('show');
 <% } else { %>

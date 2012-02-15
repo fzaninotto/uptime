@@ -20,6 +20,7 @@
 </script>
 <script>
 jQuery(document).ready(function($) {
+  $('.navbar-inner li:last').addClass('active');
   $.timeago.settings.strings.suffixAgo = null;
   var tag_template = document.getElementById('tag_template').innerHTML;
   var ejs = require('ejs');
