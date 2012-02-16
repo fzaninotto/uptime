@@ -20,6 +20,12 @@ var Check = new Schema({
   , qosPerHour  : {}
 });
 
+Check.pre('remove', function(next) {
+  Ping.find({ check: this._id }).remove();
+  require('../models/checkHourlyStat').find({ check: this._id }).remove();
+  next();
+});
+
 Check.methods.setLastTest = function(status) {
   var now = new Date();
   if (this.isUp != status) {

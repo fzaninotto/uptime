@@ -28,7 +28,7 @@ app.configure('production', function(){
 // Routes
 
 app.get('/checks', function(req, res) {
-  res.render('checks', { route: app.route });
+  res.render('checks', { route: app.route, info: req.flash('info')  });
 });
 
 app.get('/check/:id', function(req, res, next) {
@@ -46,6 +46,17 @@ app.put('/check/:id', function(req, res, next) {
     if (err) return next(err);
     req.flash('info', 'Changes have been saved');
     res.redirect('/check/' + req.params.id);
+  });
+});
+
+app.delete('/check/:id', function(req, res, next) {
+  Check.findOne({ _id: req.params.id }, function(err, check) {
+    if (err) return next(err);
+    if (!check) return next(new Error('failed to load check ' + req.params.id));
+    check.remove(function(err){
+      req.flash('info', 'Check has been deleted');
+      res.redirect('/checks');
+    });
   });
 });
 

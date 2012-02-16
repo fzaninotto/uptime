@@ -1,5 +1,5 @@
 <div class="tab-pane" id="details">
-  <form method="post" class="form-horizontal">
+  <form id="check_form" method="post" class="form-horizontal">
     <input type="hidden" name="_method" value="put" />
     <fieldset>
       <div class="control-group">
@@ -44,6 +44,7 @@
       </div>
       <div class="form-actions">
         <button type="submit" class="btn btn-primary">Save changes</button>
+        <button type="submit" class="btn btn-danger" name="delete">Delete</buttin>
       </div>
     </fieldset>
   </form>
@@ -62,6 +63,10 @@ function updatePollingIntervalTooltip() {
   $(intervalFieldSelector + ' + span').html('ms (' + value + ' ' + unit + ')');
 }
 $(document).ready(function() {
+  $('#check_form button[name="delete"]').click(function() {
+    if (!confirm("This will delete the check and related pings and stats.\nAre you sure?")) return false;
+    $('#check_form input[name="_method"]').val('delete');
+  });
   updatePollingIntervalTooltip();
   $(intervalFieldSelector).bind('keypress keyup', updatePollingIntervalTooltip);
   var tag_links  = [];

@@ -1,4 +1,7 @@
 <h1>Checks <small id="last_update"></small></h1>
+<% if (info.length) { %>
+<div class="alert alert-success"><%= info %></div>
+<% } %>
 <table id="check_summary">
   <thead>
     <tr><th><span class="label label-success">Up</span></th><th><span class="label label-important">Down</label></th></tr>
