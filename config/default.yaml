@@ -4,5 +4,11 @@ mongodb:
   user:     root 
   password:
 
+monitor:
+  pollingInterval: 10000
+  updateInterval:  60000
+  timeout:         5000
+  http_proxy:      
+
 server:
   port:     8082
