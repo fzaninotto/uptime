@@ -1,0 +1,8 @@
+mongodb:
+  server:   localhost
+  database: uptime
+  user:     root 
+  passwort:
+
+server:
+  port:     8082

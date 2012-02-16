@@ -1,8 +1,8 @@
 var mongoose = require('mongoose'),
-    config   = require('../config/config.js');
+    config   = require('config');
 
 // configure mongodb
-mongoose.connect('mongodb://' + config.mongodbUser + ':' + config.mongodbPassword + '@' + config.mongodbServer +'/' + config.mongodbDatabase);
+mongoose.connect('mongodb://' + config.mongodb.user + ':' + config.mongodb.password + '@' + config.mongodb.server +'/' + config.mongodb.database);
 
 // models dependencies
 var Check   = require('../models/check');
