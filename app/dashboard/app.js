@@ -31,6 +31,18 @@ app.get('/checks', function(req, res) {
   res.render('checks', { route: app.route, info: req.flash('info')  });
 });
 
+app.get('/check', function(req, res) {
+  res.render('check_new', { route: app.route, check: new Check() });
+});
+
+app.post('/check', function(req, res) {
+  var check = new Check(req.body.check);
+  check.save(function(err) {
+    req.flash('info', 'New check has been created');
+    res.redirect('/check/' + check._id);
+  });
+});
+
 app.get('/check/:id', function(req, res, next) {
   Check.findOne({ _id: req.params.id }, function(err, check) {
     if (err) return next(err);

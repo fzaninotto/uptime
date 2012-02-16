@@ -1,17 +1,17 @@
 <div class="tab-pane" id="details">
   <form id="check_form" method="post" class="form-horizontal">
-    <input type="hidden" name="_method" value="put" />
+    <input type="hidden" name="_method" value="<%= (check.isNew) ? 'post' : 'put' %>" />
     <fieldset>
       <div class="control-group">
         <label class="control-label">Name</label>
         <div class="controls">
-          <input type="text" name="check[name]" value="<%= check.name %>" class="span8"/>
+          <input type="text" name="check[name]" value="<%= check.name || '' %>" class="span8"/>
         </div>
       </div>
       <div class="control-group">
         <label class="control-label">Url</label>
         <div class="controls">
-          <input type="text" name="check[url]" value="<%= check.url %>" class="span8" />
+          <input type="text" name="check[url]" value="<%= check.url || '' %>" class="span8" />
           <span class="help-inline"><a href="<%= check.url %>"><img src="<%= route %>/images/external-link-ltr-icon.png"></a></span>
         </div>
       </div>
@@ -36,15 +36,21 @@
           <span class="help-inline" id="check_tags">ms</span>
         </div>
       </div>
+      <% if (check.lastTested) { %>
       <div class="control-group">
         <label class="control-label">Last edited on</label>
         <div class="controls">
           <span class="span4 uneditable-input"><%= check.lastTested.toLocaleString() %></span>
         </div>
       </div>
+      <% } %>
       <div class="form-actions">
         <button type="submit" class="btn btn-primary">Save changes</button>
-        <button type="submit" class="btn btn-danger" name="delete">Delete</buttin>
+        <% if (!check.isNew) { %>
+        <button type="submit" class="btn btn-danger" name="delete">Delete</button>
+        <% } else { %>
+        <a class="btn" href="<%= route %>/checks">Cancel</a>
+        <% } %>
       </div>
     </fieldset>
   </form>
