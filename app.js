@@ -45,4 +45,4 @@ app.use('/api',       require('./app/api/app'));
 app.use('/dashboard', require('./app/dashboard/app'));
 
 app.listen(config.server.port);
-console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
+console.log("Express server listening on port %d in %s mode", config.server.port, app.settings.env);

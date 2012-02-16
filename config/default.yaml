@@ -2,7 +2,7 @@ mongodb:
   server:   localhost
   database: uptime
   user:     root 
-  passwort:
+  password:
 
 server:
   port:     8082
