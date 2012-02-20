@@ -23,6 +23,8 @@ var Check = new Schema({
 Check.pre('remove', function(next) {
   Ping.find({ check: this._id }).remove();
   require('../models/checkHourlyStat').find({ check: this._id }).remove();
+  require('../models/checkDailyStat').find({ check: this._id }).remove();
+  require('../models/checkMonthlyStat').find({ check: this._id }).remove();
   next();
 });
 
