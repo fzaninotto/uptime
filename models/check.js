@@ -76,6 +76,14 @@ Check.namedScope('byUptime', function(order) {
   }
 });
 
+
+Check.statics.convertTags = function(tags) {
+  if (typeof(tags) === 'string') {
+    tags = tags.replace(/\s*,\s*/g, ',').split(',');
+  }
+  return tags;
+}
+
 /**
  * Calls a function for all checks that need to be polled.
  *
