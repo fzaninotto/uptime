@@ -1,6 +1,7 @@
 var mongoose = require('mongoose'),
     Schema   = mongoose.Schema,
-    shiftTime = require('../lib/timeCalculator');
+    shiftTime = require('../lib/timeCalculator'),
+    async    = require('async');
 
 var Ping = new Schema({
     date         : { type: Date, default: Date.now }
@@ -79,16 +80,16 @@ Ping.statics.updateHourlyQos = function(now, callback) {
   var TagHourlyStat   = require('./tagHourlyStat');
   this.getQosForPeriod(start, end, function(err, results) {
     if (err) return;
-    results.forEach(function(result) {
+    async.forEach(results, function(result, cb) {
       var stat = result.value;
       if (result._id.substr) {
         // the key is a string, so it's a tag
-        TagHourlyStat.update({ name: result._id, timestamp: start }, { $set: { count: stat.count, ups: stat.ups, responsives: stat.responsives, time: stat.time, downtime: stat.downtime } }, { upsert: true }, callback);
+        TagHourlyStat.update({ name: result._id, timestamp: start }, { $set: { count: stat.count, ups: stat.ups, responsives: stat.responsives, time: stat.time, downtime: stat.downtime } }, { upsert: true }, cb);
       } else {
         // the key is a check
-        CheckHourlyStat.update({ check: result._id, timestamp: start }, { $set: { count: stat.count, ups: stat.ups, responsives: stat.responsives, time: stat.time, downtime: stat.downtime } }, { upsert: true }, callback);
+        CheckHourlyStat.update({ check: result._id, timestamp: start }, { $set: { count: stat.count, ups: stat.ups, responsives: stat.responsives, time: stat.time, downtime: stat.downtime } }, { upsert: true }, cb);
       }
-    });
+    }, callback);
   });
 }
 
@@ -108,21 +109,21 @@ Ping.statics.updateLast24HoursQos = function(callback) {
   var Tag   = require('../models/tag');
   this.getQosForPeriod(start, end, function(err, results) {
     if (err) return;
-    results.forEach(function(result) {
+    async.forEach(results, function(result, cb) {
       if (result._id.substr) {
         // the key is a string, so it's a tag
         var stat = result.value;
-        Tag.update({ name: result._id }, { $set: { lastUpdated: end, count: stat.count, ups: stat.ups, responsives: stat.responsives, time: stat.time, downtime: stat.downtime } }, { upsert: true }, callback);
+        Tag.update({ name: result._id }, { $set: { lastUpdated: end, count: stat.count, ups: stat.ups, responsives: stat.responsives, time: stat.time, downtime: stat.downtime } }, { upsert: true }, cb);
       } else {
         // the key is a check
         Check.findById(result._id, function (err, check) {
           if (err || !check) return;
           check.qos = result.value;
           check.markModified('qos');
-          check.save(callback);
+          check.save(cb);
         });
       }
-    })
+    }, callback);
   });
 }
 

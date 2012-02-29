@@ -6,6 +6,7 @@
     "mongoose": "2.3.13",
     "express":  "2.5.0",
     "ejs":      "0.6.1",
-    "config":   "0.4.11"
+    "config":   "0.4.11",
+    "async":    "latest"
   }
 }

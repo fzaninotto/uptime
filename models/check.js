@@ -1,5 +1,6 @@
 var mongoose = require('mongoose'),
-    Schema = mongoose.Schema;
+    Schema   = mongoose.Schema,
+    async    = require('async');
 
 // models dependencies
 var Ping   = require('../models/ping');
@@ -20,12 +21,15 @@ var Check = new Schema({
   , qosPerHour  : {}
 });
 
-Check.pre('remove', function(next) {
-  Ping.find({ check: this._id }).remove();
-  require('../models/checkHourlyStat').find({ check: this._id }).remove();
-  require('../models/checkDailyStat').find({ check: this._id }).remove();
-  require('../models/checkMonthlyStat').find({ check: this._id }).remove();
-  next();
+Check.pre('remove', function(callback) {
+  async.parallel([
+    function(cb) { Ping.find({ check: this._id }).remove(cb); },
+    function(cb) { require('../models/checkHourlyStat').find({ check: this._id }).remove(cb); },
+    function(cb) { require('../models/checkDailyStat').find({ check: this._id }).remove(cb); },
+    function(cb) { require('../models/checkMonthlyStat').find({ check: this._id }).remove(cb); }
+  ], function(err, results) {
+    callback();
+  });
 });
 
 Check.methods.setLastTest = function(status) {

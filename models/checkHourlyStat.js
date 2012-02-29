@@ -1,6 +1,7 @@
 var mongoose = require('mongoose'),
-    Schema = mongoose.Schema,
-    shiftTime = require('../lib/timeCalculator');
+    Schema   = mongoose.Schema,
+    shiftTime = require('../lib/timeCalculator'),
+    async = require('async');
 
 // main model
 var CheckHourlyStat = new Schema({
@@ -50,10 +51,10 @@ CheckHourlyStat.statics.updateDailyQos = function(now, callback) {
   var CheckDailyStat = require('./checkDailyStat');
   this.getQosForPeriod(start, end, function(err, results) {
     if (err) return;
-    results.forEach(function(result) {
+    async.forEach(results, function(result, cb) {
       var stat = result.value;
-      CheckDailyStat.update({ check: result._id, timestamp: start }, { $set: { count: stat.count, ups: stat.ups, responsives: stat.responsives, time: stat.time, downtime: stat.downtime } }, { upsert: true }, callback);
-    });
+      CheckDailyStat.update({ check: result._id, timestamp: start }, { $set: { count: stat.count, ups: stat.ups, responsives: stat.responsives, time: stat.time, downtime: stat.downtime } }, { upsert: true }, cb);
+    }, callback);
   });
 }
 
@@ -72,10 +73,10 @@ CheckHourlyStat.statics.updateMonthlyQos = function(now, callback) {
   var CheckMonthlyStat = require('./checkMonthlyStat');
   this.getQosForPeriod(start, end, function(err, results) {
     if (err) return;
-    results.forEach(function(result) {
+    async.forEach(results, function(result, cb) {
       var stat = result.value;
-      CheckMonthlyStat.update({ check: result._id, timestamp: start }, { $set: { count: stat.count, ups: stat.ups, responsives: stat.responsives, time: stat.time, downtime: stat.downtime } }, { upsert: true }, callback);
-    });
+      CheckMonthlyStat.update({ check: result._id, timestamp: start }, { $set: { count: stat.count, ups: stat.ups, responsives: stat.responsives, time: stat.time, downtime: stat.downtime } }, { upsert: true }, cb);
+    }, callback);
   });
 }
 
