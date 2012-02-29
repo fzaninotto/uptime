@@ -1,5 +1,6 @@
 var mongoose = require('mongoose'),
-    Schema = mongoose.Schema;
+    Schema = mongoose.Schema,
+    shiftTime = require('../lib/timeCalculator');
 
 // main model
 var CheckHourlyStat = new Schema({
@@ -44,16 +45,8 @@ CheckHourlyStat.statics.updateDailyQos = function(now, callback) {
     // Mogoose Model.update() implementation requires a callback
     callback = function(err) { if (err) console.dir(err); };
   }
-  var start = new Date(now);
-  start.setUTCHours(0);
-  start.setUTCMinutes(0);
-  start.setUTCSeconds(0);
-  start.setUTCMilliseconds(0);
-  var end = new Date(start);
-  end.setUTCHours(23);
-  end.setUTCMinutes(59);
-  end.setUTCSeconds(59);
-  end.setUTCMilliseconds(999);
+  var start = shiftTime(now, 'resetDay');
+  var end   = shiftTime(now, 'completeDay');
   var CheckDailyStat = require('./checkDailyStat');
   this.getQosForPeriod(start, end, function(err, results) {
     if (err) return;
@@ -74,19 +67,8 @@ CheckHourlyStat.statics.updateMonthlyQos = function(now, callback) {
     // Mogoose Model.update() implementation requires a callback
     callback = function(err) { if (err) console.dir(err); };
   }
-  var start = new Date(now);
-  start.setUTCDate(1);
-  start.setUTCHours(0);
-  start.setUTCMinutes(0);
-  start.setUTCSeconds(0);
-  start.setUTCMilliseconds(0);
-  var end = new Date(start);
-  if (start.getUTCMonth() == 11) {
-    end.setUTCMonth(0);
-    end.setUTCFullYear(start.getUTCFullYear() + 1);
-  } else {
-    end.setUTCMonth(start.getUTCMonth() + 1);
-  }
+  var start = shiftTime(now, 'resetMonth');
+  var end   = shiftTime(now, 'completeMonth');
   var CheckMonthlyStat = require('./checkMonthlyStat');
   this.getQosForPeriod(start, end, function(err, results) {
     if (err) return;
