@@ -5,10 +5,10 @@ mongodb:
   password:
 
 monitor:
-  pollingInterval:        10000
-  updateInterval:         60000
-  qosAggregationInterval: 3600000
-  timeout:                5000
+  pollingInterval:        10000    # ten seconds
+  updateInterval:         60000    # one minute
+  qosAggregationInterval: 3600000  # one hour
+  timeout:                5000     # five seconds
   http_proxy:      
 
 server:
