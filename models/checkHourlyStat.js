@@ -1,6 +1,6 @@
 var mongoose = require('mongoose'),
     Schema   = mongoose.Schema,
-    shiftTime = require('../lib/timeCalculator'),
+    TimeCalculator = require('../lib/timeCalculator'),
     async = require('async');
 
 // main model
@@ -46,8 +46,8 @@ CheckHourlyStat.statics.updateDailyQos = function(now, callback) {
     // Mogoose Model.update() implementation requires a callback
     callback = function(err) { if (err) console.dir(err); };
   }
-  var start = shiftTime(now, 'resetDay');
-  var end   = shiftTime(now, 'completeDay');
+  var start = TimeCalculator.resetDay(now);
+  var end   = TimeCalculator.completeDay(now);
   var CheckDailyStat = require('./checkDailyStat');
   this.getQosForPeriod(start, end, function(err, results) {
     if (err) return;
@@ -68,8 +68,8 @@ CheckHourlyStat.statics.updateMonthlyQos = function(now, callback) {
     // Mogoose Model.update() implementation requires a callback
     callback = function(err) { if (err) console.dir(err); };
   }
-  var start = shiftTime(now, 'resetMonth');
-  var end   = shiftTime(now, 'completeMonth');
+  var start = TimeCalculator.resetMonth(now);
+  var end   = TimeCalculator.completeMonth(now);
   var CheckMonthlyStat = require('./checkMonthlyStat');
   this.getQosForPeriod(start, end, function(err, results) {
     if (err) return;

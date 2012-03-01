@@ -1,6 +1,6 @@
 var mongoose = require('mongoose'),
     Schema   = mongoose.Schema,
-    shiftTime = require('../lib/timeCalculator'),
+    TimeCalculator = require('../lib/timeCalculator'),
     async    = require('async');
 
 var Ping = new Schema({
@@ -74,8 +74,8 @@ Ping.statics.updateHourlyQos = function(now, callback) {
     // Mogoose Model.update() implementation requires a callback
     callback = function(err) { if (err) console.dir(err); };
   }
-  var start = shiftTime(now, 'resetHour');
-  var end   = shiftTime(now, 'completeHour');
+  var start = TimeCalculator.resetHour(now);
+  var end   = TimeCalculator.completeHour(now);
   var CheckHourlyStat = require('./checkHourlyStat');
   var TagHourlyStat   = require('./tagHourlyStat');
   this.getQosForPeriod(start, end, function(err, results) {
