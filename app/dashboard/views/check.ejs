@@ -1,4 +1,5 @@
 <script src="<%= route %>/javascripts/bootstrap-tab.js"></script>
+<script src="<%= route %>/javascripts/bootstrap-button.js"></script>
 <script src="<%= route %>/javascripts/ejs.min.js"></script>
 <script src="<%= route %>/javascripts/highcharts.js"></script>
 <script src="<%= route %>/javascripts/pagination.js"></script>
@@ -24,9 +25,8 @@ var page = {};
 <div class="tab-content">
   <%- partial('_pings', { check: check, route: route }) %>
   <%- partial('_stats', { url: { 
-    updateStat:   '/api/check/' + check._id + '/stat/',
-    uptime:       '/api/check/' + check._id + '/hourlyUptime',
-    responseTime: '/api/check/' + check._id + '/hourlyResponseTime'
+    updateStat: '/api/check/' + check._id + '/stat/',
+    chart:      '/api/check/' + check._id + '/'
   }} ) %>
   <%- partial('_check_details', { check: check }) %>
 </div>

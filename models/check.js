@@ -23,14 +23,25 @@ var Check = new Schema({
 
 Check.pre('remove', function(callback) {
   async.parallel([
-    function(cb) { Ping.find({ check: this._id }).remove(cb); },
-    function(cb) { require('../models/checkHourlyStat').find({ check: this._id }).remove(cb); },
-    function(cb) { require('../models/checkDailyStat').find({ check: this._id }).remove(cb); },
-    function(cb) { require('../models/checkMonthlyStat').find({ check: this._id }).remove(cb); }
+    this.removePings,
+    this.removeStats
   ], function(err, results) {
     callback();
   });
 });
+
+Check.methods.removePings = function(callback) {
+  Ping.find({ check: this._id }).remove(callback);
+};
+
+Check.methods.removeStats = function(callback) {
+  var self = this;
+  async.parallel([
+    function(cb) { require('../models/checkHourlyStat').find({ check: self._id }).remove(cb); },
+    function(cb) { require('../models/checkDailyStat').find({ check: self._id }).remove(cb); },
+    function(cb) { require('../models/checkMonthlyStat').find({ check: self._id }).remove(cb); }
+  ], callback);
+};
 
 Check.methods.setLastTest = function(status) {
   var now = new Date();

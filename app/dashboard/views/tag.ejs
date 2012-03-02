@@ -17,9 +17,8 @@ var page = {};
 </ul>
 <div class="tab-content">
   <%- partial('_stats', { url: { 
-    updateStat:   '/api/tag/' + tag.name + '/stat/',
-    uptime:       '/api/tag/' + tag.name + '/hourlyUptime',
-    responseTime: '/api/tag/' + tag.name + '/hourlyResponseTime'
+    updateStat: '/api/tag/' + tag.name + '/stat/',
+    chart:      '/api/tag/' + tag.name + '/'
   }} ) %>
   <%- partial('_tag_details', { tag: tag }) %>
 </div>

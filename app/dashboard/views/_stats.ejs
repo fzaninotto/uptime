@@ -1,4 +1,11 @@
 <div class="tab-pane" id="stats">
+  <div class="btn-toolbar" style="text-align:right">
+    <div class="btn-group" data-toggle="buttons-radio" id="chartPeriod">
+      <a class="btn active" href="#" id="hourly" class="active">Hourly</a>
+      <a class="btn" href="#" id="daily">Daily</a>
+      <a class="btn" href="#" id="monhly">Monthly</a>
+    </div>
+  </div>
   <div id="chart" style="width:920px;height: 400px"></div>
   <div>
     <a class="recent btn" href="#">&lt; More Recent</a>
@@ -35,7 +42,9 @@ var updateStats = function() {
     $('#stats tbody').html(lines.join(''));
   });
 }
+var chartPeriod = 'hourly';
 var chart;
+
 var MeetupForChart = function() {
   this.uptime = false;
   this.downtime = false;
@@ -49,7 +58,9 @@ MeetupForChart.prototype.send = function(object, callback) {
     this.responseTime = false;
   }
 }
-var updateChart = function(uptime, responseTime) {
+
+var drawChart = function(uptime, responseTime) {
+  var uptimeBoundaries = getBoundaries(uptime);
   chart = new Highcharts.Chart({
     chart: {
       renderTo: 'chart',
@@ -62,6 +73,7 @@ var updateChart = function(uptime, responseTime) {
     yAxis: [{
        title: { text: 'Uptime', style: { color: '#4572A7' }},
        labels: { style: { color: '#4572A7' }},
+       min: uptimeBoundaries.min < 90 ? uptimeBoundaries.min - 10 : 90,
        max: 100
     }, { 
       title: { text: 'Response Time', style: { color: '#89A54E' }},
@@ -73,10 +85,6 @@ var updateChart = function(uptime, responseTime) {
       { name: "Uptime", data: uptime, type: 'area', color: '#4572A7' }, 
       { name: "Response Time", data: responseTime, yAxis: 1, type: 'spline', color: '#89A54E' }
     ],
-    plotOptions: { 
-      area: { marker: { enabled: false, states: { hover: { enabled: true }} }},
-      line: { marker: { enabled: false, states: { hover: { enabled: true }} }}
-    },
     tooltip: {
       formatter: function() {
         return Highcharts.dateFormat('%e. %b %Y, %H:00', this.x) +'<br/>' 
@@ -87,14 +95,36 @@ var updateChart = function(uptime, responseTime) {
     },
   });
 }
-$(document).ready(function() {
+
+var updateChart = function() {
   var meetup = new MeetupForChart();
-  $.getJSON('<%= url.uptime %>', function(uptime) {
-    meetup.send({uptime: uptime}, updateChart);
+  $.getJSON('<%= url.chart %>' + chartPeriod + 'Uptime', function(uptime) {
+    meetup.send({uptime: uptime}, drawChart);
   });
-  $.getJSON('<%= url.responseTime %>', function(responseTime) {
-    meetup.send({responseTime: responseTime}, updateChart);
+  $.getJSON('<%= url.chart %>' + chartPeriod + 'ResponseTime', function(responseTime) {
+    meetup.send({responseTime: responseTime}, drawChart);
   });
+}
+
+var getBoundaries = function(series) {
+  var min = null;
+  var max = null;
+  series.forEach(function(element) {
+    if (min === null || element[1] < min) {
+      min = element[1];
+    }
+    if (max === null || element[1] < max) {
+      max = element[1];
+    }
+  });
+  return { min: min, max: max };
+}
+
+$(document).ready(function() {
+  $('#chartPeriod a').eq(0).click(function() { chartPeriod = 'hourly'; updateChart(); });
+  $('#chartPeriod a').eq(1).click(function() { chartPeriod = 'daily'; updateChart(); });
+  $('#chartPeriod a').eq(2).click(function() { chartPeriod = 'monthly'; updateChart(); });
+  updateChart();
   handlePagination('stat', '#stats', updateStats);
 });
 </script>

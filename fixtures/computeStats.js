@@ -7,7 +7,15 @@ mongoose.connect('mongodb://' + config.user + ':' + config.password + '@' + conf
 
 // models dependencies
 var Ping            = require('../models/ping');
+var Check            = require('../models/check');
 var CheckHourlyStat = require('../models/checkHourlyStat');
+
+var emptyStats = function(callback) {
+  console.log('Emptying stat collections');
+  Check.find({}, function(err, checks) {
+    async.forEach(checks, function(check, cb) { check.removeStats(cb); }, callback);
+  });
+}
 
 var updateLastHourQos = function(callback) {
   console.log('Updating last hour Qos for all checks');
@@ -70,7 +78,7 @@ var updateMonthlyQosSinceTheFirstPing = function(callback) {
   });
 }
 
-async.series([updateLastHourQos, updateHourlyQosSinceTheFirstPing, updateDailyQosSinceTheFirstPing, updateMonthlyQosSinceTheFirstPing], function(err) {
+async.series([emptyStats, updateLastHourQos, updateHourlyQosSinceTheFirstPing, updateDailyQosSinceTheFirstPing, updateMonthlyQosSinceTheFirstPing], function(err) {
   if (err) {
     console.dir(err);
   } else {
