@@ -50,7 +50,7 @@ module.exports = function(app) {
       if (err) return next(err);
       if (!check) return next(new Error('failed to load check ' + req.params.id));
       var uptimes = [];
-      CheckHourlyStat.find({ check: check, timestamp: { $gte: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000) } }).asc('timestamp').each(function(err, stat) {
+      CheckHourlyStat.find({ check: check, timestamp: { $gte: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000) } }).asc('timestamp').each(function(err, stat) {
         if (err) return next(err);
         if (stat) {
           uptimes.push([Date.parse(stat.timestamp), (stat.ups / stat.count).toFixed(5) * 100]);
@@ -66,7 +66,7 @@ module.exports = function(app) {
       if (err) return next(err);
       if (!check) return next(new Error('failed to load check ' + req.params.id));
       var responseTimes = [];
-      CheckHourlyStat.find({ check: check, timestamp: { $gte: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000) } }).asc('timestamp').each(function(err, stat) {
+      CheckHourlyStat.find({ check: check, timestamp: { $gte: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000) } }).asc('timestamp').each(function(err, stat) {
         if (err) return next(err);
         if (stat) {
           responseTimes.push([Date.parse(stat.timestamp), Math.round(stat.time / stat.count)]);
@@ -82,7 +82,7 @@ module.exports = function(app) {
       if (err) return next(err);
       if (!check) return next(new Error('failed to load check ' + req.params.id));
       var uptimes = [];
-      CheckDailyStat.find({ check: check, timestamp: { $gte: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000) } }).asc('timestamp').each(function(err, stat) {
+      CheckDailyStat.find({ check: check, timestamp: { $gte: new Date(Date.now() - 2 * 30 * 24 * 60 * 60 * 1000) } }).asc('timestamp').each(function(err, stat) {
         if (err) return next(err);
         if (stat) {
           uptimes.push([Date.parse(stat.timestamp), (stat.ups / stat.count).toFixed(5) * 100]);
@@ -98,7 +98,7 @@ module.exports = function(app) {
       if (err) return next(err);
       if (!check) return next(new Error('failed to load check ' + req.params.id));
       var responseTimes = [];
-      CheckDailyStat.find({ check: check, timestamp: { $gte: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000) } }).asc('timestamp').each(function(err, stat) {
+      CheckDailyStat.find({ check: check, timestamp: { $gte: new Date(Date.now() - 2 * 30 * 24 * 60 * 60 * 1000) } }).asc('timestamp').each(function(err, stat) {
         if (err) return next(err);
         if (stat) {
           responseTimes.push([Date.parse(stat.timestamp), Math.round(stat.time / stat.count)]);
@@ -114,7 +114,7 @@ module.exports = function(app) {
       if (err) return next(err);
       if (!check) return next(new Error('failed to load check ' + req.params.id));
       var uptimes = [];
-      CheckMonthlyStat.find({ check: check, timestamp: { $gte: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000) } }).asc('timestamp').each(function(err, stat) {
+      CheckMonthlyStat.find({ check: check, timestamp: { $gte: new Date(Date.now() - 13 * 30 * 24 * 60 * 60 * 1000) } }).asc('timestamp').each(function(err, stat) {
         if (err) return next(err);
         if (stat) {
           uptimes.push([Date.parse(stat.timestamp), (stat.ups / stat.count).toFixed(5) * 100]);
@@ -130,7 +130,7 @@ module.exports = function(app) {
       if (err) return next(err);
       if (!check) return next(new Error('failed to load check ' + req.params.id));
       var responseTimes = [];
-      CheckMonthlyStat.find({ check: check, timestamp: { $gte: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000) } }).asc('timestamp').each(function(err, stat) {
+      CheckMonthlyStat.find({ check: check, timestamp: { $gte: new Date(Date.now() - 13 * 30 * 24 * 60 * 60 * 1000) } }).asc('timestamp').each(function(err, stat) {
         if (err) return next(err);
         if (stat) {
           responseTimes.push([Date.parse(stat.timestamp), Math.round(stat.time / stat.count)]);
