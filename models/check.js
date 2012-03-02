@@ -21,12 +21,15 @@ var Check = new Schema({
   , qosPerHour  : {}
 });
 
-Check.pre('remove', function(callback) {
-  async.parallel([
-    this.removePings,
-    this.removeStats
-  ], function(err, results) {
-    callback();
+Check.pre('remove', function(next) {
+  this.removePings(function() {
+    next();
+  });
+});
+
+Check.pre('remove', function(next) {
+  this.removeStats(function() {
+    next();
   });
 });
 
