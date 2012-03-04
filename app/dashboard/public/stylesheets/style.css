@@ -23,6 +23,15 @@ table#check_summary {
 
 table#check_summary tbody tr {
   font-size: 3em;
+  line-height: 1em;
+}
+
+ul#events {
+  margin-top: 1em;
+}
+
+ul#events li {
+  margin-bottom: 0.5em;
 }
 
 .green {
