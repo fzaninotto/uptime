@@ -22,7 +22,7 @@
 </div>
 <script id="ping_template" type="text/template">
 <tr class="{{= ping.isUp ? 'green' : 'red' }}">
-  <td>{{= new Date(ping.date).toLocaleString() }}</td>
+  <td>{{= new Date(ping.timestamp).toLocaleString() }}</td>
   <td><span class="label {{= (ping.isUp ? 'label-success' : 'label-important') }}">{{= (ping.isUp ? 'yes' : 'no') }}</span></td>
   <td><span class="label {{= (ping.isResponsive ? 'label-success' : 'label-important') }}">{{= (ping.isResponsive ? 'yes' : 'no') }}</span></td>
   <td>{{= ping.time }}</td>

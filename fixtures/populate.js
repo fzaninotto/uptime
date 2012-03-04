@@ -49,7 +49,7 @@ var createFixturePings = function(callback) {
         function() { date += check.interval; return date < now; },
         function(cb) {
           var ping = new Ping();
-          ping.date = date;
+          ping.timestamp = date;
           ping.isUp = Math.random() < (quality / 100);
           ping.time = check.maxTime + (Math.random() - 0.9) * 200;
           ping.check = check;
@@ -64,7 +64,7 @@ var createFixturePings = function(callback) {
           ping.save(cb);
           nbPings++;
           if (nbPings % 1440 == 0) {
-            console.log(ping.date + ' Created pings for check "' + check.name + '"');
+            console.log(ping.timestamp + ' Created pings for check "' + check.name + '"');
           };
         },
         callme

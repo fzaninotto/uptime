@@ -32,27 +32,23 @@ module.exports = function(app) {
     });
   });
 
-  app.get('/tag/:name/hourlyUptime', function(req, res, next) {
-    var uptimes = [];
-    TagHourlyStat.find({ name: req.params.name, timestamp: { $gte: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000) } }).asc('timestamp').each(function(err, stat) {
+  app.get('/tag/:name/uptime/:type', function(req, res) {
+    Tag.find({ name: req.params.name }).exclude('qosPerHour').findOne(function(err, tag) {
       if (err) return next(err);
-      if (stat) {
-        uptimes.push([Date.parse(stat.timestamp), (stat.ups / stat.count).toFixed(5) * 100]);
-      } else {
-        res.json(uptimes);
-      }
+      if (!tag) return next(new Error('failed to load tag ' + req.params.name));
+      tag.getUptimeForPeriod(req.params.type, function(stats) {
+        res.json(stats);
+      });
     });
   });
 
-  app.get('/tag/:name/hourlyResponseTime', function(req, res, next) {
-    var responseTimes = [];
-    TagHourlyStat.find({ name: req.params.name, timestamp: { $gte: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000) } }).asc('timestamp').each(function(err, stat) {
+  app.get('/tag/:name/responseTime/:type', function(req, res) {
+    Tag.find({ name: req.params.name }).exclude('qosPerHour').findOne(function(err, tag) {
       if (err) return next(err);
-      if (stat) {
-        responseTimes.push([Date.parse(stat.timestamp), Math.round(stat.time / stat.count)]);
-      } else {
-        res.json(responseTimes);
-      }
+      if (!tag) return next(new Error('failed to load tag ' + req.params.name));
+      tag.getResponseTimeForPeriod(req.params.type, function(stats) {
+        res.json(stats);
+      });
     });
   });
 

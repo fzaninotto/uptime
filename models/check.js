@@ -1,5 +1,6 @@
 var mongoose = require('mongoose'),
     Schema   = mongoose.Schema,
+    TimeCalculator = require('../lib/timeCalculator'),
     async    = require('async');
 
 // models dependencies
@@ -75,6 +76,59 @@ Check.methods.updateQos = function(callback) {
     check.qos = result[0].value;
     check.markModified('qos');
     check.save(callback);
+  });
+}
+
+var qosParams = {
+  '6h':  { type: 'Ping',             fromDate: new Date(Date.now() -                 6 * 60 * 60 * 1000) },
+  '1d':  { type: 'CheckHourlyStat',  fromDate: new Date(Date.now() -                25 * 60 * 60 * 1000) },
+  '7d':  { type: 'CheckHourlyStat',  fromDate: new Date(Date.now() -            8 * 24 * 60 * 60 * 1000) },
+  'MTD': { type: 'CheckDailyStat',   fromDate: TimeCalculator.resetMonth(new Date()) },
+  '1m':  { type: 'CheckDailyStat',   fromDate: new Date(Date.now() -           31 * 24 * 60 * 60 * 1000) },
+  '3m':  { type: 'CheckDailyStat',   fromDate: new Date(Date.now() -       3 * 31 * 24 * 60 * 60 * 1000) },
+  '6m':  { type: 'CheckMonthlyStat', fromDate: new Date(Date.now() -       6 * 31 * 24 * 60 * 60 * 1000) },
+  'YTD': { type: 'CheckMonthlyStat', fromDate: TimeCalculator.resetYear(new Date()) },
+  '1y':  { type: 'CheckMonthlyStat', fromDate: new Date(Date.now() -      12 * 31 * 24 * 60 * 60 * 1000) },
+  'max': { type: 'CheckMonthlyStat', fromDate: new Date(Date.now() - 10 * 12 * 31 * 24 * 60 * 60 * 1000) },
+};
+
+Check.methods.getUptimeForPeriod = function(period, callback) {
+  var qosParam = qosParams[period];
+  var uptimes = [];
+  var uptimeScore;
+  this.db.model(qosParam.type).find({ check: this, timestamp: { $gte: qosParam.fromDate } }).asc('timestamp').each(function(err, stat) {
+    if (stat) {
+      if (stat.isUp) {
+        // stat is a Ping
+        uptimeScore = stat.isUp ? 100 : 0; 
+      } else {
+        // stat is an aggregation
+        uptimeScore = (stat.ups / stat.count).toFixed(5) * 100;
+      };
+      uptimes.push([Date.parse(stat.timestamp), uptimeScore]);
+    } else {
+      callback(uptimes);
+    }
+  });
+}
+
+Check.methods.getResponseTimeForPeriod = function(period, callback) {
+  var qosParam = qosParams[period];
+  var responseTimes = [];
+  var responseTimeScore;
+  this.db.model(qosParam.type).find({ check: this, timestamp: { $gte: qosParam.fromDate } }).asc('timestamp').each(function(err, stat) {
+    if (stat) {
+      if (stat.isUp) {
+        // stat is a Ping
+        responseTimeScore = stat.time; 
+      } else {
+        // stat is an aggregation
+        responseTimeScore = Math.round(stat.time / stat.count);
+      };
+      responseTimes.push([Date.parse(stat.timestamp), responseTimeScore]);
+    } else {
+      callback(responseTimes);
+    }
   });
 }
 

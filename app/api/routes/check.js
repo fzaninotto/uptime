@@ -45,99 +45,24 @@ module.exports = function(app) {
     });
   });
 
-  app.get('/check/:id/hourlyUptime', function(req, res) {
+  app.get('/check/:id/uptime/:type', function(req, res) {
     Check.find({ _id: req.params.id }).exclude('qosPerHour').findOne(function(err, check) {
       if (err) return next(err);
       if (!check) return next(new Error('failed to load check ' + req.params.id));
-      var uptimes = [];
-      CheckHourlyStat.find({ check: check, timestamp: { $gte: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000) } }).asc('timestamp').each(function(err, stat) {
-        if (err) return next(err);
-        if (stat) {
-          uptimes.push([Date.parse(stat.timestamp), (stat.ups / stat.count).toFixed(5) * 100]);
-        } else {
-          res.json(uptimes);
-        }
-      })
+      check.getUptimeForPeriod(req.params.type, function(stats) {
+        res.json(stats);
+      });
     });
   });
 
-  app.get('/check/:id/hourlyResponseTime', function(req, res) {
+  app.get('/check/:id/responseTime/:type', function(req, res) {
     Check.find({ _id: req.params.id }).exclude('qosPerHour').findOne(function(err, check) {
       if (err) return next(err);
       if (!check) return next(new Error('failed to load check ' + req.params.id));
-      var responseTimes = [];
-      CheckHourlyStat.find({ check: check, timestamp: { $gte: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000) } }).asc('timestamp').each(function(err, stat) {
-        if (err) return next(err);
-        if (stat) {
-          responseTimes.push([Date.parse(stat.timestamp), Math.round(stat.time / stat.count)]);
-        } else {
-          res.json(responseTimes);
-        }
-      })
+      check.getResponseTimeForPeriod(req.params.type, function(stats) {
+        res.json(stats);
+      });
     });
   });
 
-  app.get('/check/:id/dailyUptime', function(req, res) {
-    Check.find({ _id: req.params.id }).exclude('qosPerHour').findOne(function(err, check) {
-      if (err) return next(err);
-      if (!check) return next(new Error('failed to load check ' + req.params.id));
-      var uptimes = [];
-      CheckDailyStat.find({ check: check, timestamp: { $gte: new Date(Date.now() - 2 * 30 * 24 * 60 * 60 * 1000) } }).asc('timestamp').each(function(err, stat) {
-        if (err) return next(err);
-        if (stat) {
-          uptimes.push([Date.parse(stat.timestamp), (stat.ups / stat.count).toFixed(5) * 100]);
-        } else {
-          res.json(uptimes);
-        }
-      })
-    });
-  });
-
-  app.get('/check/:id/dailyResponseTime', function(req, res) {
-    Check.find({ _id: req.params.id }).exclude('qosPerHour').findOne(function(err, check) {
-      if (err) return next(err);
-      if (!check) return next(new Error('failed to load check ' + req.params.id));
-      var responseTimes = [];
-      CheckDailyStat.find({ check: check, timestamp: { $gte: new Date(Date.now() - 2 * 30 * 24 * 60 * 60 * 1000) } }).asc('timestamp').each(function(err, stat) {
-        if (err) return next(err);
-        if (stat) {
-          responseTimes.push([Date.parse(stat.timestamp), Math.round(stat.time / stat.count)]);
-        } else {
-          res.json(responseTimes);
-        }
-      })
-    });
-  });
-
-  app.get('/check/:id/monthlyUptime', function(req, res) {
-    Check.find({ _id: req.params.id }).exclude('qosPerHour').findOne(function(err, check) {
-      if (err) return next(err);
-      if (!check) return next(new Error('failed to load check ' + req.params.id));
-      var uptimes = [];
-      CheckMonthlyStat.find({ check: check, timestamp: { $gte: new Date(Date.now() - 13 * 30 * 24 * 60 * 60 * 1000) } }).asc('timestamp').each(function(err, stat) {
-        if (err) return next(err);
-        if (stat) {
-          uptimes.push([Date.parse(stat.timestamp), (stat.ups / stat.count).toFixed(5) * 100]);
-        } else {
-          res.json(uptimes);
-        }
-      })
-    });
-  });
-
-  app.get('/check/:id/monthlyResponseTime', function(req, res) {
-    Check.find({ _id: req.params.id }).exclude('qosPerHour').findOne(function(err, check) {
-      if (err) return next(err);
-      if (!check) return next(new Error('failed to load check ' + req.params.id));
-      var responseTimes = [];
-      CheckMonthlyStat.find({ check: check, timestamp: { $gte: new Date(Date.now() - 13 * 30 * 24 * 60 * 60 * 1000) } }).asc('timestamp').each(function(err, stat) {
-        if (err) return next(err);
-        if (stat) {
-          responseTimes.push([Date.parse(stat.timestamp), Math.round(stat.time / stat.count)]);
-        } else {
-          res.json(responseTimes);
-        }
-      })
-    });
-  });
 };

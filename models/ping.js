@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
     async    = require('async');
 
 var Ping = new Schema({
-    date         : { type: Date, default: Date.now }
+    timestamp    : { type: Date, default: Date.now }
   , isUp         : Boolean  // false if ping returned a non-OK status code or timed out
   , isResponsive : Boolean  // true if the ping time is less than the check max time 
   , time         : Number
@@ -14,7 +14,7 @@ var Ping = new Schema({
   , downtime     : Number   // time since last ping if the ping is down
   , error        : String
 });
-Ping.index({ date: -1 });
+Ping.index({ timestamp: -1 });
 
 Ping.methods.findCheck = function(callback) {
   return this.db.model('Check').findById(this.check, callback);
@@ -64,7 +64,7 @@ Ping.statics.getQosForPeriod = function(start, end, callback) {
   this.collection.mapReduce(
     this.mapCheckAndTags.toString(),
     this.reduce.toString(),
-    { query: { date: { $gte: start, $lte: end } }, out: { inline: 1 } },
+    { query: { timestamp: { $gte: start, $lte: end } }, out: { inline: 1 } },
     callback
   );
 }
@@ -130,7 +130,7 @@ Ping.statics.updateLast24HoursQos = function(callback) {
 Ping.statics.cleanup = function(maxAge, callback) {
   console.log(maxAge);
   oldestDateToKeep = new Date(Date.now() - (maxAge ||  3 * 31 * 24 * 60 * 60 * 1000));
-  this.find({ date: { $lt: oldestDateToKeep } }).remove(callback);
+  this.find({ timestamp: { $lt: oldestDateToKeep } }).remove(callback);
 }
 
 module.exports = mongoose.model('Ping', Ping);

@@ -24,7 +24,7 @@ var updateLastHourQos = function(callback) {
 
 var updateHourlyQosSinceTheFirstPing = function(callback) {
   Ping.find().asc('date').findOne(function(err, ping) {
-    var date = ping.date.valueOf();
+    var date = ping.timestamp.valueOf();
     var now = Date.now();
     nbDates = 0;
     async.whilst(
@@ -44,7 +44,7 @@ var updateHourlyQosSinceTheFirstPing = function(callback) {
 
 var updateDailyQosSinceTheFirstPing = function(callback) {
   Ping.find().asc('date').findOne(function(err, ping) {
-    var date = ping.date.valueOf();
+    var date = ping.timestamp.valueOf();
     var now = Date.now();
     nbDates = 0;
     async.whilst(
@@ -62,7 +62,7 @@ var updateDailyQosSinceTheFirstPing = function(callback) {
 
 var updateMonthlyQosSinceTheFirstPing = function(callback) {
   Ping.find().asc('date').findOne(function(err, ping) {
-    var date = ping.date.valueOf();
+    var date = ping.timestamp.valueOf();
     var now = Date.now();
     nbDates = 0;
     async.whilst(
