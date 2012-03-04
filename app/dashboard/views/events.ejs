@@ -9,8 +9,8 @@
     <tr><td id="all_up" class="green"></td><td id="all_down" class="red"></td></tr>
   </tbody>
 </table>
-<ul id="events" class="unstyled">
-</ul>
+<div id="events">
+</div>
 <script src="<%= route %>/javascripts/jquery.timeago.js"></script>
 <script src="<%= route %>/javascripts/ejs.min.js"></script>
 <script id="event_template" type="text/template">
@@ -52,8 +52,12 @@ $(document).ready(function() {
         return;
       }
       var lines = [];
-      $.each(events, function(key, event) {
-        lines.push(ejs.render(event_template, { event: event, route: '<%= route %>' }));
+      $.each(events, function(key, eventGroup) {
+        lines.push('<ul><li class="day"><h3>' + key + '</h3><ul>');
+        $.each(eventGroup, function(key, event) {
+          lines.push(ejs.render(event_template, { event: event, route: '<%= route %>' }));
+        });
+        lines.push('</ul></li></ul>');
       });
       $('#events').html(lines.join(''));
     });

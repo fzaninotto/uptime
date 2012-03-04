@@ -25,7 +25,7 @@ module.exports = function(app) {
   app.get('/pings/events', function(req, res) {
     CheckEvent.find({ timestamp: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} }).desc('timestamp').populate('check').run(function(err, events) {
       if (err) return next(err);
-      res.json(events);
+      res.json(CheckEvent.aggregateEventsByDay(events));
     });
   });
 

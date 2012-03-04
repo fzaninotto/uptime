@@ -26,11 +26,13 @@ table#check_summary tbody tr {
   line-height: 1em;
 }
 
-ul#events {
+#events ul {
   margin-top: 1em;
+  margin-left: 0;
+  list-style: none;
 }
 
-ul#events li {
+#events li {
   margin-bottom: 0.5em;
 }
 

@@ -11,4 +11,19 @@ var CheckEvent = new Schema({
 });
 CheckEvent.index({ check: 1, timestamp: -1 });
 
+CheckEvent.statics.aggregateEventsByDay = function(events) {
+  var currentDay;
+  var aggregatedEvents = {};
+  var currentAggregate = [];
+  events.forEach(function(event) {
+    var date = new Date(event.timestamp).toLocaleDateString();
+    if (date != currentDay) {
+      currentDay = date;
+      currentAggregate = aggregatedEvents[date] = [];
+    }
+    currentAggregate.push(event);
+  });
+  return aggregatedEvents;
+}
+
 module.exports = mongoose.model('CheckEvent', CheckEvent);
