@@ -7,8 +7,9 @@ mongoose.connect('mongodb://' + config.user + ':' + config.password + '@' + conf
 
 // models dependencies
 var Ping            = require('../models/ping');
-var Check            = require('../models/check');
+var Check           = require('../models/check');
 var CheckHourlyStat = require('../models/checkHourlyStat');
+var TagHourlyStat   = require('../models/tagHourlyStat');
 
 var emptyStats = function(callback) {
   console.log('Emptying stat collections');
@@ -19,7 +20,10 @@ var emptyStats = function(callback) {
 
 var updateLastHourQos = function(callback) {
   console.log('Updating last hour Qos for all checks');
-  Ping.updateLastHourQos(callback);
+  async.series([
+    function(cb) { Ping.updateLast24HoursQos(cb); },
+    function(cb) { Ping.updateLastHourQos(callback); }
+  ], callback);
 }
 
 var updateHourlyQosSinceTheFirstPing = function(callback) {
@@ -51,7 +55,10 @@ var updateDailyQosSinceTheFirstPing = function(callback) {
       function() { date += 24 * 60 * 60 * 1000; return date < now; },
       function(cb) {
         var dateObject = new Date(date);
-        CheckHourlyStat.updateDailyQos(dateObject, cb);
+        async.parallel([
+          function(callme) { CheckHourlyStat.updateDailyQos(dateObject, callme); },
+          function(callme) { TagHourlyStat.updateDailyQos(dateObject, callme); },
+        ], cb);
         nbDates++;
         console.log('Computing daily stats for ' + dateObject.toUTCString());
       },
@@ -69,7 +76,10 @@ var updateMonthlyQosSinceTheFirstPing = function(callback) {
       function() { date += 28 * 24 * 60 * 60 * 1000; return date < now; },
       function(cb) {
         var dateObject = new Date(date);
-        CheckHourlyStat.updateMonthlyQos(dateObject, cb);
+        async.parallel([
+          function(callme) { CheckHourlyStat.updateMonthlyQos(dateObject, callme); },
+          function(callme) { TagHourlyStat.updateMonthlyQos(dateObject, callme); },
+        ], cb);
         nbDates++;
         console.log('Computing monthly stats for ' + dateObject.toUTCString());
       },

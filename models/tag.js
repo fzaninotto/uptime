@@ -2,6 +2,11 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema
     TimeCalculator = require('../lib/timeCalculator');
 
+// model dependencies
+var TagHourlyStat  = require('../models/tagHourlyStat');
+var TagDailyStat   = require('../models/tagDailyStat');
+var TagMonthlyStat = require('../models/tagMonthlyStat');
+
 // main model
 var Tag = new Schema({
     name        : String
@@ -20,16 +25,16 @@ Tag.methods.getChecks = function(callback) {
 }
 
 var qosParams = {
-  '6h':  { type: 'TagHourlyStat', fromDate: new Date(Date.now() -                 6 * 60 * 60 * 1000) },
-  '1d':  { type: 'TagHourlyStat', fromDate: new Date(Date.now() -                25 * 60 * 60 * 1000) },
-  '7d':  { type: 'TagHourlyStat', fromDate: new Date(Date.now() -            8 * 24 * 60 * 60 * 1000) },
-  'MTD': { type: 'TagHourlyStat', fromDate: TimeCalculator.resetMonth(new Date()) },
-  '1m':  { type: 'TagHourlyStat', fromDate: new Date(Date.now() -           31 * 24 * 60 * 60 * 1000) },
-  '3m':  { type: 'TagHourlyStat', fromDate: new Date(Date.now() -       3 * 31 * 24 * 60 * 60 * 1000) },
-  '6m':  { type: 'TagHourlyStat', fromDate: new Date(Date.now() -       6 * 31 * 24 * 60 * 60 * 1000) },
-  'YTD': { type: 'TagHourlyStat', fromDate: TimeCalculator.resetYear(new Date()) },
-  '1y':  { type: 'TagHourlyStat', fromDate: new Date(Date.now() -      12 * 31 * 24 * 60 * 60 * 1000) },
-  'max': { type: 'TagHourlyStat', fromDate: new Date(Date.now() - 10 * 12 * 31 * 24 * 60 * 60 * 1000) },
+  '6h':  { type: 'TagHourlyStat',  fromDate: new Date(Date.now() -                 6 * 60 * 60 * 1000) },
+  '1d':  { type: 'TagHourlyStat',  fromDate: new Date(Date.now() -                25 * 60 * 60 * 1000) },
+  '7d':  { type: 'TagHourlyStat',  fromDate: new Date(Date.now() -            8 * 24 * 60 * 60 * 1000) },
+  'MTD': { type: 'TagDailyStat',   fromDate: TimeCalculator.resetMonth(new Date()) },
+  '1m':  { type: 'TagDailyStat',   fromDate: new Date(Date.now() -           31 * 24 * 60 * 60 * 1000) },
+  '3m':  { type: 'TagDailyStat',   fromDate: new Date(Date.now() -       3 * 31 * 24 * 60 * 60 * 1000) },
+  '6m':  { type: 'TagMonthlyStat', fromDate: new Date(Date.now() -       6 * 31 * 24 * 60 * 60 * 1000) },
+  'YTD': { type: 'TagMonthlyStat', fromDate: TimeCalculator.resetYear(new Date()) },
+  '1y':  { type: 'TagMonthlyStat', fromDate: new Date(Date.now() -      12 * 31 * 24 * 60 * 60 * 1000) },
+  'max': { type: 'TagMonthlyStat', fromDate: new Date(Date.now() - 10 * 12 * 31 * 24 * 60 * 60 * 1000) },
 };
 
 Tag.methods.getUptimeForPeriod = function(period, callback) {

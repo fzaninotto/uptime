@@ -1,6 +1,7 @@
 var mongoose = require('mongoose'),
     Schema   = mongoose.Schema,
     TimeCalculator = require('../lib/timeCalculator'),
+    MapReduce = require('../lib/mapReduce'),
     async = require('async');
 
 // main model
@@ -15,31 +16,10 @@ var CheckHourlyStat = new Schema({
 });
 CheckHourlyStat.index({ check: 1, timestamp: -1 }, { unique: true });
 
-CheckHourlyStat.statics.map = function() {
+var mapCheck = function() {
   var qos = { count: this.count, ups: this.ups , responsives: this.responsives, time: this.time, downtime: this.downtime };
   emit(this.check, qos);
-}
-
-CheckHourlyStat.statics.reduce = function(key, values) {
-  var result = { count: 0, ups: 0, responsives: 0, time: 0, downtime: 0 };
-  values.forEach(function(value) {
-    result.count       += value.count;
-    result.ups         += value.ups;
-    result.responsives += value.responsives;
-    result.time        += value.time;
-    result.downtime    += value.downtime;
-  });
-  return result;
-}
-
-CheckHourlyStat.statics.getQosForPeriod = function(start, end, callback) {
-  this.collection.mapReduce(
-    this.map.toString(),
-    this.reduce.toString(),
-    { query: { timestamp: { $gte: start, $lte: end } }, out: { inline: 1 } },
-    callback
-  );
-}
+};
 
 CheckHourlyStat.statics.updateDailyQos = function(now, callback) {
   if ('undefined' == typeof callback) {
@@ -49,7 +29,7 @@ CheckHourlyStat.statics.updateDailyQos = function(now, callback) {
   var start = TimeCalculator.resetDay(now);
   var end   = TimeCalculator.completeDay(now);
   var CheckDailyStat = require('./checkDailyStat');
-  this.getQosForPeriod(start, end, function(err, results) {
+  MapReduce.getQosForPeriod(this.collection, mapCheck, start, end, function(err, results) {
     if (err) return;
     async.forEach(results, function(result, cb) {
       var stat = result.value;
@@ -71,7 +51,7 @@ CheckHourlyStat.statics.updateMonthlyQos = function(now, callback) {
   var start = TimeCalculator.resetMonth(now);
   var end   = TimeCalculator.completeMonth(now);
   var CheckMonthlyStat = require('./checkMonthlyStat');
-  this.getQosForPeriod(start, end, function(err, results) {
+  MapReduce.getQosForPeriod(this.collection, mapCheck, start, end, function(err, results) {
     if (err) return;
     async.forEach(results, function(result, cb) {
       var stat = result.value;

@@ -1,6 +1,7 @@
 var mongoose = require('mongoose'),
     Schema   = mongoose.Schema,
     TimeCalculator = require('../lib/timeCalculator'),
+    MapReduce = require('../lib/mapReduce'),
     async    = require('async');
 
 var Ping = new Schema({
@@ -39,35 +40,14 @@ Ping.statics.createForCheck = function(check, status, time, error, callback) {
   ping.save(callback);
 }
 
-Ping.statics.mapCheckAndTags = function() {
+var mapCheckAndTags = function() {
   var qos = { count: 1, ups: this.isUp ? 1 : 0 , responsives: this.isResponsive ? 1 : 0, time: this.time, downtime: this.downtime ? this.downtime : 0 };
   emit(this.check, qos);
   if (!this.tags) return;
   for (index in this.tags) {
     emit(this.tags[index], qos);
   }
-}
-
-Ping.statics.reduce = function(key, values) {
-  var result = { count: 0, ups: 0, responsives: 0, time: 0, downtime: 0 };
-  values.forEach(function(value) {
-    result.count       += value.count;
-    result.ups         += value.ups;
-    result.responsives += value.responsives;
-    result.time        += value.time;
-    result.downtime    += value.downtime;
-  });
-  return result;
-}
-
-Ping.statics.getQosForPeriod = function(start, end, callback) {
-  this.collection.mapReduce(
-    this.mapCheckAndTags.toString(),
-    this.reduce.toString(),
-    { query: { timestamp: { $gte: start, $lte: end } }, out: { inline: 1 } },
-    callback
-  );
-}
+};
 
 Ping.statics.updateHourlyQos = function(now, callback) {
   if ('undefined' == typeof callback) {
@@ -78,7 +58,7 @@ Ping.statics.updateHourlyQos = function(now, callback) {
   var end   = TimeCalculator.completeHour(now);
   var CheckHourlyStat = require('./checkHourlyStat');
   var TagHourlyStat   = require('./tagHourlyStat');
-  this.getQosForPeriod(start, end, function(err, results) {
+  MapReduce.getQosForPeriod(this.collection, mapCheckAndTags, start, end, function(err, results) {
     if (err) return;
     async.forEach(results, function(result, cb) {
       var stat = result.value;
@@ -107,7 +87,7 @@ Ping.statics.updateLast24HoursQos = function(callback) {
   var end   = new Date();
   var Check = require('../models/check');
   var Tag   = require('../models/tag');
-  this.getQosForPeriod(start, end, function(err, results) {
+  MapReduce.getQosForPeriod(this.collection, mapCheckAndTags, start, end, function(err, results) {
     if (err) return;
     async.forEach(results, function(result, cb) {
       if (result._id.substr) {

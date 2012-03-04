@@ -4,7 +4,10 @@ var mongoose = require('mongoose'),
     async    = require('async');
 
 // models dependencies
-var Ping   = require('../models/ping');
+var Ping             = require('../models/ping');
+var CheckHourlyStat  = require('../models/checkHourlyStat');
+var CheckDailyStat   = require('../models/checkDailyStat');
+var CheckMonthlyStat = require('../models/checkMonthlyStat');
 
 // main model
 var Check = new Schema({
@@ -41,9 +44,9 @@ Check.methods.removePings = function(callback) {
 Check.methods.removeStats = function(callback) {
   var self = this;
   async.parallel([
-    function(cb) { require('../models/checkHourlyStat').find({ check: self._id }).remove(cb); },
-    function(cb) { require('../models/checkDailyStat').find({ check: self._id }).remove(cb); },
-    function(cb) { require('../models/checkMonthlyStat').find({ check: self._id }).remove(cb); }
+    function(cb) { CheckHourlyStat.find({ check: self._id }).remove(cb); },
+    function(cb) { CheckDailyStat.find({ check: self._id }).remove(cb); },
+    function(cb) { CheckMonthlyStat.find({ check: self._id }).remove(cb); }
   ], callback);
 };
 
