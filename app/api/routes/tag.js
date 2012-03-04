@@ -4,6 +4,7 @@
 
 var Tag           = require('../../../models/tag');
 var TagHourlyStat = require('../../../models/tagHourlyStat');
+var CheckEvent    = require('../../../models/checkEvent');
 
 /**
  * Check Routes
@@ -49,6 +50,13 @@ module.exports = function(app) {
       tag.getResponseTimeForPeriod(req.params.type, function(stats) {
         res.json(stats);
       });
+    });
+  });
+
+  app.get('/tag/:name/events', function(req, res) {
+    CheckEvent.find({ tags: req.params.name, timestamp: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} }).desc('timestamp').populate('check').run(function(err, events) {
+      if (err) return next(err);
+      res.json(events);
     });
   });
 

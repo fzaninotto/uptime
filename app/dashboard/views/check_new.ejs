@@ -2,6 +2,6 @@
 <%- partial('_check_details', { check: check }) %>
 <script>
 jQuery(document).ready(function($) {
-  $('.navbar-inner li:first').addClass('active');
+  $('.navbar-inner li').eq(1).addClass('active');
 });
 </script>

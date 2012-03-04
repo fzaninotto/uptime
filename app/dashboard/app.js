@@ -27,6 +27,10 @@ app.configure('production', function(){
 
 // Routes
 
+app.get('/events', function(req, res) {
+  res.render('events', { route: app.route, info: req.flash('info')  });
+});
+
 app.get('/checks', function(req, res) {
   res.render('checks', { route: app.route, info: req.flash('info')  });
 });

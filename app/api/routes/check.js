@@ -3,6 +3,7 @@
  */
 
 var Check            = require('../../../models/check');
+var CheckEvent       = require('../../../models/checkEvent');
 var CheckHourlyStat  = require('../../../models/checkHourlyStat');
 var CheckDailyStat   = require('../../../models/checkDailyStat');
 var CheckMonthlyStat = require('../../../models/checkMonthlyStat');
@@ -62,6 +63,13 @@ module.exports = function(app) {
       check.getResponseTimeForPeriod(req.params.type, function(stats) {
         res.json(stats);
       });
+    });
+  });
+  
+  app.get('/check/:id/events', function(req, res) {
+    CheckEvent.find({ check: req.params.id, timestamp: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} }).desc('timestamp').populate('check').run(function(err, events) {
+      if (err) return next(err);
+      res.json(events);
     });
   });
 

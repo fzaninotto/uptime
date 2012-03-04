@@ -5,6 +5,7 @@ var mongoose = require('mongoose'),
 
 // models dependencies
 var Ping             = require('../models/ping');
+var CheckEvent       = require('../models/checkEvent');
 var CheckHourlyStat  = require('../models/checkHourlyStat');
 var CheckDailyStat   = require('../models/checkDailyStat');
 var CheckMonthlyStat = require('../models/checkMonthlyStat');
@@ -53,6 +54,16 @@ Check.methods.removeStats = function(callback) {
 Check.methods.setLastTest = function(status) {
   var now = new Date();
   if (this.isUp != status) {
+    var event = new CheckEvent({
+      timestamp: now,
+      check: this,
+      tags: this.tags,
+      isGoDown: this.isUp,
+    });
+    if (status && this.lastChanged) {
+      event.downtime = now.getTime() - this.lastChanged.getTime();
+    }
+    event.save();
     this.lastChanged = now;
     this.isUp = status;
     this.uptime = 0;

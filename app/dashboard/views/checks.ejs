@@ -2,14 +2,6 @@
 <% if (info.length) { %>
 <div class="alert alert-success"><%= info %></div>
 <% } %>
-<table id="check_summary">
-  <thead>
-    <tr><th><span class="label label-success">Up</span></th><th><span class="label label-important">Down</label></th></tr>
-  </thead>
-  <tbody>
-    <tr><td id="all_up" class="green"></td><td id="all_down" class="red"></td></tr>
-  </tbody>
-</table>
 <div style="text-align:right">
   <a class="btn btn-primary" href="<%= route %>/check">Create check</a>
 </div>
@@ -39,7 +31,7 @@
 </script>
 <script>
 jQuery(document).ready(function($) {
-  $('.navbar-inner li:first').addClass('active');
+  $('.navbar-inner li').eq(1).addClass('active');
   $.timeago.settings.strings.suffixAgo = null;
   var check_template = document.getElementById('check_template').innerHTML;
   var ejs = require('ejs');
@@ -47,15 +39,11 @@ jQuery(document).ready(function($) {
   ejs.close = '}}';
   var updateChecks = function() {
     $.getJSON('/api/check', function(checks) {
-      var all_up = all_down = 0;
       var lines = [];
       $.each(checks, function(key, check) {
-        if (check.isUp) all_up += 1; else all_down += 1;
         lines.push(ejs.render(check_template, { check: check, route: '<%= route %>' }));
       });
       $('#checks tbody').html(lines.join(''));
-      $('#all_up').text(all_up);
-      $('#all_down').text(all_down);
       $('#last_update').text('Last updated on ' + new Date().toLocaleString());
     });
   }
