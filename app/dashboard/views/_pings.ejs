@@ -11,7 +11,7 @@
   </div>
   <table class="table">
     <thead>
-      <tr><th>Date</th><th>Up?</th><th>Responsive?</th><th>Response time</th><th>Error</th></tr>
+      <tr><th>Date</th><th>Status</th><th>Response time</th><th>Error</th></tr>
     </thead>
     <tbody></tbody>
   </table>
@@ -21,10 +21,12 @@
   </div>
 </div>
 <script id="ping_template" type="text/template">
-<tr class="{{= ping.isUp ? 'green' : 'red' }}">
+<tr class="{{= ping.isUp && ping.isResponsive ? 'green' : 'red' }}">
   <td>{{= new Date(ping.timestamp).toLocaleString() }}</td>
-  <td><span class="label {{= (ping.isUp ? 'label-success' : 'label-important') }}">{{= (ping.isUp ? 'yes' : 'no') }}</span></td>
-  <td><span class="label {{= (ping.isResponsive ? 'label-success' : 'label-important') }}">{{= (ping.isResponsive ? 'yes' : 'no') }}</span></td>
+  <td>
+    <span class="label {{= (ping.isUp ? 'label-success' : 'label-important') }}">{{= (ping.isUp ? 'Up' : 'Down') }}</span>
+    {{ if (ping.isUp && !ping.isResponsive) { }}<span class="label label-important">Slow</span>{{ } }}
+  </td>
   <td>{{= ping.time }}</td>
   <td>{{= ping.error || '' }}</td>
 </tr>
