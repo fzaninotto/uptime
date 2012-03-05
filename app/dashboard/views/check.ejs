@@ -3,12 +3,14 @@
 <script src="<%= route %>/javascripts/ejs.min.js"></script>
 <script src="<%= route %>/javascripts/highcharts.js"></script>
 <script src="<%= route %>/javascripts/pagination.js"></script>
+<script src="<%= route %>/javascripts/jquery.timeago.js"></script>
 <script>
 var ejs = require('ejs');
 ejs.open = '{{';
 ejs.close = '}}';
 var page = {};
 </script>
+<div style="float: right;" id="check_24h"></div>
 <h1>
   Check "<%= check.name %>"
   <a href="<%= check.url %>"><img src="<%= route %>/images/external-link-ltr-icon.png"></a>
@@ -16,7 +18,6 @@ var page = {};
 <% if (info.length) { %>
 <div class="alert alert-success"><%= info %></div>
 <% } %>
-
 <ul class="nav nav-tabs">
   <li><a href="#pings" data-toggle="tab">Pings</a></li>
   <li><a href="#stats" data-toggle="tab">History</a></li>
@@ -38,5 +39,14 @@ $(document).ready(function() {
 <% } else { %>
   $('.nav-tabs a:first').tab('show');
 <% } %>
+  $.timeago.settings.strings.suffixAgo = null;
+  var updateLast24h = function() {
+    $.getJSON('/api/check/<%= check._id %>', function(check) {
+      var html = '<span class="label ' + (check.isUp ? 'label-success' : 'label-important') + '">' +  (check.isUp ? 'Up' : 'Down') +'</span>';
+      $('#check_24h').html(html);
+    });
+  };
+  socket.on('CheckEvent', updateLast24h);
+  updateLast24h();
 });
 </script>

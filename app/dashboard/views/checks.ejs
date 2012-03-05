@@ -7,11 +7,11 @@
 </div>
 <table class="table" id="checks">
   <thead>
-    <tr><th>Name</th><th>Up?</th><th>Up for</th><th>Uptime</th><th>Downtime</th><th>Avg. Response time</th></tr>
+    <tr><th>Name</th><th>Status</th><th>Uptime</th><th>Downtime</th><th>Avg. Response time</th></tr>
   </thead>
   <tbody></tbody>
   <tfoot>
-    <tr><td colspan="3"></td><td>Average of all checks<br/>in the last 24h</td><td>Total of all checks<br />in the last 24h</td><td>Average of all checks<br/>in the last 24h</td></tr>
+    <tr><td colspan="2"></td><td>Average of all checks<br/>in the last 24h</td><td>Total of all checks<br />in the last 24h</td><td>Average of all checks<br/>in the last 24h</td></tr>
   </tfoot>
 </table>
 <script src="<%= route %>/javascripts/jquery.timeago.js"></script>
@@ -22,8 +22,7 @@
     <a href="{{=  route + '/check/' + check._id }}">{{= check.name }}</a>
     <a href="{{= check.url }}"><img src="{{= route }}/images/external-link-ltr-icon.png"></a>
   </td>
-  <td><span class="label {{= (check.isUp ? 'label-success' : 'label-important') }}">{{= (check.isUp ? 'yes' : 'no') }}</span></td>
-  <td class="{{= check.isUp ? 'green' : 'red' }}">{{= check.isUp ? $.timeago.inWords(check.uptime) : 'Down for ' + $.timeago.inWords(check.downtime) }}</td>
+  <td><span class="label {{= (check.isUp ? 'label-success' : 'label-important') }}">{{= (check.isUp ? 'Up' : 'Down') }}</span> <span class="{{= check.isUp ? 'green' : 'red' }}"> for {{= $.timeago.inWords(check.isUp ? check.uptime : check.downtime) }}</span>
   <td>{{= check.qos ? ((check.qos.ups / check.qos.count) * 100).toFixed(3) : '' }}%</td>
   <td>{{= check.qos ? (check.qos.downtime / 1000).toFixed() : '' }}s</td>
   <td>{{= check.qos ? Math.round(check.qos.time / check.qos.count) : '' }}ms</td>
