@@ -15,22 +15,29 @@
   </tfoot>
 </table>
 <script src="<%= route %>/javascripts/jquery.timeago.js"></script>
+<script src="<%= route %>/javascripts/jquery.tablesorter.min.js"></script>
 <script src="<%= route %>/javascripts/ejs.min.js"></script>
 <script id="check_template" type="text/template">
 <tr>
-  <td>
+  <td data-sort="{{= check.name }}">
     <a href="{{=  route + '/check/' + check._id }}">{{= check.name }}</a>
     <a href="{{= check.url }}"><img src="{{= route }}/images/external-link-ltr-icon.png"></a>
   </td>
-  <td><span class="label {{= (check.isUp ? 'label-success' : 'label-important') }}">{{= (check.isUp ? 'Up' : 'Down') }}</span> <span class="{{= check.isUp ? 'green' : 'red' }}"> for {{= $.timeago.inWords(check.isUp ? check.uptime : check.downtime) }}</span>
-  <td>{{= check.qos ? ((check.qos.ups / check.qos.count) * 100).toFixed(3) : '' }}%</td>
-  <td>{{= check.qos ? (check.qos.downtime / 1000).toFixed() : '' }}s</td>
-  <td>{{= check.qos ? Math.round(check.qos.time / check.qos.count) : '' }}ms</td>
+  <td data-sort="{{= check.isUp ? check.uptime : -check.downtime }}"><span class="label {{= (check.isUp ? 'label-success' : 'label-important') }}">{{= (check.isUp ? 'Up' : 'Down') }}</span> <span class="{{= check.isUp ? 'green' : 'red' }}"> for {{= $.timeago.inWords(check.isUp ? check.uptime : check.downtime) }}</span>
+  <td data-sort="{{= check.qos ? check.qos.ups / check.qos.count : 100 }}">{{= check.qos ? ((check.qos.ups / check.qos.count) * 100).toFixed(3) : '' }}%</td>
+  <td data-sort="{{= check.qos ? check.qos.downtime : 0 }}">{{= check.qos ? (check.qos.downtime / 1000).toFixed() : '' }}s</td>
+  <td data-sort="{{= check.qos ? check.qos.time / check.qos.count : 0 }}">{{= check.qos ? Math.round(check.qos.time / check.qos.count) : '' }}ms</td>
 </tr>
 </script>
 <script>
 jQuery(document).ready(function($) {
   $('.navbar-inner li').eq(1).addClass('active');
+  $('#checks').tablesorter({
+    textExtraction: function(node) {
+      return $(node).data('sort');
+    },
+    sortList: [[1,0]]
+  });
   $.timeago.settings.strings.suffixAgo = null;
   var check_template = document.getElementById('check_template').innerHTML;
   var ejs = require('ejs');
@@ -43,10 +50,11 @@ jQuery(document).ready(function($) {
         lines.push(ejs.render(check_template, { check: check, route: '<%= route %>' }));
       });
       $('#checks tbody').html(lines.join(''));
+      $('#checks').trigger('update');
       $('#last_update').text('Last updated on ' + new Date().toLocaleString());
     });
   }
   updateChecks();
-  window.setInterval(updateChecks, 5000);
+  socket.on('CheckEvent', updateChecks);
 });
 </script>
