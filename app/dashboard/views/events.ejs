@@ -1,14 +1,6 @@
 <h1>
   Latest events
 </h1>
-<table id="check_summary">
-  <thead>
-    <tr><th><span class="label label-success">Up</span></th><th><span class="label label-important">Down</label></th></tr>
-  </thead>
-  <tbody>
-    <tr><td id="all_up" class="green"></td><td id="all_down" class="red"></td></tr>
-  </tbody>
-</table>
 <div id="events">
 </div>
 <script src="<%= route %>/javascripts/jquery.timeago.js"></script>
@@ -32,19 +24,6 @@ $(document).ready(function() {
   var ejs = require('ejs');
   ejs.open = '{{';
   ejs.close = '}}';
-  var updateCounts = function() {
-    $.getJSON('/api/check', function(checks) {
-      if (checks.length == 0) {
-        $('#events').after('<p>Couldn\'t find a check in the database. Start right away and <a href="<%= route %>/check">create a check</a>!</p>');
-      };
-      var all_up = all_down = 0;
-      $.each(checks, function(key, check) {
-        if (check.isUp) all_up += 1; else all_down += 1;
-      });
-      $('#all_up').text(all_up);
-      $('#all_down').text(all_down);
-    });
-  }
   var updateEvents = function() {
     $.getJSON('/api/pings/events', function(events) {
       if (events.length == 0) {
@@ -62,7 +41,7 @@ $(document).ready(function() {
       $('#events').html(lines.join(''));
     });
   }
-  updateCounts();
+  socket.on('CheckEvent', updateEvents);
   updateEvents();
 });
 </script>

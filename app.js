@@ -2,10 +2,12 @@
  * Monitor remote server uptime.
  */
 
-var mongoose = require('mongoose'),
-    express  = require('express'),
-    config   = require('config'),
-    monitor  = require('./lib/monitor');
+var mongoose   = require('mongoose'),
+    express    = require('express'),
+    config     = require('config'),
+    socketIo   = require('socket.io'),
+    monitor    = require('./lib/monitor'),
+    CheckEvent = require('./models/checkEvent');
 
 // configure mongodb
 mongoose.connect('mongodb://' + config.mongodb.user + ':' + config.mongodb.password + '@' + config.mongodb.server +'/' + config.mongodb.database);
@@ -20,7 +22,7 @@ m.start();
 
 var app = module.exports = express.createServer();
 
-// Configuration
+// Site
 
 app.configure(function(){
   app.use(app.router);
@@ -46,6 +48,18 @@ app.configure('production', function(){
 // Routes
 app.use('/api',       require('./app/api/app'));
 app.use('/dashboard', require('./app/dashboard/app'));
+
+// Sockets
+var io = socketIo.listen(app);
+
+io.configure('production', function(){
+  io.enable('browser client etag');
+  io.set('log level', 1);
+});
+
+CheckEvent.on('new', function(event) {
+  io.sockets.emit('CheckEvent', event.toJSON());
+});
 
 app.listen(config.server.port);
 console.log("Express server listening on port %d in %s mode", config.server.port, app.settings.env);

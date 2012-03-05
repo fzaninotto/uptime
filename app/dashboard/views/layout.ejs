@@ -2,20 +2,30 @@
 <html lang="fr">
   <head>
     <meta charset="utf-8">
-    <title>Dashboard</title>
+    <title>Uptime</title>
     <link rel="stylesheet" href="<%= route %>/stylesheets/bootstrap.css">
     <link rel="stylesheet" href="<%= route %>/stylesheets/style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+    var socket = io.connect('http://' + location.hostname);
+    </script>
   </head>
   <body>
     <div class="navbar">
       <div class="navbar-inner">
         <div class="container">
-          <a class="brand" href="<%= route %>/events">Dashboard</a>
-          <ul class="nav">
+          <a class="brand" href="<%= route %>/events">Uptime</a>
+          <ul class="nav pull-left">
             <li><a href="<%= route %>/events">Events</a></li>
             <li><a href="<%= route %>/checks">Checks</a></li>
             <li><a href="<%= route %>/tags">Tags</a></li>
+          </ul>
+          <ul class="nav pull-right" id="check_summary">
+            <li class="label label-success">Up</li>
+            <li id="all_up" class="green">0</li>
+            <li class="label label-important">Down</li>
+            <li id="all_down" class="red">0</li>
           </ul>
         </div>
       </div>
@@ -25,5 +35,25 @@
         <%- body %>
       </section>
     </div>
+    <script>
+    $(document).ready(function() {
+      var updateCounts = function() {
+        $.getJSON('/api/check', function(checks) {
+          var all_up = all_down = 0;
+          $.each(checks, function(key, check) {
+            if (check.isUp) all_up += 1; else all_down += 1;
+          });
+          $('#all_up').html(all_up);
+          $('#all_down').html(all_down);
+          document.title = '(' + all_up + '/' + (all_up + all_down) +') Uptime';
+        });
+      };
+      socket.on('CheckEvent', function() {
+        updateCounts();
+        $('#check_summary').fadeOut().fadeIn().fadeOut().fadeIn();
+      });
+      updateCounts();
+    });
+    </script>
   </body>
 </html>

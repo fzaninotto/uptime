@@ -26,4 +26,9 @@ CheckEvent.statics.aggregateEventsByDay = function(events) {
   return aggregatedEvents;
 }
 
+CheckEvent.pre('save', function(next) {
+  this.db.model('CheckEvent').emit('new', this);
+  next();
+});
+
 module.exports = mongoose.model('CheckEvent', CheckEvent);
