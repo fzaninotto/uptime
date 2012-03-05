@@ -108,7 +108,6 @@ Ping.statics.updateLast24HoursQos = function(callback) {
 }
 
 Ping.statics.cleanup = function(maxAge, callback) {
-  console.log(maxAge);
   oldestDateToKeep = new Date(Date.now() - (maxAge ||  3 * 31 * 24 * 60 * 60 * 1000));
   this.find({ timestamp: { $lt: oldestDateToKeep } }).remove(callback);
 }
