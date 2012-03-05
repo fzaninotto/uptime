@@ -38,17 +38,7 @@
 </tr>
 </script>
 <script>
-var stat_template = document.getElementById('stat_template').innerHTML;
 page.stat = 0;
-var updateStats = function() {
-  $.getJSON('<%= url.updateStat %>' + page.stat, function(stats) {
-    var lines = [];
-    $.each(stats, function(key, stat) {
-      lines.push(ejs.render(stat_template, { stat: stat }));
-    });
-    $('#stats tbody').html(lines.join(''));
-  });
-}
 var chartPeriod = '7d';
 var chart;
 
@@ -146,8 +136,20 @@ MeetupForChart.prototype.checkMeetup = function() {
 }
 
 $(document).ready(function() {
-  $('#chartPeriod a').click(function() { chartPeriod = $(this).data('period'); updateChart(chartPeriod); });
+  $('#chartPeriod a').click(function() {
+    chartPeriod = $(this).data('period'); updateChart(chartPeriod);
+  });
   updateChart('7d');
+  var stat_template = document.getElementById('stat_template').innerHTML;
+  var updateStats = function() {
+    $.getJSON('<%= url.updateStat %>' + page.stat, function(stats) {
+      var lines = [];
+      $.each(stats, function(key, stat) {
+        lines.push(ejs.render(stat_template, { stat: stat }));
+      });
+      $('#stats tbody').html(lines.join(''));
+    });
+  }
   handlePagination('stat', '#stats', updateStats);
 });
 </script>
