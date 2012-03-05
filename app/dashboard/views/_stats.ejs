@@ -52,21 +52,7 @@ var updateStats = function() {
 var chartPeriod = '7d';
 var chart;
 
-var MeetupForChart = function() {
-  this.uptime = false;
-  this.downtime = false;
-}
-MeetupForChart.prototype.send = function(object, callback) {
-  if (object.uptime) this.uptime = object.uptime;
-  if (object.responseTime) this.responseTime = object.responseTime;
-  if (this.uptime && this.responseTime) {
-    callback(this.uptime, this.responseTime);
-    this.uptime = false;
-    this.responseTime = false;
-  }
-}
-
-var drawChart = function(uptime, responseTime) {
+var drawChart = function(uptime, responseTime, period) {
   var uptimeBoundaries = getBoundaries(uptime);
   chart = new Highcharts.Chart({
     chart: {
@@ -94,22 +80,25 @@ var drawChart = function(uptime, responseTime) {
     ],
     tooltip: {
       formatter: function() {
-        return Highcharts.dateFormat('%e. %b %Y, %H:00', this.x) +'<br/>' 
+        var dateFormat;
+        if ('6h' == period) {
+          dateFormat = '%e. %b %Y, %H:%M';
+        }
+        if ('1d' == period || '7d' == period) {
+          dateFormat = '%e. %b %Y, %H:00';
+        };
+        if ('MTD' == period || '1m' == period || '3m' == period) {
+          dateFormat = '%e. %b %Y';
+        };
+        if ('6m' == period || 'YTD' == period || '1y' == period || 'max' == period) {
+          dateFormat = '%b %Y';
+        }
+        return Highcharts.dateFormat(dateFormat, this.x) +'<br/>' 
            + (this.series.name == 'Uptime' ? 'Uptime: ' : 'Response Time: ')
            + this.y
            + (this.series.name == 'Uptime' ? '%' : 'ms');
       }
     },
-  });
-}
-
-var updateChart = function() {
-  var meetup = new MeetupForChart();
-  $.getJSON('<%= url.chart %>' + 'uptime/' + chartPeriod, function(uptime) {
-    meetup.send({uptime: uptime}, drawChart);
-  });
-  $.getJSON('<%= url.chart %>' + 'responseTime/' + chartPeriod, function(responseTime) {
-    meetup.send({responseTime: responseTime}, drawChart);
   });
 }
 
@@ -127,9 +116,38 @@ var getBoundaries = function(series) {
   return { min: min, max: max };
 }
 
+var updateChart = function(period) {
+  var meetup = new MeetupForChart(period);
+  $.getJSON('<%= url.chart %>' + 'uptime/' + chartPeriod, function(uptime) {
+    meetup.sendUptime(uptime);
+  });
+  $.getJSON('<%= url.chart %>' + 'responseTime/' + chartPeriod, function(responseTime) {
+    meetup.sendResponseTime(responseTime);
+  });
+}
+
+var MeetupForChart = function(period) {
+  this.period = period;
+  this.uptime = false;
+  this.downtime = false;
+}
+MeetupForChart.prototype.sendUptime = function(uptime) {
+  this.uptime = uptime;
+  this.checkMeetup();
+}
+MeetupForChart.prototype.sendResponseTime = function(responseTime) {
+  this.responseTime = responseTime;
+  this.checkMeetup();
+}
+MeetupForChart.prototype.checkMeetup = function() {
+  if (this.uptime && this.responseTime) {
+    drawChart(this.uptime, this.responseTime, this.period);
+  }
+}
+
 $(document).ready(function() {
-  $('#chartPeriod a').click(function() { chartPeriod = $(this).data('period'); updateChart(); });
-  updateChart();
+  $('#chartPeriod a').click(function() { chartPeriod = $(this).data('period'); updateChart(chartPeriod); });
+  updateChart('7d');
   handlePagination('stat', '#stats', updateStats);
 });
 </script>
