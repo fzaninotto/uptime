@@ -19,16 +19,20 @@ var page = {};
 <div class="alert alert-success"><%= info %></div>
 <% } %>
 <ul class="nav nav-tabs">
-  <li><a href="#pings" data-toggle="tab">Pings</a></li>
   <li><a href="#stats" data-toggle="tab">History</a></li>
+  <li><a href="#events" data-toggle="tab">Events</a></li>
+  <li><a href="#pings" data-toggle="tab">Pings</a></li>
   <li><a href="#details" data-toggle="tab">Details</a></li>
 </ul>
 <div class="tab-content">
-  <%- partial('_pings', { check: check, route: route }) %>
   <%- partial('_stats', { url: { 
     updateStat: '/api/check/' + check._id + '/stat/',
     chart:      '/api/check/' + check._id + '/'
   }} ) %>
+  <div class="tab-pane" id="events">
+  <%- partial('_events', { url: '/api/check/' + check._id + '/events', route: route }) %>
+  </div>
+  <%- partial('_pings', { check: check, route: route }) %>
   <%- partial('_check_details', { check: check }) %>
 </div>
 <script>

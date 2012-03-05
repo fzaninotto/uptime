@@ -25,6 +25,10 @@ html, body {
   margin: 10px;
 }
 
+h1 {
+  margin-bottom: 20px;
+}
+
 #events ul {
   margin-top: 1em;
   margin-left: 0;

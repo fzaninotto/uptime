@@ -14,6 +14,7 @@ var page = {};
 </h1>
 <ul class="nav nav-tabs">
   <li class="active"><a href="#stats" data-toggle="tab">History</a></li>
+  <li><a href="#events" data-toggle="tab">Events</a></li>
   <li><a href="#details" data-toggle="tab">Details</a></li>
 </ul>
 <div class="tab-content">
@@ -21,6 +22,9 @@ var page = {};
     updateStat: '/api/tag/' + tag.name + '/stat/',
     chart:      '/api/tag/' + tag.name + '/'
   }} ) %>
+  <div class="tab-pane" id="events">
+  <%- partial('_events', { url: '/api/tag/' + tag.name + '/events', route: route }) %>
+  </div>
   <%- partial('_tag_details', { tag: tag }) %>
 </div>
 <script>
