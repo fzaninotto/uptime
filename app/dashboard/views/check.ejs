@@ -11,7 +11,7 @@ var page = {};
 </script>
 <h1>
   Check "<%= check.name %>"
-  <small><%= check.url %></small>
+  <a href="<%= check.url %>"><img src="<%= route %>/images/external-link-ltr-icon.png"></a>
 </h1>
 <% if (info.length) { %>
 <div class="alert alert-success"><%= info %></div>
