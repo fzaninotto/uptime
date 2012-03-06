@@ -20,6 +20,7 @@
       <a class="recent btn" href="#">&gt;</a>
     </div>
   </div>
+  <div style="clear:left"></div>
 </div>
 <script id="ping_template" type="text/template">
 <tr class="{{= ping.isUp && ping.isResponsive ? 'green' : 'red' }}">
@@ -46,11 +47,12 @@ $(document).ready(function() {
       $('#pings tbody').html(lines.join(''));
     });
   };
-  $('#autoupdate').click(function() {
+  interval = window.setInterval(updatePings, 10000);
+  $('#autoupdate').button('toggle').click(function() {
     if (interval) {
       window.clearInterval(interval);
     } else {
-      interval = window.setInterval(updatePings, 5000);
+      interval = window.setInterval(updatePings, 10000);
     }
   });
   handlePagination('ping', '#pings', updatePings);

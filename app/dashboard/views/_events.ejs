@@ -2,7 +2,7 @@
 <li>
   <span class="label">{{= new Date(event.timestamp).toLocaleTimeString() }}</span>
   <a href="{{=  route + '/check/' + event.check._id }}">{{= event.check.name }}</a>
-  <a href="{{= event.check.url }}"><img src="{{= route }}/images/external-link-ltr-icon.png"></a>
+  <a href="{{= event.check.url }}" target="_blank"><img src="{{= route }}/images/external-link-ltr-icon.png"></a>
   <span class="{{= (event.isGoDown ? 'red' : 'green') }}">{{= (event.isGoDown ? 'went down' : event.downtime ? 'went back up' : 'is now up') }}</span>
   {{ if (!event.isGoDown && event.downtime) { }}
   after {{= $.timeago.inWords(event.downtime) }} of downtime
@@ -18,8 +18,9 @@ $(document).ready(function() {
   ejs.close = '}}';
   var updateEvents = function() {
     $.getJSON('<%= url %>', function(events) {
-      if (events.length == 0) {
-        $('#events').after('<p>Nothing happened lately. All Green!</p>');
+      console.log(events);
+      if ($.isEmptyObject(events)) {
+        $('#events').html('<p>Nothing happened lately. All Green!</p>');
         return;
       }
       var lines = [];

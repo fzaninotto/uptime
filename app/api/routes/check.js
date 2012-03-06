@@ -19,6 +19,12 @@ module.exports = function(app) {
     });
   });
 
+  app.get('/check/count', function(req, res) {
+    Check.find({}).count(function(err, count) {
+      res.json(count);
+    });
+  });
+
   app.get('/check/tag/:name', function(req, res, next) {
     Check.find({ tags: req.params.name }).asc('isUp').desc('lastChanged').exclude('qosPerHour').find(function(err, checks) {
       if (err) return next(err);

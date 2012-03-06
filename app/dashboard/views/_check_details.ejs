@@ -1,18 +1,18 @@
-<div class="tab-pane" id="details">
+<div class="tab-pane" id="admin">
   <form id="check_form" method="post" class="form-horizontal">
     <input type="hidden" name="_method" value="<%= (check.isNew) ? 'post' : 'put' %>" />
     <fieldset>
       <div class="control-group">
         <label class="control-label">Name</label>
         <div class="controls">
-          <input type="text" name="check[name]" value="<%= check.name || '' %>" class="span8"/>
+          <input type="text" name="check[name]" value="<%= check.name || '' %>" class="span8" placeholder="Type a name here"/>
         </div>
       </div>
       <div class="control-group">
         <label class="control-label">Url</label>
         <div class="controls">
-          <input type="text" name="check[url]" value="<%= check.url || '' %>" class="span8" />
-          <span class="help-inline"><a href="<%= check.url %>"><img src="<%= route %>/images/external-link-ltr-icon.png"></a></span>
+          <input type="text" name="check[url]" value="<%= check.url || '' %>" class="span8"  placeholder="http://www.example.com"/>
+          <span class="help-inline"><a href="<%= check.url %>" target="_blank"><img src="<%= route %>/images/external-link-ltr-icon.png"></a></span>
         </div>
       </div>
       <div class="control-group">
@@ -32,8 +32,8 @@
       <div class="control-group">
         <label class="control-label">Tags</label>
         <div class="controls">
-          <input type="text" name="check[tags]" value="<%= check.tags.join(', ') %>" class="span2" />
-          <span class="help-inline" id="check_tags"></span>
+          <input type="text" name="check[tags]" value="<%= check.tags.join(', ') %>" class="span2" placeholder=""/>
+          <span class="help-inline" id="check_tags">Comma-separated list of tags</span>
         </div>
       </div>
       <% if (check.lastTested) { %>
@@ -45,11 +45,12 @@
       </div>
       <% } %>
       <div class="form-actions">
-        <button type="submit" class="btn btn-primary">Save changes</button>
-        <% if (!check.isNew) { %>
-        <button type="submit" class="btn btn-danger" name="delete">Delete</button>
-        <% } else { %>
+        <% if (check.isNew) { %>
+        <button type="submit" class="btn btn-primary">Save</button>
         <a class="btn" href="<%= route %>/checks">Cancel</a>
+        <% } else { %>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+        <button type="submit" class="btn btn-danger" name="delete">Delete</button>
         <% } %>
       </div>
     </fieldset>
@@ -75,10 +76,12 @@ $(document).ready(function() {
   });
   updatePollingIntervalTooltip();
   $(intervalFieldSelector).bind('keypress keyup', updatePollingIntervalTooltip);
-  var tag_links  = [];
-  $.each([<%= check.tags.map(function(tag) { return "'" + tag + "'"}).join(', ') %>], function(key, tag) {
-      tag_links.push('<a href="/dashboard/tag/' + tag + '">' + tag + '</a>');
+  var tagLinks  = [];
+  $('#check_form input[name*="tags"]').val().split(', ').forEach(function(tag) {
+    if (tag) tagLinks.push('<a href="/dashboard/tag/' + tag + '">' + tag + '</a>');
   });
-  $('#check_tags').html(tag_links.join(', '));
+  if (tagLinks.length > 0) {
+    $('#check_tags').html(tagLinks.join(', '));
+  };
 });
 </script>
