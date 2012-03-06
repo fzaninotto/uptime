@@ -15,7 +15,7 @@ module.exports = function(app) {
     Check.count({ _id: req.params.id}, function(err, nb_checks) {
       if (err) return app.next(err);
       if (!nb_checks) return app.next(new Error('failed to load check ' + req.params.id));
-      Ping.find({ check: req.params.id }).desc('timestamp').limit(50).skip(req.params.page * 50).run(function(err, pings) {
+      Ping.find({ check: req.params.id }).desc('timestamp').limit(50).skip((req.params.page -1) * 50).run(function(err, pings) {
         if (err) return next(err);
         res.json(pings);
       });
