@@ -19,10 +19,7 @@ var page = {};
   <li><a href="#checks" data-toggle="tab">Checks</a></li>
 </ul>
 <div class="tab-content">
-  <%- partial('_stats', { url: { 
-    updateStat: '/api/tag/' + tag.name + '/stat/',
-    chart:      '/api/tag/' + tag.name + '/'
-  }} ) %>
+  <%- partial('_stats', { url: '/api/tag/' + tag.name + '/stats/' } ) %>
   <div class="tab-pane" id="events">
   <%- partial('_events', { url: '/api/tag/' + tag.name + '/events', route: route }) %>
   </div>

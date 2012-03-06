@@ -1,6 +1,11 @@
 <div class="tab-pane" id="stats">
-  <div class="btn-toolbar" style="text-align:right">
-    <div class="btn-group" data-toggle="buttons-radio" id="chartPeriod">
+  <div class="btn-toolbar">
+    <div class="btn-group pull-left">
+      <a class="old btn" href="#">&lt;</a>
+      <a class="recent btn" href="#">&gt;</a>
+    </div>
+    <div class="btn-group pull-right" data-toggle="buttons-radio" id="chartPeriod">
+      <a class="btn" data-period="1h" href="#">1h</a>
       <a class="btn" data-period="6h" href="#">6h</a>
       <a class="btn" data-period="1d" href="#">1d</a>
       <a class="btn active" data-period="7d" href="#">7d</a>
@@ -10,38 +15,36 @@
       <a class="btn" data-period="6m" href="#">6m</a>
       <a class="btn" data-period="YTD" href="#">YTD</a>
       <a class="btn" data-period="1y" href="#">1y</a>
-      <a class="btn" data-period="max" href="#">Max</a>
+      <a class="btn" data-period="3y" href="#">3y</a>
     </div>
   </div>
   <div id="chart" style="width:920px;height: 400px"></div>
-  <div>
-    <a class="recent btn" href="#">&lt; More Recent</a>
-    <a class="old btn" href="#">Older &gt;</a>
-  </div>
+  <hr/>
   <table class="table">
     <thead>
       <tr><th>Date</th><th>Uptime</th><th>Downtime</th><th>Avg. Response time</th></tr>
     </thead>
     <tbody></tbody>
   </table>
-  <div>
-    <a class="recent btn" href="#">&lt; More Recent</a>
-    <a class="old btn" href="#">Older &gt;</a>
+  <div class="btn-toolbar">
+    <div class="btn-group pull-left">
+      <a class="old btn" href="#">&lt;</a>
+      <a class="recent btn" href="#">&gt;</a>
+    </div>
   </div>
+  <hr/>
 </div>
 <script id="stat_template" type="text/template">
-<tr class="{{= (stat.ups / stat.count == 1) ? 'green' : 'red' }}">
+<tr class="{{= (stat.uptime == 100) ? 'green' : 'red' }}">
   <td>{{= new Date(stat.timestamp).toLocaleString() }}</td>
-  <td>{{= ((stat.ups / stat.count) * 100).toFixed(3) }}%</td>
-  <td>{{= (stat.downtime / 1000).toFixed() }}s</td>
-  <td>{{= Math.round(stat.time / stat.count) }}ms</td>
+  <td>{{= stat.uptime }}%</td>
+  <td>{{= stat.downtime }}s</td>
+  <td>{{= stat.responseTime }}ms</td>
 </tr>
 </script>
 <script>
-page.stat = 0;
-var chartPeriod = '7d';
+var chartPeriod;
 var chart;
-
 var drawChart = function(uptime, responseTime, period) {
   var uptimeBoundaries = getBoundaries(uptime);
   chart = new Highcharts.Chart({
@@ -56,7 +59,7 @@ var drawChart = function(uptime, responseTime, period) {
     yAxis: [{
        title: { text: 'Uptime', style: { color: '#4572A7' }},
        labels: { style: { color: '#4572A7' }},
-       min: uptimeBoundaries.min < 90 ? uptimeBoundaries.min - 10 : 90,
+       min: uptimeBoundaries.min < 10 ? uptimeBoundaries.min : uptimeBoundaries < 90 ? uptimeBoundaries.min - 10 : 90,
        max: 100
     }, { 
       title: { text: 'Response Time', style: { color: '#89A54E' }},
@@ -71,7 +74,7 @@ var drawChart = function(uptime, responseTime, period) {
     tooltip: {
       formatter: function() {
         var dateFormat;
-        if ('6h' == period) {
+        if ('1h' == period || '6h' == period) {
           dateFormat = '%e. %b %Y, %H:%M';
         }
         if ('1d' == period || '7d' == period) {
@@ -88,7 +91,7 @@ var drawChart = function(uptime, responseTime, period) {
            + this.y
            + (this.series.name == 'Uptime' ? '%' : 'ms');
       }
-    },
+    }
   });
 }
 
@@ -106,50 +109,32 @@ var getBoundaries = function(series) {
   return { min: min, max: max };
 }
 
-var updateChart = function(period) {
-  var meetup = new MeetupForChart(period);
-  $.getJSON('<%= url.chart %>' + 'uptime/' + chartPeriod, function(uptime) {
-    meetup.sendUptime(uptime);
-  });
-  $.getJSON('<%= url.chart %>' + 'responseTime/' + chartPeriod, function(responseTime) {
-    meetup.sendResponseTime(responseTime);
-  });
-}
-
-var MeetupForChart = function(period) {
-  this.period = period;
-  this.uptime = false;
-  this.downtime = false;
-}
-MeetupForChart.prototype.sendUptime = function(uptime) {
-  this.uptime = uptime;
-  this.checkMeetup();
-}
-MeetupForChart.prototype.sendResponseTime = function(responseTime) {
-  this.responseTime = responseTime;
-  this.checkMeetup();
-}
-MeetupForChart.prototype.checkMeetup = function() {
-  if (this.uptime && this.responseTime) {
-    drawChart(this.uptime, this.responseTime, this.period);
-  }
-}
-
 $(document).ready(function() {
-  $('#chartPeriod a').click(function() {
-    chartPeriod = $(this).data('period'); updateChart(chartPeriod);
-  });
-  updateChart('7d');
+  var timezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
   var stat_template = document.getElementById('stat_template').innerHTML;
   var updateStats = function() {
-    $.getJSON('<%= url.updateStat %>' + page.stat, function(stats) {
+    $.getJSON('<%= url %>' + chartPeriod + '/' + page.stat, function(stats) {
       var lines = [];
+      var uptime = [];
+      var responseTime = [];
       $.each(stats, function(key, stat) {
         lines.push(ejs.render(stat_template, { stat: stat }));
+        uptime.push([stat.timestamp - timezoneOffset, stat.uptime]);
+        responseTime.push([stat.timestamp - timezoneOffset, stat.responseTime]);
       });
       $('#stats tbody').html(lines.join(''));
+      drawChart(uptime, responseTime, chartPeriod);
     });
   }
+  $('#chartPeriod a').click(function() {
+    chartPeriod = $(this).data('period');
+    page.stat = 1;
+    $('#stats .recent').hide();
+    updateStats();
+    return false;
+  });
+  page.stat = 1;
+  chartPeriod = '7d';
   handlePagination('stat', '#stats', updateStats);
 });
 </script>

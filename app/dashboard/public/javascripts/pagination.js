@@ -11,13 +11,14 @@ var handlePagination = function(page_name, selector, callback) {
   $(selector + ' .recent').click(function(){
     page[page_name]--;
     callback();
-    if (page[page_name] == 0) {
+    if (page[page_name] == 1) {
       $(this).hide();
     };
     return false;
   }).dblclick(function(){
-    page[page_name] = 0;
+    page[page_name] = 1;
     callback();
     $(this).hide();
+    return false;
   });
 }

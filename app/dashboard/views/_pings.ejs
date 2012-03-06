@@ -1,13 +1,12 @@
 <div class="tab-pane" id="pings">
-  <div style="float:right;margin-bottom:0;height:28px">
-  <label class="checkbox">
-    <input type="checkbox" name="optionsCheckboxes" value="option1">
-    <span>Auto-update pings</span>
-  </label>
-  </div>
-  <div>
-    <a class="recent btn" href="#">&lt; More Recent</a>
-    <a class="old btn" href="#">Older &gt;</a>
+  <div class="btn-toolbar">
+    <div class="btn-group pull-left">
+      <a class="old btn" href="#">&lt;</a>
+      <a class="recent btn" href="#">&gt;</a>
+    </div>
+    <div class="btn-group pull-right">
+      <a class="btn" data-toggle="button" id="autoupdate" href="#">Auto-update</a>
+    </div>
   </div>
   <table class="table">
     <thead>
@@ -15,9 +14,11 @@
     </thead>
     <tbody></tbody>
   </table>
-  <div>
-    <a class="recent btn" href="#">&lt; More Recent</a>
-    <a class="old btn" href="#">Older &gt;</a>
+  <div class="btn-toolbar">
+    <div class="btn-group pull-left">
+      <a class="old btn" href="#">&lt;</a>
+      <a class="recent btn" href="#">&gt;</a>
+    </div>
   </div>
 </div>
 <script id="ping_template" type="text/template">
@@ -45,7 +46,7 @@ $(document).ready(function() {
       $('#pings tbody').html(lines.join(''));
     });
   };
-  $('#pings input:checkbox').click(function() {
+  $('#autoupdate').click(function() {
     if (interval) {
       window.clearInterval(interval);
     } else {

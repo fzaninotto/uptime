@@ -24,39 +24,35 @@ Tag.methods.getChecks = function(callback) {
   Check.find({ tags: this.name }, callback);
 }
 
-var qosParams = {
-  '6h':  { type: 'TagHourlyStat',  fromDate: new Date(Date.now() -                 6 * 60 * 60 * 1000) },
-  '1d':  { type: 'TagHourlyStat',  fromDate: new Date(Date.now() -                25 * 60 * 60 * 1000) },
-  '7d':  { type: 'TagHourlyStat',  fromDate: new Date(Date.now() -            8 * 24 * 60 * 60 * 1000) },
-  'MTD': { type: 'TagDailyStat',   fromDate: TimeCalculator.resetMonth(new Date()) },
-  '1m':  { type: 'TagDailyStat',   fromDate: new Date(Date.now() -           31 * 24 * 60 * 60 * 1000) },
-  '3m':  { type: 'TagDailyStat',   fromDate: new Date(Date.now() -       3 * 31 * 24 * 60 * 60 * 1000) },
-  '6m':  { type: 'TagMonthlyStat', fromDate: new Date(Date.now() -       6 * 31 * 24 * 60 * 60 * 1000) },
-  'YTD': { type: 'TagMonthlyStat', fromDate: TimeCalculator.resetYear(new Date()) },
-  '1y':  { type: 'TagMonthlyStat', fromDate: new Date(Date.now() -      12 * 31 * 24 * 60 * 60 * 1000) },
-  'max': { type: 'TagMonthlyStat', fromDate: new Date(Date.now() - 10 * 12 * 31 * 24 * 60 * 60 * 1000) },
+var statProvider = {
+  '1h':  'TagHourlyStat',
+  '6h':  'TagHourlyStat',
+  '1d':  'TagHourlyStat',
+  '7d':  'TagHourlyStat',
+  'MTD': 'TagDailyStat',
+  '1m':  'TagDailyStat',
+  '3m':  'TagDailyStat',
+  '6m':  'TagMonthlyStat',
+  'YTD': 'TagMonthlyStat',
+  '1y':  'TagMonthlyStat',
+  '3y':  'TagMonthlyStat'
 };
 
-Tag.methods.getUptimeForPeriod = function(period, callback) {
-  var qosParam = qosParams[period];
-  var uptimes = [];
-  this.db.model(qosParam.type).find({ name: this.name, timestamp: { $gte: qosParam.fromDate } }).asc('timestamp').each(function(err, stat) {
+Tag.methods.getStatsForPeriod = function(period, page, callback) {
+  var boundary = TimeCalculator.boundaryFunction[period];
+  var stats = [];
+  var query = { name: this.name, timestamp: { $gte: boundary(page), $lte: boundary(page - 1) } };
+  this.db.model(statProvider[period]).find(query).asc('timestamp').each(function(err, stat) {
     if (stat) {
-      uptimes.push([Date.parse(stat.timestamp), (stat.ups / stat.count).toFixed(5) * 100]);
+      stats.push({
+        timestamp: Date.parse(stat.timestamp),
+        uptime: (stat.ups / stat.count).toFixed(5) * 100,
+        responsiveness: (stat.responsives / stat.count).toFixed(5) * 100,
+        downtime: stat.downtime / 1000,
+        responseTime: Math.round(stat.time / stat.count)
+      });
     } else {
-      callback(uptimes);
-    }
-  });
-}
-
-Tag.methods.getResponseTimeForPeriod = function(period, callback) {
-  var qosParam = qosParams[period];
-  var responseTimes = [];
-  this.db.model(qosParam.type).find({ name: this.name, timestamp: { $gte: qosParam.fromDate } }).asc('timestamp').each(function(err, stat) {
-    if (stat) {
-      responseTimes.push([Date.parse(stat.timestamp), Math.round(stat.time / stat.count)]);
-    } else {
-      callback(responseTimes);
+      callback(stats);
     }
   });
 }

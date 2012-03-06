@@ -93,77 +93,50 @@ Check.methods.updateQos = function(callback) {
   });
 }
 
-var qosParams = {
-  '6h':  { type: 'Ping',             fromDate: new Date(Date.now() -                 6 * 60 * 60 * 1000) },
-  '1d':  { type: 'CheckHourlyStat',  fromDate: new Date(Date.now() -                25 * 60 * 60 * 1000) },
-  '7d':  { type: 'CheckHourlyStat',  fromDate: new Date(Date.now() -            8 * 24 * 60 * 60 * 1000) },
-  'MTD': { type: 'CheckDailyStat',   fromDate: TimeCalculator.resetMonth(new Date()) },
-  '1m':  { type: 'CheckDailyStat',   fromDate: new Date(Date.now() -           31 * 24 * 60 * 60 * 1000) },
-  '3m':  { type: 'CheckDailyStat',   fromDate: new Date(Date.now() -       3 * 31 * 24 * 60 * 60 * 1000) },
-  '6m':  { type: 'CheckMonthlyStat', fromDate: new Date(Date.now() -       6 * 31 * 24 * 60 * 60 * 1000) },
-  'YTD': { type: 'CheckMonthlyStat', fromDate: TimeCalculator.resetYear(new Date()) },
-  '1y':  { type: 'CheckMonthlyStat', fromDate: new Date(Date.now() -      12 * 31 * 24 * 60 * 60 * 1000) },
-  'max': { type: 'CheckMonthlyStat', fromDate: new Date(Date.now() - 10 * 12 * 31 * 24 * 60 * 60 * 1000) },
+var statProvider = {
+  '1h':  'Ping',
+  '6h':  'Ping',
+  '1d':  'CheckHourlyStat',
+  '7d':  'CheckHourlyStat',
+  'MTD': 'CheckDailyStat',
+  '1m':  'CheckDailyStat',
+  '3m':  'CheckDailyStat',
+  '6m':  'CheckMonthlyStat',
+  'YTD': 'CheckMonthlyStat',
+  '1y':  'CheckMonthlyStat',
+  '3y':  'CheckMonthlyStat'
 };
 
-Check.methods.getUptimeForPeriod = function(period, callback) {
-  var qosParam = qosParams[period];
-  var uptimes = [];
-  var uptimeScore;
-  this.db.model(qosParam.type).find({ check: this, timestamp: { $gte: qosParam.fromDate } }).asc('timestamp').each(function(err, stat) {
+Check.methods.getStatsForPeriod = function(period, page, callback) {
+  var boundary = TimeCalculator.boundaryFunction[period];
+  var stats = [];
+  var query = { check: this, timestamp: { $gte: boundary(page), $lte: boundary(page - 1) } };
+  this.db.model(statProvider[period]).find(query).asc('timestamp').each(function(err, stat) {
     if (stat) {
-      if (stat.isUp) {
+      if (typeof stat.isUp != 'undefined') {
         // stat is a Ping
-        uptimeScore = stat.isUp ? 100 : 0; 
+        stats.push({
+          timestamp: Date.parse(stat.timestamp),
+          uptime: stat.isUp ? 100 : 0,
+          responsiveness: stat.isResponsive ? 100 : 0,
+          downtime: stat.downtime ? stat.downtime / 1000 : 0,
+          responseTime: stat.time
+        });
       } else {
         // stat is an aggregation
-        uptimeScore = (stat.ups / stat.count).toFixed(5) * 100;
+        stats.push({
+          timestamp: Date.parse(stat.timestamp),
+          uptime: (stat.ups / stat.count).toFixed(5) * 100,
+          responsiveness: (stat.responsives / stat.count).toFixed(5) * 100,
+          downtime: stat.downtime / 1000,
+          responseTime: Math.round(stat.time / stat.count)
+        });
       };
-      uptimes.push([Date.parse(stat.timestamp), uptimeScore]);
     } else {
-      callback(uptimes);
+      callback(stats);
     }
   });
 }
-
-Check.methods.getResponseTimeForPeriod = function(period, callback) {
-  var qosParam = qosParams[period];
-  var responseTimes = [];
-  var responseTimeScore;
-  this.db.model(qosParam.type).find({ check: this, timestamp: { $gte: qosParam.fromDate } }).asc('timestamp').each(function(err, stat) {
-    if (stat) {
-      if (stat.isUp) {
-        // stat is a Ping
-        responseTimeScore = stat.time; 
-      } else {
-        // stat is an aggregation
-        responseTimeScore = Math.round(stat.time / stat.count);
-      };
-      responseTimes.push([Date.parse(stat.timestamp), responseTimeScore]);
-    } else {
-      callback(responseTimes);
-    }
-  });
-}
-
-Check.namedScope('byUptime', function(order) {
-  if (typeof order == 'undefined' || order == 'asc') {
-    // return first checks that are down since a long time,
-    // then the ones down since not that long,
-    // then the ones up since not that long,
-    // then the ones up since a long time
-    // useful for monitoring
-    return this.find({}).desc('downtime').asc('uptime');
-  } else {
-    // return first atrgets that are up since a long time
-    // then the ones up since not that long
-    // then the ones down since not that long
-    // then the ones down since a long time
-    // useful to see the most stable services
-    return this.find({}).desc('uptime').asc('downtime');
-  }
-});
-
 
 Check.statics.convertTags = function(tags) {
   if (typeof(tags) === 'string') {

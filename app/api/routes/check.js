@@ -34,33 +34,11 @@ module.exports = function(app) {
     });
   });
 
-  app.get('/check/:id/stat/:page?', function(req, res) {
+  app.get('/check/:id/stats/:type/:page?', function(req, res) {
     Check.find({ _id: req.params.id }).exclude('qosPerHour').findOne(function(err, check) {
       if (err) return next(err);
       if (!check) return next(new Error('failed to load check ' + req.params.id));
-      CheckHourlyStat.find({ check: check }).desc('timestamp').limit(50).skip(req.params.page * 50).run(function(err, stats) {
-        if (err) return next(err);
-        if (!stats) return next(new Error('failed to load stats for check ' + req.params.id));
-        res.json(stats);
-      })
-    });
-  });
-
-  app.get('/check/:id/uptime/:type', function(req, res) {
-    Check.find({ _id: req.params.id }).exclude('qosPerHour').findOne(function(err, check) {
-      if (err) return next(err);
-      if (!check) return next(new Error('failed to load check ' + req.params.id));
-      check.getUptimeForPeriod(req.params.type, function(stats) {
-        res.json(stats);
-      });
-    });
-  });
-
-  app.get('/check/:id/responseTime/:type', function(req, res) {
-    Check.find({ _id: req.params.id }).exclude('qosPerHour').findOne(function(err, check) {
-      if (err) return next(err);
-      if (!check) return next(new Error('failed to load check ' + req.params.id));
-      check.getResponseTimeForPeriod(req.params.type, function(stats) {
+      check.getStatsForPeriod(req.params.type, req.params.page, function(stats) {
         res.json(stats);
       });
     });
