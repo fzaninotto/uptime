@@ -1,7 +1,7 @@
 var mongoose = require('mongoose'),
     Schema   = mongoose.Schema,
     TimeCalculator = require('../lib/timeCalculator'),
-    MapReduce = require('../lib/mapReduce'),
+    QosAggregator = require('../lib/qosAggregator'),
     async    = require('async');
 
 var Ping = new Schema({
@@ -58,7 +58,7 @@ Ping.statics.updateHourlyQos = function(now, callback) {
   var end   = TimeCalculator.completeHour(now);
   var CheckHourlyStat = require('./checkHourlyStat');
   var TagHourlyStat   = require('./tagHourlyStat');
-  MapReduce.getQosForPeriod(this.collection, mapCheckAndTags, start, end, function(err, results) {
+  QosAggregator.getQosForPeriod(this.collection, mapCheckAndTags, start, end, function(err, results) {
     if (err) return;
     async.forEach(results, function(result, cb) {
       var stat = result.value;
@@ -87,7 +87,7 @@ Ping.statics.updateLast24HoursQos = function(callback) {
   var end   = new Date();
   var Check = require('../models/check');
   var Tag   = require('../models/tag');
-  MapReduce.getQosForPeriod(this.collection, mapCheckAndTags, start, end, function(err, results) {
+  QosAggregator.getQosForPeriod(this.collection, mapCheckAndTags, start, end, function(err, results) {
     if (err) return;
     async.forEach(results, function(result, cb) {
       if (result._id.substr) {

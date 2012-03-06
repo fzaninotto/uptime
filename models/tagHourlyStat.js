@@ -1,7 +1,7 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     TimeCalculator = require('../lib/timeCalculator'),
-    MapReduce = require('../lib/mapReduce'),
+    QosAggregator = require('../lib/qosAggregator'),
     async    = require('async');
 
 // main model
@@ -29,7 +29,7 @@ TagHourlyStat.statics.updateDailyQos = function(now, callback) {
   var start = TimeCalculator.resetDay(now);
   var end   = TimeCalculator.completeDay(now);
   var TagDailyStat = require('./tagDailyStat');
-  MapReduce.getQosForPeriod(this.collection, mapTag, start, end, function(err, results) {
+  QosAggregator.getQosForPeriod(this.collection, mapTag, start, end, function(err, results) {
     if (err) return;
     async.forEach(results, function(result, cb) {
       var stat = result.value;
@@ -51,7 +51,7 @@ TagHourlyStat.statics.updateMonthlyQos = function(now, callback) {
   var start = TimeCalculator.resetMonth(now);
   var end   = TimeCalculator.completeMonth(now);
   var TagMonthlyStat = require('./tagMonthlyStat');
-  MapReduce.getQosForPeriod(this.collection, mapTag, start, end, function(err, results) {
+  QosAggregator.getQosForPeriod(this.collection, mapTag, start, end, function(err, results) {
     if (err) return;
     async.forEach(results, function(result, cb) {
       var stat = result.value;
