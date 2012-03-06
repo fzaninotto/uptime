@@ -48,6 +48,9 @@ app.configure('production', function(){
 // Routes
 app.use('/api',       require('./app/api/app'));
 app.use('/dashboard', require('./app/dashboard/app'));
+app.get('/', function(reaq, res) {
+  res.redirect('/dashboard/events');
+});
 
 // Sockets
 var io = socketIo.listen(app);
