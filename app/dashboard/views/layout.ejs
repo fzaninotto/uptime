@@ -40,6 +40,7 @@
       </footer>
     </div>
     <script>
+    var nbNewEvents = 0;
     $(document).ready(function() {
       var updateCounts = function() {
         $.getJSON('/api/check', function(checks) {
@@ -49,10 +50,13 @@
           });
           $('#all_up').html(all_up);
           $('#all_down').html(all_down);
-          document.title = '(' + all_up + '/' + (all_up + all_down) +') Uptime';
+          if (nbNewEvents > 0) {
+            document.title = '(' + nbNewEvents +') Uptime';
+          };
         });
       };
       socket.on('CheckEvent', function() {
+        nbNewEvents++;
         updateCounts();
         $('#check_summary').fadeOut().fadeIn().fadeOut().fadeIn();
       });
