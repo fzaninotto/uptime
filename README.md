@@ -3,6 +3,8 @@ uptime
 
 A simple remote monitoring utility using Node.js and MongoDB.
 
+<img src="https://github.com/downloads/fzaninotto/uptime/uptime.png" title="Uptime screenshot" />
+
 Features
 --------
 
