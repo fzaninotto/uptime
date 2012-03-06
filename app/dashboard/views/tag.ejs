@@ -16,7 +16,7 @@ var page = {};
 <ul class="nav nav-tabs">
   <li class="active"><a href="#stats" data-toggle="tab">History</a></li>
   <li><a href="#events" data-toggle="tab">Events</a></li>
-  <li><a href="#details" data-toggle="tab">Details</a></li>
+  <li><a href="#checks" data-toggle="tab">Checks</a></li>
 </ul>
 <div class="tab-content">
   <%- partial('_stats', { url: { 
@@ -26,7 +26,9 @@ var page = {};
   <div class="tab-pane" id="events">
   <%- partial('_events', { url: '/api/tag/' + tag.name + '/events', route: route }) %>
   </div>
-  <%- partial('_tag_details', { tag: tag }) %>
+  <div class="tab-pane" id="checks">
+  <%- partial('_checks', { url: '/api/check/tag/' + tag.name, route: route }) %>
+  </div>
 </div>
 <script>
 $(document).ready(function() {

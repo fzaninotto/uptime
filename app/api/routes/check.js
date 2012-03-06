@@ -14,13 +14,13 @@ var CheckMonthlyStat = require('../../../models/checkMonthlyStat');
 module.exports = function(app) {
   
   app.get('/check', function(req, res) {
-    Check.byUptime().find({}).asc('isUp').desc('lastChanged').exclude('qosPerHour').run(function(err, checks) {
+    Check.find({}).asc('isUp').desc('lastChanged').exclude('qosPerHour').run(function(err, checks) {
       res.json(checks);
     });
   });
 
   app.get('/check/tag/:name', function(req, res, next) {
-    Check.find({ tags: req.params.name }).exclude('qosPerHour').find(function(err, checks) {
+    Check.find({ tags: req.params.name }).asc('isUp').desc('lastChanged').exclude('qosPerHour').find(function(err, checks) {
       if (err) return next(err);
       res.json(checks);
     });
