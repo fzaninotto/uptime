@@ -26,6 +26,11 @@ CheckEvent.statics.aggregateEventsByDay = function(events) {
   return aggregatedEvents;
 }
 
+CheckEvent.statics.cleanup = function(maxAge, callback) {
+  oldestDateToKeep = new Date(Date.now() - (maxAge ||  3 * 31 * 24 * 60 * 60 * 1000));
+  this.find({ timestamp: { $lt: oldestDateToKeep } }).remove(callback);
+}
+
 CheckEvent.pre('save', function(next) {
   this.db.model('CheckEvent').emit('new', this);
   next();
