@@ -120,7 +120,7 @@ Check.methods.getStatsForPeriod = function(period, page, callback) {
           uptime: stat.isUp ? 100 : 0,
           responsiveness: stat.isResponsive ? 100 : 0,
           downtime: stat.downtime ? stat.downtime / 1000 : 0,
-          responseTime: stat.time
+          responseTime: Math.round(stat.time)
         });
       } else {
         // stat is an aggregation

@@ -1,11 +1,15 @@
 <table class="table" id="checks">
   <thead>
-    <tr><th>Name</th><th>Status</th><th>Uptime</th><th>Downtime</th><th>Avg. Response time</th></tr>
+    <tr>
+      <th>Name</th>
+      <th>Status</th>
+      <th title="Percentage of all pings up in the last 24h">Availability</th>
+      <th title="Percentage of all pings below slow threshold in the last 24h">Responsiveness</th>
+      <th title="Total downtime in the last 24h">Downtime</th>
+      <th title="Average response time of all pings in the last 24h">Avg. Response time</th>
+    </tr>
   </thead>
   <tbody></tbody>
-  <tfoot>
-    <tr><td colspan="2"></td><td>Average of all checks<br/>in the last 24h</td><td>Total of all checks<br />in the last 24h</td><td>Average of all checks<br/>in the last 24h</td></tr>
-  </tfoot>
 </table>
 <script src="<%= route %>/javascripts/jquery.timeago.js"></script>
 <script src="<%= route %>/javascripts/jquery.tablesorter.min.js"></script>
@@ -18,6 +22,7 @@
   </td>
   <td data-sort="{{= check.isUp ? check.uptime : -check.downtime }}"><span class="label {{= (check.isUp ? 'label-success' : 'label-important') }}">{{= (check.isUp ? 'Up' : 'Down') }}</span> <span class="{{= check.isUp ? 'green' : 'red' }}"> for {{= $.timeago.inWords(check.isUp ? check.uptime : check.downtime) }}</span>
   <td data-sort="{{= check.qos ? check.qos.ups / check.qos.count : 100 }}">{{= check.qos ? ((check.qos.ups / check.qos.count) * 100).toFixed(3) : '' }}%</td>
+  <td data-sort="{{= check.qos ? check.qos.responsives / check.qos.count : 100 }}">{{= check.qos ? ((check.qos.responsives / check.qos.count) * 100).toFixed(3) : '' }}%</td>
   <td data-sort="{{= check.qos ? check.qos.downtime : 0 }}">{{= check.qos ? (check.qos.downtime / 1000).toFixed() : '' }}s</td>
   <td data-sort="{{= check.qos ? check.qos.time / check.qos.count : 0 }}">{{= check.qos ? Math.round(check.qos.time / check.qos.count) : '' }}ms</td>
 </tr>

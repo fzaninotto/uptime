@@ -22,7 +22,13 @@
   <hr/>
   <table class="table">
     <thead>
-      <tr><th>Date</th><th>Uptime</th><th>Downtime</th><th>Avg. Response time</th></tr>
+      <tr>
+        <th>Date</th>
+        <th title="Percentage of all pings up in the last 24h">Availability</th>
+        <th title="Percentage of all pings below slow threshold in the last 24h">Responsiveness</th>
+        <th title="Total downtime in the last 24h">Downtime</th>
+        <th title="Average response time of all pings in the last 24h">Avg. Response time</th>
+      </tr>
     </thead>
     <tbody></tbody>
   </table>
@@ -38,6 +44,7 @@
 <tr class="{{= (stat.uptime == 100) ? 'green' : 'red' }}">
   <td>{{= new Date(stat.timestamp).toLocaleString() }}</td>
   <td>{{= stat.uptime }}%</td>
+  <td>{{= stat.responsiveness }}%</td>
   <td>{{= stat.downtime }}s</td>
   <td>{{= stat.responseTime }}ms</td>
 </tr>
@@ -59,7 +66,7 @@ var drawChart = function(uptime, responseTime, period) {
     yAxis: [{
        title: { text: 'Uptime', style: { color: '#4572A7' }},
        labels: { style: { color: '#4572A7' }},
-       min: uptimeBoundaries.min < 10 ? uptimeBoundaries.min : uptimeBoundaries < 90 ? uptimeBoundaries.min - 10 : 90,
+       min: uptimeBoundaries.min < 10 ? uptimeBoundaries.min : uptimeBoundaries.min < 90 ? uptimeBoundaries.min - 10 : 90,
        max: 100
     }, { 
       title: { text: 'Response Time', style: { color: '#89A54E' }},
