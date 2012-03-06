@@ -71,6 +71,17 @@ var drawChart = function(uptime, responseTime, period) {
       { name: "Uptime", data: uptime, type: 'area', color: '#4572A7' }, 
       { name: "Response Time", data: responseTime, yAxis: 1, type: 'spline', color: '#89A54E' }
     ],
+    plotOptions: {
+      area: {
+        fillColor: {
+          linearGradient: [0, 0, 0, 300],
+          stops: [
+            [0, 'rgba(80, 144, 197, 0.8)'],
+            [1, 'rgba(96,156,210,0.4)']
+          ]
+        }
+      }
+    },
     tooltip: {
       formatter: function() {
         var dateFormat;
