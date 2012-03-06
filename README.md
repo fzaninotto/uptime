@@ -1,42 +1,79 @@
 uptime
 ======
 
-A simple remote monitoring utility using node.js and MongoDB.
+A simple remote monitoring utility using Node.js and MongoDB.
 
-Installing Dependencies
+Features
+--------
+
+* Monitor thousands of websites (powered by [Node.js asynchronous programming](http://dotheweb.posterous.com/nodejs-for-php-programmers-1-event-driven-pro))
+* Tweak frequency of monitoring on a per-check basis, up to the millisecond
+* Receive instant web alerts on every page when a check goes down (thanks [socket.io](http://socket.io/))
+* Record availability statistics for further reporting (powered by [MongoDB](http://www.mongodb.org/))
+* Detailed uptime reports with animated charts (powered by [Highcharts](http://www.highcharts.com/))
+* Monitor availability, responsiveness, average response time , and total uptime/downtime
+* Get details about failed checks (HTTP error code, etc.)
+* Group checks by tags and get reports by tag
+* Familiar web interface (powered by [Twitter Bootstrap 2.0](http://twitter.github.com/bootstrap/index.html))
+* complete API for integration with third-party monitoring services
+* Easy installation and zero administration
+
+Installing Uptime
 -----------------------
 
-Uptime requires [Mongoose](http://mongoosejs.com/), a JavaScript ODM for MongoDB, [ExpressJS](http://expressjs.com/index.html), a MVC framework for Node, and [EJS](https://github.com/visionmedia/ejs), a JavsScript templating engine. To install all dependencies in one command, use the Node Package Manager:
+As for every Node.js application, the installation is straightforward:
 
+    > git clone git://github.com/fzaninotto/uptime.git
     > npm install
+    > node app.js
+
+Adding Checks
+-------------
+
+By default, the web UI runs on port 8082, so just browse to 
+
+    http://localhost:8082/
+
+And you're ready to begin. Create your first check by entering an URL, wait for the first ping, and you'll soon see data flowing through your charts!
 
 Configuring
 -----------
 
-You must configure the connection settings to the MongoDB database.
+Uptime uses [node-config](https://github.com/lorenwest/node-config) to allow YAML configuration and environment support. Here is the default configuration, taken from `config/default.yaml`:
 
-You must also add URIs to check. For now, this must be done directly in the mongo database, using the MongoDB interactive shell `mongo`:
+    mongodb:
+      server:   localhost
+      database: uptime
+      user:     root 
+      password:
 
-    > mongo uptime
-    connecting to: uptime
-    > db.checks.save({ name: 'Google', url: 'http://www.google.com/index.html', maxTime: 1000 })
-    > db.checks.save({ name: 'Yahoo',  url: 'http://www.yahoo.com/', maxTime: 5000})
+    monitor:
+      pollingInterval:        10000      # ten seconds
+      updateInterval:         60000      # one minute
+      qosAggregationInterval: 600000     # ten minutes
+      timeout:                5000       # five seconds
+      pingHistory:            8035200000 # three months
+      http_proxy:      
 
-Running the Uptime Monitor
---------------------------
+    server:
+      port:     8082
 
-Just start the application using the `node` command:
+To modify this configuration, create a `development.yaml` or a `production.yaml` file in the same directory, and override just the settings you need. For instance, to run Uptime on port 80 in production, create a `production.yaml` file as follows:
 
-    > node app.js
+    server:
+      port:     80
 
-As of now, this starts the polling of all checks and the calculation of their quality of service on the past 24 hours.
+License
+-------
+
+Uptime is free to use and distribute, under the MIT license. See the bundled `LICENSE` file for details.
+
+If you like the software, please help improving it by contributing PRs on the [GitHub project](https://github.com/fzaninotto/uptime)!
 
 TODO
 ----
 
-* Keep QoS history in checks (month per month)
-* Add groups API and GUI
-* Cleanup old pings automatically to save disk space
 * Allow email alerts in case of non-availability (not sure if this should be part of the lib)
 * Account for scheduled maintenance (and provide two QoS calculations: with and without scheduled maintenance)
 * Allow for JavaScript execution in the monitored resources by using a headless browser (probably zombie.js)
+* Unit tests
