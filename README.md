@@ -75,6 +75,8 @@ If you like the software, please help improving it by contributing PRs on the [G
 TODO
 ----
 
+* Plugin system to allow extension (check types, action taken on a new event, etc)
+* Decouple monitor and app, to avoid slowdown of checks when the dashboard is heavily browsed
 * Allow email alerts in case of non-availability (not sure if this should be part of the lib)
 * Account for scheduled maintenance (and provide two QoS calculations: with and without scheduled maintenance)
 * Allow for JavaScript execution in the monitored resources by using a headless browser (probably zombie.js)
