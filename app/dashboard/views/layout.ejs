@@ -22,10 +22,8 @@
             <li><a href="<%= route %>/tags">Tags</a></li>
           </ul>
           <ul class="nav pull-right" id="check_summary">
-            <li class="label label-success">Up</li>
-            <li id="all_up" class="green">0</li>
-            <li class="label label-important">Down</li>
-            <li id="all_down" class="red">0</li>
+            <li id="all_up" style="display:none;"><span class="label label-success">Up</span><strong class="green">0</strong></li>
+            <li id="all_down" style="display: none;"><span class="label label-important">Down</span><strong class="red">0</strong></li>
           </ul>
         </div>
       </div>
@@ -43,13 +41,17 @@
     var nbNewEvents = 0;
     $(document).ready(function() {
       var updateCounts = function() {
-        $.getJSON('/api/check', function(checks) {
-          var all_up = all_down = 0;
-          $.each(checks, function(key, check) {
-            if (check.isUp) all_up += 1; else all_down += 1;
-          });
-          $('#all_up').html(all_up);
-          $('#all_down').html(all_down);
+        $.getJSON('/api/check/count', function(count) {
+          if (count.total > 0) {
+            $('#all_up').show().children('strong').text(count.up);
+          } else {
+            $('#all_up').hide();
+          }
+          if (count.down > 0) {
+            $('#all_down').show().children('strong').text(count.down);
+          } else {
+            $('#all_down').hide();
+          }
           if (nbNewEvents > 0) {
             document.title = '(' + nbNewEvents +') Uptime';
           };

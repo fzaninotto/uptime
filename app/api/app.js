@@ -1,7 +1,9 @@
 /**
  * Module dependencies.
  */
-var express = require('express');
+var express    = require('express'),
+    Check      = require('../../models/check')
+    CheckEvent = require('../../models/checkEvent');
 
 var app = module.exports = express.createServer();
 
@@ -10,6 +12,23 @@ var app = module.exports = express.createServer();
 app.configure(function(){
   app.use(app.router);
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+});
+
+// up count
+var upCount;
+var refreshUpCount = function() {
+  Check.count({}, function(err, total) {
+    Check.count({ isUp: true}, function(err, nbUp) {
+      upCount = { up: nbUp, down: total - nbUp, total: total };
+    });
+  });
+}
+
+refreshUpCount();
+CheckEvent.on('new', refreshUpCount);
+
+app.get('/check/count', function(req, res) {
+  res.json(upCount);
 });
 
 // Routes
