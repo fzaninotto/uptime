@@ -38,6 +38,10 @@ h1 {
   margin-bottom: 20px;
 }
 
+div.btn-toolbar {
+  height:20px;
+}
+
 #events ul {
   margin-top: 1em;
   margin-left: 0;
