@@ -1,26 +1,37 @@
 <h1>Tags <small id="last_update"></small></h1>
 <table class="table" id="tags">
   <thead>
-    <tr><th>Name</th><th>Uptime</th><th>Downtime</th><th>Avg. Response time</th></tr>
+    <tr>
+      <th>Name</th>
+      <th title="Percentage of all pings up in the last 24h">Availability</th>
+      <th title="Percentage of all pings below slow threshold in the last 24h">Responsiveness</th>
+      <th title="Total downtime in the last 24h">Downtime</th>
+      <th title="Average response time of all pings in the last 24h">Avg. Response time</th>
+    </tr>
   </thead>
   <tbody></tbody>
-  <tfoot>
-    <tr><td></td><td>Average of all checks<br/>in the last 24h</td><td>Total of all checks<br />in the last 24h</td><td>Average of all checks<br/>in the last 24h</td></tr>
-  </tfoot>
 </table>
 <script src="<%= route %>/javascripts/jquery.timeago.js"></script>
+<script src="<%= route %>/javascripts/jquery.tablesorter.min.js"></script>
 <script src="<%= route %>/javascripts/ejs.min.js"></script>
 <script id="tag_template" type="text/template">
 <tr>
-  <td><a href="{{=  route + '/tag/' + tag.name }}">{{= tag.name }}</a></td>
-  <td>{{= ((tag.ups / tag.count) * 100).toFixed(3) }}%</td>
-  <td>{{= (tag.downtime / 1000).toFixed() }}s</td>
-  <td>{{= Math.round(tag.time / tag.count) }}ms</td>
+  <td data-sort="{{=  tag.name }}"><a href="{{=  route + '/tag/' + tag.name }}">{{= tag.name }}</a></td>
+  <td data-sort="{{= tag.ups / tag.count }}">{{= ((tag.ups / tag.count) * 100).toFixed(3) }}%</td>
+  <td data-sort="{{= tag.responsives / tag.count }}">{{= ((tag.responsives / tag.count) * 100).toFixed(3) }}%</td>
+  <td data-sort="{{= tag.downtime }}">{{= (tag.downtime / 1000).toFixed() }}s</td>
+  <td data-sort="{{= tag.time / tag.count }}">{{= Math.round(tag.time / tag.count) }}ms</td>
 </tr>
 </script>
 <script>
 jQuery(document).ready(function($) {
   $('.navbar-inner li').eq(2).addClass('active');
+  $('#tags').tablesorter({
+    textExtraction: function(node) {
+      return $(node).data('sort');
+    },
+    sortList: [[0,0]]
+  });
   $.timeago.settings.strings.suffixAgo = null;
   var tag_template = document.getElementById('tag_template').innerHTML;
   var ejs = require('ejs');
@@ -35,10 +46,11 @@ jQuery(document).ready(function($) {
         lastUpdated = tag.lastUpdated;
       });
       $('#tags tbody').html(lines.join(''));
+      $('#tags').trigger('update');
       $('#last_update').text('Last updated on ' + lastUpdated.toLocaleString());
     });
   }
   updateTags();
-  window.setInterval(updateTags, 5000);
+  window.setInterval(updateTags, 5 * 60 * 1000); // refresh every 5 minutes to update the qos scores
 });
 </script>
