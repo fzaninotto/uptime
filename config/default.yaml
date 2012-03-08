@@ -5,12 +5,14 @@ mongodb:
   password:
 
 monitor:
+  checkProviderUrl:       'http://localhost:8082/api/check/needingPoll'
+  pingCreatorUrl:         'http://localhost:8082/ping'
   pollingInterval:        10000      # ten seconds
   updateInterval:         60000      # one minute
   qosAggregationInterval: 600000     # ten minutes
   timeout:                5000       # five seconds
   pingHistory:            8035200000 # three months
-  http_proxy:      
+  proxy:      
 
 server:
   port:     8082

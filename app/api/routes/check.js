@@ -14,20 +14,26 @@ var CheckMonthlyStat = require('../../../models/checkMonthlyStat');
 module.exports = function(app) {
   
   app.get('/check', function(req, res) {
-    Check.find({}).asc('isUp').desc('lastChanged').exclude('qosPerHour').run(function(err, checks) {
+    Check.find({}).asc('isUp').desc('lastChanged').run(function(err, checks) {
+      res.json(checks);
+    });
+  });
+
+  app.get('/check/needingPoll', function(req, res) {
+    Check.needingPoll().exclude('qos').run(function(err, checks) {
       res.json(checks);
     });
   });
 
   app.get('/check/tag/:name', function(req, res, next) {
-    Check.find({ tags: req.params.name }).asc('isUp').desc('lastChanged').exclude('qosPerHour').find(function(err, checks) {
+    Check.find({ tags: req.params.name }).asc('isUp').desc('lastChanged').find(function(err, checks) {
       if (err) return next(err);
       res.json(checks);
     });
   });
   
   app.get('/check/:id', function(req, res, next) {
-    Check.find({ _id: req.params.id }).exclude('qosPerHour').findOne(function(err, check) {
+    Check.find({ _id: req.params.id }).exclude('qos').findOne(function(err, check) {
       if (err) return next(err);
       if (!check) return next(new Error('failed to load check ' + req.params.id));
       res.json(check);
@@ -35,7 +41,7 @@ module.exports = function(app) {
   });
 
   app.get('/check/:id/stats/:type/:page?', function(req, res) {
-    Check.find({ _id: req.params.id }).exclude('qosPerHour').findOne(function(err, check) {
+    Check.find({ _id: req.params.id }).exclude('qos').findOne(function(err, check) {
       if (err) return next(err);
       if (!check) return next(new Error('failed to load check ' + req.params.id));
       check.getStatsForPeriod(req.params.type, req.params.page, function(stats) {

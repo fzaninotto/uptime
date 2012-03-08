@@ -14,10 +14,7 @@ mongoose.connect('mongodb://' + config.mongodb.user + ':' + config.mongodb.passw
 
 // see if a check needs a new poll every 10 seconds
 // and update the QoS score every minute
-m = monitor.createMonitor(config.monitor.pollingInterval, config.monitor.updateInterval, config.monitor.qosAggregationInterval, config.monitor.timeout, config.monitor.pingHistory);
-if (config.monitor.http_proxy) {
-  m.proxy = config.monitor.http_proxy;
-}
+m = monitor.createMonitor(config.monitor);
 m.start();
 
 var app = module.exports = express.createServer();

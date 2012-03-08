@@ -155,9 +155,13 @@ Check.statics.convertTags = function(tags) {
  * @api   public
  */
 Check.statics.callForChecksNeedingPoll = function(callback) {
-  this.find().$where(function() {
+  this.needingPoll().each(callback);
+}
+
+Check.statics.needingPoll = function() {
+  return this.$where(function() {
     return !this.lastTested || (Date.now() - this.lastTested.getTime()) > (this.interval || 60000);
-  }).each(callback);
+  });
 }
 
 Check.statics.updateAllQos = function(callback) {

@@ -22,7 +22,6 @@ Ping.methods.findCheck = function(callback) {
 }
 
 Ping.statics.createForCheck = function(check, status, time, error, callback) {
-  check.setLastTest(status).save();
   ping = new this();
   ping.check = check;
   ping.tags = check.tags;
@@ -37,7 +36,9 @@ Ping.statics.createForCheck = function(check, status, time, error, callback) {
     ping.downtime = check.interval || 60000;
     ping.error = error;
   };
-  ping.save(callback);
+  ping.save(function(err) {
+    callback(err, ping);
+  });
 }
 
 var mapCheckAndTags = function() {

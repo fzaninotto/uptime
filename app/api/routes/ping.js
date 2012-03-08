@@ -29,4 +29,20 @@ module.exports = function(app) {
     });
   });
 
+  app.put('/ping', function(req, res) {
+    Check.findById(req.body.checkId, function(err1, check) {
+      if (err1) {
+        res.send(err1.message, 500);
+        return;
+      };
+      Ping.createForCheck(check, req.body.status, req.body.time, req.body.error, function(err2, ping) {
+        if (err2) {
+          res.send(err2.message, 500);
+          return;
+        }
+        res.json(ping);
+      });
+    })
+  });
+
 };
