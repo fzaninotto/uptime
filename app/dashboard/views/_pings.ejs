@@ -48,12 +48,13 @@ $(document).ready(function() {
     });
   };
   interval = window.setInterval(updatePings, 10000);
-  $('#autoupdate').button('toggle').click(function() {
+  $('#autoupdate').button('toggle').click(function(e) {
     if (interval) {
       window.clearInterval(interval);
     } else {
       interval = window.setInterval(updatePings, 10000);
     }
+    e.preventDefault();
   });
   handlePagination('ping', '#pings', updatePings);
 });
