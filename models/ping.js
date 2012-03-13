@@ -11,6 +11,7 @@ var Ping = new Schema({
   , time         : Number
   , check        : Schema.ObjectId
   , tags         : [String]
+  , monitorName  : String
   // for pings in error, more details need to be persisted
   , downtime     : Number   // time since last ping if the ping is down
   , error        : String
@@ -21,23 +22,30 @@ Ping.methods.findCheck = function(callback) {
   return this.db.model('Check').findById(this.check, callback);
 }
 
-Ping.statics.createForCheck = function(check, status, time, error, callback) {
+Ping.statics.createForCheck = function(status, time, check, monitorName, error, callback) {
+  var timestamp = new Date();
   ping = new this();
-  ping.check = check;
-  ping.tags = check.tags;
+  ping.timestamp = timestamp;
   ping.isUp = status;
-  ping.time = time;
   if (status && check.maxTime) {
     ping.isResponsive = time < check.maxTime;
   } else {
     ping.isResponsive = false;
   }
+  ping.time = time;
+  ping.check = check;
+  ping.tags = check.tags;
+  ping.monitorName = monitorName;
   if (!status) {
     ping.downtime = check.interval || 60000;
     ping.error = error;
   };
   ping.save(function(err) {
     callback(err, ping);
+    if (!err) {
+      check.setLastTest(status, timestamp);
+      check.save();
+    };
   });
 }
 

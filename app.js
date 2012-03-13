@@ -12,10 +12,10 @@ var mongoose   = require('mongoose'),
 // configure mongodb
 mongoose.connect('mongodb://' + config.mongodb.user + ':' + config.mongodb.password + '@' + config.mongodb.server +'/' + config.mongodb.database);
 
-// see if a check needs a new poll every 10 seconds
-// and update the QoS score every minute
-m = monitor.createMonitor(config.monitor);
-m.start();
+if (config.autoStartMonitor) {
+  m = monitor.createMonitor(config.monitor);
+  m.start();
+}
 
 var app = module.exports = express.createServer();
 

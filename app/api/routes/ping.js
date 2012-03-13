@@ -29,16 +29,18 @@ module.exports = function(app) {
     });
   });
 
-  app.put('/ping', function(req, res) {
+  app.post('/ping', function(req, res) {
     Check.findById(req.body.checkId, function(err1, check) {
       if (err1) {
-        res.send(err1.message, 500);
-        return;
+        return res.send(err1.message, 500);
       };
-      Ping.createForCheck(check, req.body.status, req.body.time, req.body.error, function(err2, ping) {
+      if (!check.needsPoll) {
+        return res.send('Error: This check was already polled. No ping was created', 403);
+      };
+      var status = req.body.status === 'true';
+      Ping.createForCheck(status, req.body.time, check, req.body.name, req.body.error, function(err2, ping) {
         if (err2) {
-          res.send(err2.message, 500);
-          return;
+          return res.send(err2.message, 500);
         }
         res.json(ping);
       });

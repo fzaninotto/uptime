@@ -51,8 +51,13 @@ Check.methods.removeStats = function(callback) {
   ], callback);
 };
 
-Check.methods.setLastTest = function(status) {
-  var now = new Date();
+Check.methods.needsPoll = function() {
+  return !this.lastTested || (Date.now() - this.lastTested.getTime()) > (this.interval || 60000);
+}
+
+Check.methods.setLastTest = function(status, time) {
+  var now = time ? new Date(time) : new Date();
+  this.lastTested = now;
   if (this.isUp != status) {
     var event = new CheckEvent({
       timestamp: now,

@@ -48,15 +48,19 @@ Uptime uses [node-config](https://github.com/lorenwest/node-config) to allow YAM
       database: uptime
       user:     root 
       password:
-
+    
     monitor:
+      name:                   origin
+      apiUrl:                 'http://localhost:8082/api'
       pollingInterval:        10000      # ten seconds
       updateInterval:         60000      # one minute
       qosAggregationInterval: 600000     # ten minutes
       timeout:                5000       # five seconds
       pingHistory:            8035200000 # three months
       http_proxy:      
-
+    
+    autoStartMonitor: true
+    
     server:
       port:     8082
 
@@ -64,6 +68,20 @@ To modify this configuration, create a `development.yaml` or a `production.yaml`
 
     server:
       port:     80
+
+Running The Monitor In a Separate Process
+-----------------------------------------
+
+Heavily browsing the web dashboard may slow down the server - including the polling monitor. In other terms, using the application can influence the uptime measurements. To avoid this effect, it is recommended to run the polling monitor in a separate process.
+
+To that extent, set the `autoStartMonitor` setting to `false` in the `production.yaml`, and launch the monitor by hand:
+
+    > node monitor.js &
+    > node app.js
+
+You can also run the monitor in a different server. This second server must be able to reach the API of the dashboard server: set the `monitor.apiUrl` setting accordingly in the `production.yaml` file of the monitor server.
+
+You can even run several monitor servers in several datacenters to get average response time. In that case, make sure you set a different `monitor.name` setting for all monitor servers to be able to tell which server make a particular ping.
 
 License
 -------
@@ -76,7 +94,6 @@ TODO
 ----
 
 * Plugin system to allow extension (check types, action taken on a new event, etc)
-* Decouple monitor and app, to avoid slowdown of checks when the dashboard is heavily browsed
 * Allow email alerts in case of non-availability (not sure if this should be part of the lib)
 * Account for scheduled maintenance (and provide two QoS calculations: with and without scheduled maintenance)
 * Allow for JavaScript execution in the monitored resources by using a headless browser (probably zombie.js)
