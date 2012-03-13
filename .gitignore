@@ -1,4 +1,5 @@
 config/development.yaml
+config/runtime.json
 node_modules
 npm-debug.log
 *.swp
