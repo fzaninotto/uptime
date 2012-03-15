@@ -18,7 +18,6 @@ $(document).ready(function() {
   ejs.close = '}}';
   var updateEvents = function() {
     $.getJSON('<%= url %>', function(events) {
-      console.log(events);
       if ($.isEmptyObject(events)) {
         $('#events').html('<p>Nothing happened lately. All Green!</p>');
         return;
