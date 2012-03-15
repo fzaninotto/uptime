@@ -6,7 +6,7 @@ var mongoose = require('mongoose'),
 
 // main model
 var CheckHourlyStat = new Schema({
-    check       : Schema.ObjectId
+    check       : { type: Schema.ObjectId, ref: 'Check' }
   , timestamp   : Date
   , count       : Number
   , ups         : Number
@@ -15,6 +15,7 @@ var CheckHourlyStat = new Schema({
   , downtime    : Number
 });
 CheckHourlyStat.index({ check: 1, timestamp: -1 }, { unique: true });
+CheckHourlyStat.plugin(require('../lib/lifecycleEventsPlugin'), 'CheckHourlyStat');
 
 var mapCheck = function() {
   var qos = { count: this.count, ups: this.ups , responsives: this.responsives, time: this.time, downtime: this.downtime };

@@ -25,7 +25,7 @@ var refreshUpCount = function() {
 }
 
 refreshUpCount();
-CheckEvent.on('new', refreshUpCount);
+CheckEvent.on('insert', refreshUpCount);
 
 app.get('/check/count', function(req, res) {
   res.json(upCount);

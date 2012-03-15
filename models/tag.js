@@ -18,6 +18,7 @@ var Tag = new Schema({
   , downtime    : Number
 });
 Tag.index({ name: 1 }, { unique: true });
+Tag.plugin(require('../lib/lifecycleEventsPlugin'), 'Tag');
 
 Tag.methods.getChecks = function(callback) {
   var Check   = require('./check')

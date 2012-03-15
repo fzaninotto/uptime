@@ -10,6 +10,11 @@ var CheckEvent = new Schema({
   , downtime    : Number
 });
 CheckEvent.index({ check: 1, timestamp: -1 });
+CheckEvent.plugin(require('../lib/lifecycleEventsPlugin'), 'CheckEvent');
+
+CheckEvent.methods.findCheck = function(callback) {
+  return this.db.model('Check').findById(this.check, callback);
+}
 
 CheckEvent.statics.aggregateEventsByDay = function(events) {
   var currentDay;
@@ -30,10 +35,5 @@ CheckEvent.statics.cleanup = function(maxAge, callback) {
   oldestDateToKeep = new Date(Date.now() - (maxAge ||  3 * 31 * 24 * 60 * 60 * 1000));
   this.find({ timestamp: { $lt: oldestDateToKeep } }).remove(callback);
 }
-
-CheckEvent.pre('save', function(next) {
-  this.db.model('CheckEvent').emit('new', this);
-  next();
-});
 
 module.exports = mongoose.model('CheckEvent', CheckEvent);

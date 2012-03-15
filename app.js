@@ -6,6 +6,7 @@ var mongoose   = require('mongoose'),
     express    = require('express'),
     config     = require('config'),
     socketIo   = require('socket.io'),
+    path       = require('path'),
     monitor    = require('./lib/monitor'),
     CheckEvent = require('./models/checkEvent');
 
@@ -57,8 +58,15 @@ io.configure('production', function(){
   io.set('log level', 1);
 });
 
-CheckEvent.on('new', function(event) {
+CheckEvent.on('insert', function(event) {
   io.sockets.emit('CheckEvent', event.toJSON());
+});
+
+// load plugins
+path.exists('./plugins/index.js', function(exists) {
+  if (exists) {
+    require('./plugins').init(app, io, config, mongoose);
+  };
 });
 
 app.listen(config.server.port);

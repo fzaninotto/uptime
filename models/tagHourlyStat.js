@@ -15,6 +15,7 @@ var TagHourlyStat = new Schema({
   , downtime    : Number
 });
 TagHourlyStat.index({ name: 1, timestamp: -1 }, { unique: true });
+TagHourlyStat.plugin(require('../lib/lifecycleEventsPlugin'), 'TagHourlyStat');
 
 var mapTag = function() {
   var qos = { count: this.count, ups: this.ups , responsives: this.responsives, time: this.time, downtime: this.downtime };

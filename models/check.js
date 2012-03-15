@@ -25,6 +25,7 @@ var Check = new Schema({
   , qos         : {}
   , qosPerHour  : {}
 });
+Check.plugin(require('../lib/lifecycleEventsPlugin'), 'Check');
 
 Check.pre('remove', function(next) {
   this.removePings(function() {

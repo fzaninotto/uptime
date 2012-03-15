@@ -83,6 +83,36 @@ You can also run the monitor in a different server. This second server must be a
 
 You can even run several monitor servers in several datacenters to get average response time. In that case, make sure you set a different `monitor.name` setting for all monitor servers to be able to tell which server make a particular ping.
 
+Using Plugins
+-------------
+
+Uptime provides plugins that you can enable to add more functionality.
+
+To enable plugins, create a `plugins/index.js` module. This module must offer a public `init()` method, where you will require and initialize plugin modules. For instance, to enable only the `console` plugin:
+
+    // in plugins/index.js
+    exports.init = function() {
+      require('./console').init();
+    }
+
+Currently supported plugins:
+
+ * `console`: log pings and events in the console in real time
+
+You can add your own plugins under the `plugins` directory. A plugin is simply a module with a public `init()` method. For instance, if you had to recreate a simple version of the `console` plugin, you could write it as follows:
+
+    // in plugins/console/index.js
+    var CheckEvent = require('../../models/checkEvent');
+    exports.init = function() {
+      CheckEvent.on('insert', function(checkEvent) {
+        checkEvent.findCheck(function(err, check) {
+          console.log(new Date() + check.name + checkEvent.isGoDown ? ' goes down' : ' goes back up');
+        });
+      });
+    }
+
+All Uptime entities emit lifecycle events that you can listen to on the Model class. These events are 'save', 'insert', 'update', and 'remove'.
+
 License
 -------
 
@@ -93,7 +123,6 @@ If you like the software, please help improving it by contributing PRs on the [G
 TODO
 ----
 
-* Plugin system to allow extension (check types, action taken on a new event, etc)
 * Allow email alerts in case of non-availability (not sure if this should be part of the lib)
 * Account for scheduled maintenance (and provide two QoS calculations: with and without scheduled maintenance)
 * Allow for JavaScript execution in the monitored resources by using a headless browser (probably zombie.js)

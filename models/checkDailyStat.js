@@ -3,7 +3,7 @@ var mongoose = require('mongoose'),
 
 // main model
 var CheckDailyStat = new Schema({
-    check       : Schema.ObjectId
+    check       : { type: Schema.ObjectId, ref: 'Check' }
   , timestamp   : Date
   , count       : Number
   , ups         : Number
@@ -12,5 +12,6 @@ var CheckDailyStat = new Schema({
   , downtime    : Number
 });
 CheckDailyStat.index({ check: 1, timestamp: -1 }, { unique: true });
+CheckDailyStat.plugin(require('../lib/lifecycleEventsPlugin'), 'CheckDailyStat');
 
 module.exports = mongoose.model('CheckDailyStat', CheckDailyStat);

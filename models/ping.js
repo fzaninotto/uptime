@@ -9,7 +9,7 @@ var Ping = new Schema({
   , isUp         : Boolean  // false if ping returned a non-OK status code or timed out
   , isResponsive : Boolean  // true if the ping time is less than the check max time 
   , time         : Number
-  , check        : Schema.ObjectId
+  , check        : { type: Schema.ObjectId, ref: 'Check' }
   , tags         : [String]
   , monitorName  : String
   // for pings in error, more details need to be persisted
@@ -17,6 +17,7 @@ var Ping = new Schema({
   , error        : String
 });
 Ping.index({ timestamp: -1 });
+Ping.plugin(require('../lib/lifecycleEventsPlugin'), 'Ping');
 
 Ping.methods.findCheck = function(callback) {
   return this.db.model('Check').findById(this.check, callback);
