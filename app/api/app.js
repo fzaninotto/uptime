@@ -16,19 +16,25 @@ app.configure(function(){
 
 // up count
 var upCount;
-var refreshUpCount = function() {
+var refreshUpCount = function(callback) {
   Check.count({}, function(err, total) {
     Check.count({ isUp: true}, function(err, nbUp) {
       upCount = { up: nbUp, down: total - nbUp, total: total };
+      callback();
     });
   });
 }
 
-refreshUpCount();
-CheckEvent.on('insert', refreshUpCount);
+CheckEvent.on('insert', function() { upCount = undefined; });
 
 app.get('/check/count', function(req, res) {
-  res.json(upCount);
+  if (upCount) {
+    res.json(upCount);
+  } else {
+    refreshUpCount(function() {
+      res.json(upCount);
+    });
+  }
 });
 
 // Routes
