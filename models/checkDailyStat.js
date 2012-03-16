@@ -12,6 +12,6 @@ var CheckDailyStat = new Schema({
   , downtime    : Number
 });
 CheckDailyStat.index({ check: 1, timestamp: -1 }, { unique: true });
-CheckDailyStat.plugin(require('../lib/lifecycleEventsPlugin'), 'CheckDailyStat');
+CheckDailyStat.plugin(require('../lib/lifecycleEventsPlugin'));
 
 module.exports = mongoose.model('CheckDailyStat', CheckDailyStat);

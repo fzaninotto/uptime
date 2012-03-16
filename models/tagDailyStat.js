@@ -12,6 +12,6 @@ var TagDailyStat = new Schema({
   , downtime    : Number
 });
 TagDailyStat.index({ name: 1, timestamp: -1 }, { unique: true });
-TagDailyStat.plugin(require('../lib/lifecycleEventsPlugin'), 'TagDailyStat');
+TagDailyStat.plugin(require('../lib/lifecycleEventsPlugin'));
 
 module.exports = mongoose.model('TagDailyStat', TagDailyStat);
