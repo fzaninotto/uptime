@@ -44,8 +44,9 @@ $(document).ready(function() {
   var updateLast24h = function() {
     $.getJSON('/api/check/<%= check._id %>', function(check) {
       var html = '<span class="label ' + (check.isUp ? 'label-success' : 'label-important') + '">' +  (check.isUp ? 'Up' : 'Down') +'</span>'
-      html += '<span class="' + (check.isUp ? 'green' : 'red' ) + '"> for ' + $.timeago.inWords(check.isUp ? check.uptime : check.downtime) + '</span>';
+      html += '<span class="' + (check.isUp ? 'green' : 'red' ) + '"> for <span class="timeago" title="' + check.lastChanged + '"></span></span>';
       $('#check_24h').html(html);
+      $('#check_24h .timeago').timeago();
     });
   };
   socket.on('CheckEvent', updateLast24h);
