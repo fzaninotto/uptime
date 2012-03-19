@@ -32,12 +32,13 @@ app.configure(function(){
   app.use(express.session({ secret: 'qdfegsgkjhflkquhfskqdjfhskjdfh' }));
 });
 
-app.configure('development', function(){
+app.configure('development', function() {
+  if (config.verbose) mongoose.set('debug', true);
   app.use(express.static(__dirname + '/public'));
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
-app.configure('production', function(){
+app.configure('production', function() {
   var oneYear = 31557600000;
   app.use(express.static(__dirname + '/public', { maxAge: oneYear }));
   app.use(express.errorHandler());
@@ -53,9 +54,13 @@ app.get('/', function(reaq, res) {
 // Sockets
 var io = socketIo.listen(app);
 
-io.configure('production', function(){
+io.configure('production', function() {
   io.enable('browser client etag');
   io.set('log level', 1);
+});
+
+io.configure('development', function() {
+  if (!config.verbose) io.set('log level', 1);
 });
 
 CheckEvent.on('insert', function(event) {

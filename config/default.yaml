@@ -18,3 +18,5 @@ autoStartMonitor: true
 
 server:
   port:     8082
+
+verbose: true # only used in dev

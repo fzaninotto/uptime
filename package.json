@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "mongoose":  "2.3.13",
+    "mongoose":  "latest",
     "express":   "2.5.0",
     "ejs":       "0.6.1",
     "config":    "0.4.11",
