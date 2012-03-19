@@ -40,17 +40,18 @@ module.exports = function(app) {
     });
   });
 
-  app.get('/check/:id/stats/:type/:page?', function(req, res) {
+  app.get('/check/:id/stats/:type/:page?', function(req, res, next) {
     Check.find({ _id: req.params.id }).exclude('qos').findOne(function(err, check) {
       if (err) return next(err);
       if (!check) return next(new Error('failed to load check ' + req.params.id));
-      check.getStatsForPeriod(req.params.type, req.params.page, function(stats) {
+      check.getStatsForPeriod(req.params.type, req.params.page, function(err, stats) {
+        if(err) return next(err);
         res.json(stats);
       });
     });
   });
   
-  app.get('/check/:id/events', function(req, res) {
+  app.get('/check/:id/events', function(req, res, next) {
     CheckEvent.find({ check: req.params.id, timestamp: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} }).desc('timestamp').populate('check').run(function(err, events) {
       if (err) return next(err);
       res.json(CheckEvent.aggregateEventsByDay(events));

@@ -115,6 +115,9 @@ var statProvider = {
 
 Check.methods.getStatsForPeriod = function(period, page, callback) {
   var boundary = TimeCalculator.boundaryFunction[period];
+  if (typeof boundary == 'undefined') {
+    return callback(new Error('unknown period type ' + period));
+  }
   var stats = [];
   var query = { check: this, timestamp: { $gte: boundary(page), $lte: boundary(page - 1) } };
   this.db.model(statProvider[period]).find(query).asc('timestamp').each(function(err, stat) {
@@ -139,7 +142,7 @@ Check.methods.getStatsForPeriod = function(period, page, callback) {
         });
       };
     } else {
-      callback(stats);
+      callback(null, stats);
     }
   });
 }
