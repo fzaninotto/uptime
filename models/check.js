@@ -28,13 +28,7 @@ var Check = new Schema({
 Check.plugin(require('../lib/lifecycleEventsPlugin'));
 
 Check.pre('remove', function(next) {
-  this.removePings(function() {
-    next();
-  });
-});
-
-Check.pre('remove', function(next) {
-  this.removeStats(function() {
+  async.parallel([this.removePings.bind(this), this.removeEvents.bind(this), this.removeStats.bind(this)], function() {
     next();
   });
 });
@@ -42,6 +36,10 @@ Check.pre('remove', function(next) {
 Check.methods.removePings = function(callback) {
   Ping.find({ check: this._id }).remove(callback);
 };
+
+Check.methods.removeEvents = function(callback) {
+  CheckEvent.find({ check: this._id }).remove(callback);
+}
 
 Check.methods.removeStats = function(callback) {
   var self = this;
@@ -224,7 +222,11 @@ Check.methods.getStatsForPeriod = function(period, page, callback) {
 
 Check.statics.convertTags = function(tags) {
   if (typeof(tags) === 'string') {
-    tags = tags.replace(/\s*,\s*/g, ',').split(',');
+    if (tags) {
+      tags = tags.replace(/\s*,\s*/g, ',').split(',');
+    } else {
+      tags = [];
+    }
   }
   return tags;
 }
