@@ -18,8 +18,8 @@
       <div class="control-group">
         <label class="control-label">Polling interval</label>
         <div class="controls">
-          <input type="text" name="check[interval]" value="<%= check.interval %>" class="span2" />
-          <span class="help-inline">ms</span>
+          <input type="text" name="check[interval]" value="<%= (check.interval / 1000).toFixed() %>" class="span2" />
+          <span class="help-inline">s</span>
         </div>
       </div>
       <div class="control-group">
@@ -59,15 +59,14 @@
 <script>
 var intervalFieldSelector = 'form input[name="check\\[interval\\]"]';
 function updatePollingIntervalTooltip() {
-  var value = $(intervalFieldSelector).val() / 1000;
+  var value = $(intervalFieldSelector).val();
   if (value > 60 ) {
     value = (value / 60).toFixed();
     unit = 'minute' + (value > 1 ? 's' : '');
+    $(intervalFieldSelector + ' + span').html('s (' + value + ' ' + unit + ')');
   } else {
-    value = value.toFixed();
-    unit = 'second' + (value > 1 ? 's' : '');
+    $(intervalFieldSelector + ' + span').html('s');
   }
-  $(intervalFieldSelector + ' + span').html('ms (' + value + ' ' + unit + ')');
 }
 $(document).ready(function() {
   $('#check_form button[name="delete"]').click(function() {

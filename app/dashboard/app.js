@@ -42,6 +42,7 @@ app.get('/check', function(req, res) {
 app.post('/check', function(req, res) {
   var check = new Check(req.body.check);
   check.tags = Check.convertTags(req.body.check.tags);
+  check.interval = req.body.check.interval * 1000;
   check.save(function(err) {
     req.flash('info', 'New check has been created');
     res.redirect('/check/' + check._id);
@@ -59,6 +60,7 @@ app.get('/check/:id', function(req, res, next) {
 app.put('/check/:id', function(req, res, next) {
   var check = req.body.check;
   check.tags = Check.convertTags(check.tags);
+  check.interval = req.body.check.interval * 1000;
   Check.update({ _id: req.params.id }, { $set: check }, { upsert: true }, function(err) {
     if (err) return next(err);
     req.flash('info', 'Changes have been saved');
