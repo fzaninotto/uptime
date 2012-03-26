@@ -89,6 +89,81 @@ Check.methods.getQosPercentage = function() {
   return (this.qos.ups / this.qos.count) * 100;
 }
 
+Check.methods.updateUptime = function(callback) {
+  var self = this;
+  Ping
+  .findOne()
+  .where('check', self)
+  .desc('timestamp')
+  .run(function(err, latestPing) {
+    if (err) return callback(err);
+    if (!latestPing) return;
+    self.lastTested = latestPing.timestamp;
+    self.isUp = latestPing.isUp;
+    if (latestPing.isUp) {
+      // check is up
+      // lastChanged is the latest down ping
+      self.downtime = 0;
+      Ping
+      .findOne()
+      .where('check', self)
+      .where('isUp', false)
+      .where('timestamp').$lt(latestPing.timestamp)
+      .desc('timestamp')
+      .run(function(err, latestDownPing) {
+        if (err) return callback(err);
+        if (latestDownPing) {
+          self.lastChanged = latestDownPing.timestamp;
+          self.uptime = latestPing.timestamp.getTime() - latestDownPing.timestamp.getTime();
+          self.save(callback);
+        } else {
+          // check never went down, last changed is the date of the first ping
+          Ping
+          .findOne()
+          .where('check', self)
+          .asc('timestamp')
+          .run(function(err, firstPing) {
+            if (err) return callback(err);
+            self.lastChanged = firstPing.timestamp;
+            self.uptime = latestPing.timestamp.getTime() - firstPing.timestamp.getTime();
+            self.save(callback);
+          });
+        }
+      });
+    } else {
+      // check is down
+      // lastChanged is the latest up ping
+      self.uptime = 0;
+      Ping
+      .findOne()
+      .where('check', self)
+      .where('isUp', true)
+      .where('timestamp').$lt( latestPing.timestamp)
+      .desc('timestamp')
+      .run(function(err, latestUpPing) {
+        if (err) return callback(err);
+        if (latestUpPing) {
+          self.lastChanged = latestUpPing.timestamp;
+          self.downtime = latestPing.timestamp.getTime() - latestUpPing.timestamp.getTime();
+          self.save(callback);
+        } else {
+          // check never went up, last changed is the date of the first ping
+          Ping
+          .findOne()
+          .where('check', self)
+          .asc('timestamp')
+          .run(function(err, firstPing) {
+            if (err) return callback(err);
+            self.lastChanged = firstPing.timestamp;
+            self.downtime = latestPing.timestamp.getTime() - firstPing.timestamp.getTime();
+            self.save(callback);
+          });
+        }
+      });
+    }
+  });
+}
+
 Check.methods.updateQos = function(callback) {
   var check = this;
   Ping.countForCheck(check, new Date(Date.now() - (24 * 60 * 60 * 1000)), new Date(), function(err, result) {

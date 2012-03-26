@@ -18,6 +18,13 @@ var emptyStats = function(callback) {
   });
 }
 
+var updateUptime = function(callback) {
+  console.log('Updating uptime');
+  Check.find({}, function(err, checks) {
+    async.forEach(checks, function(check, cb) { check.updateUptime(cb); }, callback);
+  });
+}
+
 var updateLastHourQos = function(callback) {
   console.log('Updating last hour Qos for all checks');
   async.series([
@@ -88,7 +95,7 @@ var updateMonthlyQosSinceTheFirstPing = function(callback) {
   });
 }
 
-async.series([emptyStats, updateLastHourQos, updateHourlyQosSinceTheFirstPing, updateDailyQosSinceTheFirstPing, updateMonthlyQosSinceTheFirstPing], function(err) {
+async.series([emptyStats, updateUptime, updateLastHourQos, updateHourlyQosSinceTheFirstPing, updateDailyQosSinceTheFirstPing, updateMonthlyQosSinceTheFirstPing], function(err) {
   if (err) {
     console.dir(err);
   } else {
