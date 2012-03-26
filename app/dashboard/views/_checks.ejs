@@ -20,11 +20,19 @@
     <a href="{{=  route + '/check/' + check._id }}">{{= check.name }}</a>
     <a href="{{= check.url }}" target="_blank"><img src="{{= route }}/images/external-link-ltr-icon.png"></a>
   </td>
+  {{ if (check.lastTested) { }}
   <td data-sort="{{= check.isUp ? check.uptime : -check.downtime }}"><span class="label {{= (check.isUp ? 'label-success' : 'label-important') }}">{{= (check.isUp ? 'Up' : 'Down') }}</span> <span class="{{= check.isUp ? 'green' : 'red' }}"> for <span class="timeago" title="{{= check.lastChanged }}"></span></span>
   <td data-sort="{{= check.qos ? check.qos.ups / check.qos.count : 100 }}">{{= check.qos ? ((check.qos.ups / check.qos.count) * 100).toFixed(3) : '' }}%</td>
   <td data-sort="{{= check.qos ? check.qos.responsives / check.qos.count : 100 }}">{{= check.qos ? ((check.qos.responsives / check.qos.count) * 100).toFixed(3) : '' }}%</td>
   <td data-sort="{{= check.qos ? check.qos.downtime : 0 }}">{{= check.qos ? (check.qos.downtime / 1000).toFixed() : '' }}s</td>
   <td data-sort="{{= check.qos ? check.qos.time / check.qos.count : 0 }}">{{= check.qos ? Math.round(check.qos.time / check.qos.count) : '' }}ms</td>
+  {{ } else { }}
+  <td data-sort="0"><span class="label label-important">down</span> <span class="label label-warning">new</span></td>
+  <td data-sort="0">-</td>
+  <td data-sort="0">-</td>
+  <td data-sort="0">-</td>
+  <td data-sort="0">-</td>
+  {{ } }}
 </tr>
 </script>
 <script>
@@ -43,13 +51,19 @@ jQuery(document).ready(function($) {
   var updateChecks = function() {
     $.getJSON('<%= url %>', function(checks) {
       var lines = [];
+      var lastTest = 0;
       $.each(checks, function(key, check) {
+        if (new Date(check.lastTested) > lastTest) {
+          lastTest = new Date(check.lastTested);
+        }
         lines.push(ejs.render(check_template, { check: check, route: '<%= route %>' }));
       });
       $('#checks tbody').html(lines.join(''));
       $('#checks').trigger('update');
       $('#checks .timeago').timeago();
-      $('#last_update').text('Last updated on ' + new Date().toLocaleString());
+      if (lastTest) {
+        $('#last_update').text('Last updated on ' + new Date(lastTest).toLocaleString());
+      }
     });
   }
   updateChecks();

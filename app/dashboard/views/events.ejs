@@ -14,8 +14,9 @@
 $(document).ready(function() {
   $('.navbar-inner li').eq(0).addClass('active');
   $.getJSON('/api/check/count', function(nbChecks) {
-    if (nbChecks == 0) {
+    if (nbChecks.total == 0) {
       $('#events').hide();
+      $('h1').hide();
       $('#welcome').show();
     };
   });
