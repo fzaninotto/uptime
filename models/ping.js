@@ -74,10 +74,10 @@ Ping.statics.updateHourlyQos = function(now, callback) {
       var stat = result.value;
       if (result._id.substr) {
         // the key is a string, so it's a tag
-        TagHourlyStat.update({ name: result._id, timestamp: end }, { $set: { count: stat.count, ups: stat.ups, responsives: stat.responsives, time: stat.time, downtime: stat.downtime } }, { upsert: true }, cb);
+        TagHourlyStat.update({ name: result._id, timestamp: start }, { $set: { count: stat.count, ups: stat.ups, responsives: stat.responsives, time: stat.time, downtime: stat.downtime } }, { upsert: true }, cb);
       } else {
         // the key is a check
-        CheckHourlyStat.update({ check: result._id, timestamp: end }, { $set: { count: stat.count, ups: stat.ups, responsives: stat.responsives, time: stat.time, downtime: stat.downtime } }, { upsert: true }, cb);
+        CheckHourlyStat.update({ check: result._id, timestamp: start }, { $set: { count: stat.count, ups: stat.ups, responsives: stat.responsives, time: stat.time, downtime: stat.downtime } }, { upsert: true }, cb);
       }
     }, callback);
   });

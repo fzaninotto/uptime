@@ -34,7 +34,7 @@ TagHourlyStat.statics.updateDailyQos = function(now, callback) {
     if (err) return;
     async.forEach(results, function(result, cb) {
       var stat = result.value;
-      TagDailyStat.update({ name: result._id, timestamp: end }, { $set: { count: stat.count, ups: stat.ups, responsives: stat.responsives, time: stat.time, downtime: stat.downtime } }, { upsert: true }, cb);
+      TagDailyStat.update({ name: result._id, timestamp: start }, { $set: { count: stat.count, ups: stat.ups, responsives: stat.responsives, time: stat.time, downtime: stat.downtime } }, { upsert: true }, cb);
     }, callback);
   });
 }
@@ -56,7 +56,7 @@ TagHourlyStat.statics.updateMonthlyQos = function(now, callback) {
     if (err) return;
     async.forEach(results, function(result, cb) {
       var stat = result.value;
-      TagMonthlyStat.update({ name: result._id, timestamp: end }, { $set: { count: stat.count, ups: stat.ups, responsives: stat.responsives, time: stat.time, downtime: stat.downtime } }, { upsert: true }, cb);
+      TagMonthlyStat.update({ name: result._id, timestamp: start }, { $set: { count: stat.count, ups: stat.ups, responsives: stat.responsives, time: stat.time, downtime: stat.downtime } }, { upsert: true }, cb);
     }, callback);
   });
 }

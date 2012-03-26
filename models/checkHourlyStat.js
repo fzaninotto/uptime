@@ -34,7 +34,7 @@ CheckHourlyStat.statics.updateDailyQos = function(now, callback) {
     if (err) return;
     async.forEach(results, function(result, cb) {
       var stat = result.value;
-      CheckDailyStat.update({ check: result._id, timestamp: end }, { $set: { count: stat.count, ups: stat.ups, responsives: stat.responsives, time: stat.time, downtime: stat.downtime } }, { upsert: true }, cb);
+      CheckDailyStat.update({ check: result._id, timestamp: start }, { $set: { count: stat.count, ups: stat.ups, responsives: stat.responsives, time: stat.time, downtime: stat.downtime } }, { upsert: true }, cb);
     }, callback);
   });
 }
@@ -56,7 +56,7 @@ CheckHourlyStat.statics.updateMonthlyQos = function(now, callback) {
     if (err) return;
     async.forEach(results, function(result, cb) {
       var stat = result.value;
-      CheckMonthlyStat.update({ check: result._id, timestamp: end }, { $set: { count: stat.count, ups: stat.ups, responsives: stat.responsives, time: stat.time, downtime: stat.downtime } }, { upsert: true }, cb);
+      CheckMonthlyStat.update({ check: result._id, timestamp: start }, { $set: { count: stat.count, ups: stat.ups, responsives: stat.responsives, time: stat.time, downtime: stat.downtime } }, { upsert: true }, cb);
     }, callback);
   });
 }
