@@ -21,8 +21,8 @@ var createFixtureChecks = function(callback) {
     function(cb) { createDummyCheck(99.95, 'Top Quality', ['good', 'all'], cb); },
     function(cb) { createDummyCheck(99.85, 'Good Quality', ['good', 'all'], cb); },
     function(cb) { createDummyCheck(99, 'Neun und neunzig Luftballons', ['average', 'all'], cb); },
-    function(cb) { createDummyCheck(80, 'My Crappy Site', ['average', 'all'], cb); },
-    function(cb) { createDummyCheck(70, 'The Crappy site I built for Al', ['low', 'all'], cb); },
+    function(cb) { createDummyCheck(80, 'My Unstable Site', ['average', 'all'], cb); },
+    function(cb) { createDummyCheck(70, 'The lousy site I built for Al', ['low', 'all'], cb); },
   ], callback);
 }
 
