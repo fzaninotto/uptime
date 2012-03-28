@@ -5,6 +5,8 @@ A simple remote monitoring utility using Node.js and MongoDB.
 
 <img src="https://github.com/downloads/fzaninotto/uptime/uptime.png" title="Uptime screenshot" />
 
+You can watch a [demo screencast on Vimeo](https://vimeo.com/39302164).
+
 Features
 --------
 
