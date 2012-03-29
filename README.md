@@ -118,7 +118,15 @@ All Uptime entities emit lifecycle events that you can listen to on the Model cl
 License
 -------
 
-Uptime is free to use and distribute, under the MIT license. See the bundled `LICENSE` file for details.
+The Uptime code is free to use and distribute, under the [MIT license](https://raw.github.com/fzaninotto/uptime/master/LICENSE).
+
+Uptime uses third-party libraries:
+ * [NodeJS](http://nodejs.org/), licensed under the [MIT License](https://github.com/joyent/node/blob/master/LICENSE#L5-22),
+ * [Socket.io](http://socket.io/), licensed under the [MIT License](https://github.com/LearnBoost/socket.io/blob/master/Readme.md),
+ * [MongooseJS](http://mongoosejs.com/), licensed under the [MIT License](https://github.com/LearnBoost/mongoose/blob/master/README.md),
+ * [jQuery](http://jquery.com/), licensed under the [MIT License](http://jquery.org/license),
+ * [TwitterBootstrap](http://twitter.github.com/bootstrap/), licensed under the [Apache License v2.0](http://www.apache.org/licenses/LICENSE-2.0),
+ * [Highcharts.js](http://shop.highsoft.com/highcharts.html), free for non-commercial use under the [Creative Commons Attribution-NonCommercial 3.0 License](http://creativecommons.org/licenses/by-nc/3.0/).
 
 If you like the software, please help improving it by contributing PRs on the [GitHub project](https://github.com/fzaninotto/uptime)!
 
