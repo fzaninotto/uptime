@@ -47,7 +47,8 @@ jQuery(document).ready(function($) {
       });
       $('#tags tbody').html(lines.join(''));
       $('#tags').trigger('update');
-      $('#last_update').text('Last updated on ' + lastUpdated.toLocaleString());
+      if( lastUpdated )
+        $('#last_update').text('Last updated on ' + lastUpdated.toLocaleString());
     });
   }
   updateTags();
