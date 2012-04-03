@@ -1,6 +1,7 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema
-    TimeCalculator = require('../lib/timeCalculator');
+    TimeCalculator = require('../lib/timeCalculator'),
+    async    = require('async');
 
 // model dependencies
 var TagHourlyStat  = require('../models/tagHourlyStat');
@@ -19,6 +20,21 @@ var Tag = new Schema({
 });
 Tag.index({ name: 1 }, { unique: true });
 Tag.plugin(require('../lib/lifecycleEventsPlugin'));
+
+Tag.pre('remove', function(next) {
+  this.removeStats(function() {
+    next();
+  });
+});
+
+Tag.methods.removeStats = function(callback) {
+  var self = this;
+  async.parallel([
+    function(cb) { TagHourlyStat.remove({ name: self.name }, cb); },
+    function(cb) { TagDailyStat.remove({ name: self.name }, cb); },
+    function(cb) { TagMonthlyStat.remove({ name: self.name }, cb); }
+  ], callback);
+};
 
 Tag.methods.getChecks = function(callback) {
   var Check   = require('./check')

@@ -34,19 +34,19 @@ Check.pre('remove', function(next) {
 });
 
 Check.methods.removePings = function(callback) {
-  Ping.find({ check: this._id }).remove(callback);
+  Ping.remove({ check: this._id }, callback);
 };
 
 Check.methods.removeEvents = function(callback) {
-  CheckEvent.find({ check: this._id }).remove(callback);
+  CheckEvent.remove({ check: this._id }, callback);
 }
 
 Check.methods.removeStats = function(callback) {
   var self = this;
   async.parallel([
-    function(cb) { CheckHourlyStat.find({ check: self._id }).remove(cb); },
-    function(cb) { CheckDailyStat.find({ check: self._id }).remove(cb); },
-    function(cb) { CheckMonthlyStat.find({ check: self._id }).remove(cb); }
+    function(cb) { CheckHourlyStat.remove({ check: self._id }, cb); },
+    function(cb) { CheckDailyStat.remove({ check: self._id }, cb); },
+    function(cb) { CheckMonthlyStat.remove({ check: self._id }, cb); }
   ], callback);
 };
 
