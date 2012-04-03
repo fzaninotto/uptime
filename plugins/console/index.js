@@ -9,7 +9,7 @@ exports.init = function(enableNewEvents, enableNewPings) {
 };
 
 var registerNewEventsLogger = function() {
-  CheckEvent.on('insert', function(checkEvent) {
+  CheckEvent.on('postInsert', function(checkEvent) {
     checkEvent.findCheck(function(err, check) {
       var message = check.name + ' ';
       message += (checkEvent.isGoDown) ? 'goes down' : ('goes back up after ' + Math.floor(checkEvent.downtime / 1000) + 's of downtime');
@@ -19,7 +19,7 @@ var registerNewEventsLogger = function() {
 };
 
 var registerNewPingsLogger = function() {
-  Ping.on('insert', function(ping) {
+  Ping.on('postInsert', function(ping) {
     ping.findCheck(function(err, check) {
       var message = check.name + ' ';
       message += (ping.isUp) ? color('OK', 'green') : color('responded with error "' + ping.error + '"', 'red');

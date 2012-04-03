@@ -63,7 +63,7 @@ io.configure('development', function() {
   if (!config.verbose) io.set('log level', 1);
 });
 
-CheckEvent.on('insert', function(event) {
+CheckEvent.on('postInsert', function(event) {
   io.sockets.emit('CheckEvent', event.toJSON());
 });
 

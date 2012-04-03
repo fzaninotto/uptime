@@ -106,14 +106,14 @@ You can add your own plugins under the `plugins` directory. A plugin is simply a
     // in plugins/console/index.js
     var CheckEvent = require('../../models/checkEvent');
     exports.init = function() {
-      CheckEvent.on('insert', function(checkEvent) {
+      CheckEvent.on('postInsert', function(checkEvent) {
         checkEvent.findCheck(function(err, check) {
           console.log(new Date() + check.name + checkEvent.isGoDown ? ' goes down' : ' goes back up');
         });
       });
     }
 
-All Uptime entities emit lifecycle events that you can listen to on the Model class. These events are 'save', 'insert', 'update', and 'remove'.
+All Uptime entities emit lifecycle events that you can listen to on the Model class. These events are `preInsert`, `postInsert`, `preUpdate`, `postUpdate`, `preSave` (called for both inserts and updates), `postSave` (called for both inserts and updates), `preRemove`, and `postRemove`.
 
 License
 -------
