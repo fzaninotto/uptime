@@ -13,6 +13,7 @@ var CheckMonthlyStat = require('../models/checkMonthlyStat');
 // main model
 var Check = new Schema({
     name        : String
+  , type        : String
   , url         : String
   , interval    : { type: Number, default: 60000 }  // interval between two pings
   , maxTime     : { type: Number, default: 1500 }   // time under which a ping is considered responsive
@@ -229,6 +230,15 @@ Check.statics.convertTags = function(tags) {
     }
   }
   return tags;
+}
+
+Check.statics.guessType = function(url) {
+  if (url.search(/^http:\/\//) != -1) {
+    return 'http';
+  }
+  if (url.search(/^https:\/\//) != -1) {
+    return 'https';
+  }
 }
 
 /**
