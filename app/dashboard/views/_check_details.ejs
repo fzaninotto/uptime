@@ -75,6 +75,12 @@ $(document).ready(function() {
   });
   updatePollingIntervalTooltip();
   $(intervalFieldSelector).bind('keypress keyup', updatePollingIntervalTooltip);
+  $('#check_form input[name*="url"]').blur(function() {
+    var field = $(this);
+    if (field.val().indexOf('://') == -1) {
+      field.val('http://' + field.val());
+    } 
+  });
   var tagLinks  = [];
   $('#check_form input[name*="tags"]').val().split(', ').forEach(function(tag) {
     if (tag) tagLinks.push('<a href="/dashboard/tag/' + tag + '">' + tag + '</a>');
