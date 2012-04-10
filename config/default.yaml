@@ -11,8 +11,7 @@ monitor:
   updateInterval:         60000      # one minute
   qosAggregationInterval: 600000     # ten minutes
   timeout:                5000       # five seconds
-  pingHistory:            8035200000 # three months
-  proxy:      
+  pingHistory:            8035200000 # three months    
 
 autoStartMonitor: true
 

@@ -58,8 +58,7 @@ Uptime uses [node-config](https://github.com/lorenwest/node-config) to allow YAM
       updateInterval:         60000      # one minute
       qosAggregationInterval: 600000     # ten minutes
       timeout:                5000       # five seconds
-      pingHistory:            8035200000 # three months
-      http_proxy:      
+      pingHistory:            8035200000 # three months  
     
     autoStartMonitor: true
     
@@ -70,6 +69,8 @@ To modify this configuration, create a `development.yaml` or a `production.yaml`
 
     server:
       port:     80
+
+Node that Uptime works great behind a proxy - it uses the http_proxy environment variable transparently.
 
 Running The Monitor In a Separate Process
 -----------------------------------------
