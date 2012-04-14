@@ -11,7 +11,7 @@ var Ping       = require('../../../models/ping');
  */
 module.exports = function(app) {
   
-  app.get('/pings/check/:id/:page?', function(req, res) {
+  app.get('/pings/check/:id/:page?', function(req, res, next) {
     Check.count({ _id: req.params.id}, function(err, nb_checks) {
       if (err) return app.next(err);
       if (!nb_checks) return app.next(new Error('failed to load check ' + req.params.id));
@@ -22,7 +22,7 @@ module.exports = function(app) {
     });
   });
 
-  app.get('/pings/events', function(req, res) {
+  app.get('/pings/events', function(req, res, next) {
     CheckEvent.find({ timestamp: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} }).desc('timestamp').populate('check').run(function(err, events) {
       if (err) return next(err);
       res.json(CheckEvent.aggregateEventsByDay(events));
