@@ -25,18 +25,39 @@ app.configure('production', function(){
   app.use(express.errorHandler());
 });
 
+app.helpers({
+  renderCssTags: function (all) {
+    if (all != undefined) {
+      return all.map(function(css) {
+        return '<link rel="stylesheet" href="' + app.route + '/stylesheets/' + css + '">';
+      }).join('\n ');
+    } else {
+      return '';
+    }
+  }
+});
+
+app.dynamicHelpers({
+  addedCss: function(req, res) {
+    return [];
+  },
+  route: function() {
+    return app.route;
+  }
+});
+
 // Routes
 
 app.get('/events', function(req, res) {
-  res.render('events', { route: app.route  });
+  res.render('events');
 });
 
 app.get('/checks', function(req, res) {
-  res.render('checks', { route: app.route, info: req.flash('info')  });
+  res.render('checks', { info: req.flash('info')  });
 });
 
 app.get('/check', function(req, res) {
-  res.render('check_new', { route: app.route, check: new Check() });
+  res.render('check_new', { check: new Check() });
 });
 
 app.post('/check', function(req, res) {
@@ -54,7 +75,7 @@ app.get('/check/:id', function(req, res, next) {
   Check.findOne({ _id: req.params.id }, function(err, check) {
     if (err) return next(err);
     if (!check) return next(new Error('failed to load check ' + req.params.id));
-    res.render('check', { route: app.route, check: check, info: req.flash('info') });
+    res.render('check', { check: check, info: req.flash('info') });
   });
 });
 
@@ -82,14 +103,14 @@ app.delete('/check/:id', function(req, res, next) {
 });
 
 app.get('/tags', function(req, res) {
-  res.render('tags', { route: app.route });
+  res.render('tags');
 });
 
 app.get('/tag/:name', function(req, res, next) {
   Tag.findOne({ name: req.params.name }, function(err, tag) {
     if (err) return next(err);
     if (!tag) return next(new Error('failed to load tag ' + req.params.name));
-    res.render('tag', { route: app.route, tag: tag });
+    res.render('tag', { tag: tag });
   });
 });
 

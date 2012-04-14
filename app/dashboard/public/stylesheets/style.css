@@ -111,3 +111,5 @@ table .headerSortUp:after {
   -moz-opacity: 0.6;
   opacity: 0.6;
 }
+
+div.tagsinput span.tag span { text-decoration: underline; cursor: pointer;}
