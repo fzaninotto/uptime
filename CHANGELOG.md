@@ -4,6 +4,7 @@ Uptime Changelog
 To be released, V1.2
 --------------------
 * Fixed failure to add check in the dashboard when the protocol wasn't set
+* Added UDP poller (bolgovr)
 
 2012-04-10, v1.1
 ----------------
