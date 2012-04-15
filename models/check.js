@@ -239,6 +239,9 @@ Check.statics.guessType = function(url) {
   if (url.search(/^https:\/\//) != -1) {
     return 'https';
   }
+  if (url.search(/^udp:\/\//) != -1) {
+    return 'udp';
+  }
 }
 
 /**
