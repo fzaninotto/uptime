@@ -1,9 +1,9 @@
 /**
  * Module dependencies.
  */
-var express    = require('express'),
-    Check      = require('../../models/check')
-    CheckEvent = require('../../models/checkEvent');
+var express    = require('express');
+var Check      = require('../../models/check');
+var CheckEvent = require('../../models/checkEvent');
 
 var app = module.exports = express.createServer();
 

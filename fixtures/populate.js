@@ -1,13 +1,15 @@
-var mongoose = require('mongoose'),
-    config   = require('config').mongodb,
-    async    = require('async');
+var mongoose = require('mongoose');
+var config   = require('config').mongodb;
+var async    = require('async');
+var Check    = require('../models/check');
+var Ping     = require('../models/ping');
 
 // configure mongodb
 mongoose.connect('mongodb://' + config.user + ':' + config.password + '@' + config.server +'/' + config.database);
-
-// models dependencies
-var Check   = require('../models/check');
-var Ping   = require('../models/ping');
+mongoose.connection.on('error', function (err) {
+  console.error('MongoDB error: ' + err.message);
+  console.error('Make sure a mongoDB server is running and accessible by this application')
+});
 
 var backInTime = 30 * 24 * 60 * 60 * 1000; // defaults to 30 days ago
 

@@ -1,7 +1,7 @@
-var mongoose = require('mongoose'),
-    Schema   = mongoose.Schema,
-    TimeCalculator = require('../lib/timeCalculator'),
-    async    = require('async');
+var mongoose = require('mongoose');
+var Schema   = mongoose.Schema;
+var TimeCalculator = require('../lib/timeCalculator');
+var async    = require('async');
 
 // models dependencies
 var Ping             = require('../models/ping');
@@ -12,19 +12,19 @@ var CheckMonthlyStat = require('../models/checkMonthlyStat');
 
 // main model
 var Check = new Schema({
-    name        : String
-  , type        : String
-  , url         : String
-  , interval    : { type: Number, default: 60000 }  // interval between two pings
-  , maxTime     : { type: Number, default: 1500 }   // time under which a ping is considered responsive
-  , tags        : [String]
-  , lastChanged : Date
-  , lastTested  : Date
-  , isUp        : Boolean
-  , uptime      : { type: Number, default: 0 }
-  , downtime    : { type: Number, default: 0 }
-  , qos         : {}
-  , qosPerHour  : {}
+  name        : String,
+  type        : String,
+  url         : String,
+  interval    : { type: Number, default: 60000 }, // interval between two pings
+  maxTime     : { type: Number, default: 1500 },  // time under which a ping is considered responsive
+  tags        : [String],
+  lastChanged : Date,
+  lastTested  : Date,
+  isUp        : Boolean,
+  uptime      : { type: Number, default: 0 },
+  downtime    : { type: Number, default: 0 },
+  qos         : {},
+  qosPerHour  : {}
 });
 Check.plugin(require('../lib/lifecycleEventsPlugin'));
 

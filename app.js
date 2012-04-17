@@ -2,14 +2,14 @@
  * Monitor remote server uptime.
  */
 
-var mongoose   = require('mongoose'),
-    express    = require('express'),
-    config     = require('config'),
-    socketIo   = require('socket.io'),
-    path       = require('path'),
-    monitor    = require('./lib/monitor'),
-    analyzer   = require('./lib/analyzer'),
-    CheckEvent = require('./models/checkEvent');
+var mongoose   = require('mongoose');
+var express    = require('express');
+var config     = require('config');
+var socketIo   = require('socket.io');
+var path       = require('path');
+var monitor    = require('./lib/monitor');
+var analyzer   = require('./lib/analyzer');
+var CheckEvent = require('./models/checkEvent');
 
 // configure mongodb
 mongoose.connect('mongodb://' + config.mongodb.user + ':' + config.mongodb.password + '@' + config.mongodb.server +'/' + config.mongodb.database);

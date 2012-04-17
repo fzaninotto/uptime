@@ -1,7 +1,7 @@
-var mongoose = require('mongoose'),
-    Schema = mongoose.Schema
-    TimeCalculator = require('../lib/timeCalculator'),
-    async    = require('async');
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
+var TimeCalculator = require('../lib/timeCalculator');
+var async    = require('async');
 
 // model dependencies
 var TagHourlyStat  = require('../models/tagHourlyStat');
@@ -10,13 +10,13 @@ var TagMonthlyStat = require('../models/tagMonthlyStat');
 
 // main model
 var Tag = new Schema({
-    name        : String
-  , lastUpdated : Date
-  , count       : Number
-  , ups         : Number
-  , responsives : Number
-  , time        : Number
-  , downtime    : Number
+  name        : String,
+  lastUpdated : Date,
+  count       : Number,
+  ups         : Number,
+  responsives : Number,
+  time        : Number,
+  downtime    : Number
 });
 Tag.index({ name: 1 }, { unique: true });
 Tag.plugin(require('../lib/lifecycleEventsPlugin'));

@@ -1,5 +1,5 @@
-var config     = require('config'),
-    monitor    = require('./lib/monitor');
+var config     = require('config');
+var monitor    = require('./lib/monitor');
 
 // start the monitor
 m = monitor.createMonitor(config.monitor);

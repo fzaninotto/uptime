@@ -2,8 +2,8 @@
  * Monitor remote server uptime.
  */
 
-var http = require('http'),
-    url  = require('url');
+var http = require('http');
+var url  = require('url');
 
 http.createServer(function(req, res) {
   var arg = url.parse(req.url).pathname.substr(1);

@@ -1,20 +1,20 @@
-var mongoose = require('mongoose'),
-    Schema   = mongoose.Schema,
-    TimeCalculator = require('../lib/timeCalculator'),
-    QosAggregator = require('../lib/qosAggregator'),
-    async    = require('async');
+var mongoose = require('mongoose');
+var Schema   = mongoose.Schema;
+var TimeCalculator = require('../lib/timeCalculator');
+var QosAggregator = require('../lib/qosAggregator');
+var async    = require('async');
 
 var Ping = new Schema({
-    timestamp    : { type: Date, default: Date.now }
-  , isUp         : Boolean  // false if ping returned a non-OK status code or timed out
-  , isResponsive : Boolean  // true if the ping time is less than the check max time 
-  , time         : Number
-  , check        : { type: Schema.ObjectId, ref: 'Check' }
-  , tags         : [String]
-  , monitorName  : String
+  timestamp    : { type: Date, default: Date.now },
+  isUp         : Boolean,  // false if ping returned a non-OK status code or timed out
+  isResponsive : Boolean,  // true if the ping time is less than the check max time 
+  time         : Number,
+  check        : { type: Schema.ObjectId, ref: 'Check' },
+  tags         : [String],
+  monitorName  : String,
   // for pings in error, more details need to be persisted
-  , downtime     : Number   // time since last ping if the ping is down
-  , error        : String
+  downtime     : Number,   // time since last ping if the ping is down
+  error        : String
 });
 Ping.index({ timestamp: -1 });
 Ping.plugin(require('../lib/lifecycleEventsPlugin'));

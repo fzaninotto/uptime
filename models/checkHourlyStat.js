@@ -1,18 +1,18 @@
-var mongoose = require('mongoose'),
-    Schema   = mongoose.Schema,
-    TimeCalculator = require('../lib/timeCalculator'),
-    QosAggregator = require('../lib/qosAggregator'),
-    async = require('async');
+var mongoose = require('mongoose');
+var Schema   = mongoose.Schema;
+var TimeCalculator = require('../lib/timeCalculator');
+var QosAggregator = require('../lib/qosAggregator');
+var async = require('async');
 
 // main model
 var CheckHourlyStat = new Schema({
-    check       : { type: Schema.ObjectId, ref: 'Check' }
-  , timestamp   : Date
-  , count       : Number
-  , ups         : Number
-  , responsives : Number
-  , time        : Number
-  , downtime    : Number
+  check       : { type: Schema.ObjectId, ref: 'Check' },
+  timestamp   : Date,
+  count       : Number,
+  ups         : Number,
+  responsives : Number,
+  time        : Number,
+  downtime    : Number
 });
 CheckHourlyStat.index({ check: 1, timestamp: -1 }, { unique: true });
 CheckHourlyStat.plugin(require('../lib/lifecycleEventsPlugin'));
