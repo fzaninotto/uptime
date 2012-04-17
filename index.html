@@ -1,0 +1,197 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Uptime by fzaninotto</title>
+    
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Uptime</h1>
+        <p>A simple HTTP remote monitoring utility using Node.js and MongoDB.</p>
+        <p class="view"><a href="https://github.com/fzaninotto/uptime">View the Project on GitHub <small>fzaninotto/uptime</small></a></p>
+        <ul>
+          <li><a href="https://github.com/fzaninotto/uptime/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/fzaninotto/uptime/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/fzaninotto/uptime">Fork On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>uptime</h1>
+
+<p>A simple remote monitoring utility using Node.js and MongoDB.</p>
+
+<p><img src="https://github.com/downloads/fzaninotto/uptime/uptime.png" title="Uptime screenshot"></p>
+
+<p>You can watch a <a href="https://vimeo.com/39302164">demo screencast on Vimeo</a>.</p>
+
+<h2>Features</h2>
+
+<ul>
+<li>Monitor thousands of websites (powered by <a href="http://dotheweb.posterous.com/nodejs-for-php-programmers-1-event-driven-pro">Node.js asynchronous programming</a>)</li>
+<li>Tweak frequency of monitoring on a per-check basis, up to the millisecond</li>
+<li>Receive instant web alerts on every page when a check goes down (thanks <a href="http://socket.io/">socket.io</a>)</li>
+<li>Record availability statistics for further reporting (powered by <a href="http://www.mongodb.org/">MongoDB</a>)</li>
+<li>Detailed uptime reports with animated charts (powered by <a href="http://www.highcharts.com/">Highcharts</a>)</li>
+<li>Monitor availability, responsiveness, average response time , and total uptime/downtime</li>
+<li>Get details about failed checks (HTTP error code, etc.)</li>
+<li>Group checks by tags and get reports by tag</li>
+<li>Familiar web interface (powered by <a href="http://twitter.github.com/bootstrap/index.html">Twitter Bootstrap 2.0</a>)</li>
+<li>complete API for integration with third-party monitoring services</li>
+<li>Easy installation and zero administration</li>
+</ul><h2>Installing Uptime</h2>
+
+<p>As for every Node.js application, the installation is straightforward:</p>
+
+<pre><code>&gt; git clone git://github.com/fzaninotto/uptime.git
+&gt; npm install
+&gt; node app.js
+</code></pre>
+
+<h2>Adding Checks</h2>
+
+<p>By default, the web UI runs on port 8082, so just browse to </p>
+
+<pre><code>http://localhost:8082/
+</code></pre>
+
+<p>And you're ready to begin. Create your first check by entering an URL, wait for the first ping, and you'll soon see data flowing through your charts!</p>
+
+<h2>Configuring</h2>
+
+<p>Uptime uses <a href="https://github.com/lorenwest/node-config">node-config</a> to allow YAML configuration and environment support. Here is the default configuration, taken from <code>config/default.yaml</code>:</p>
+
+<pre><code>mongodb:
+  server:   localhost
+  database: uptime
+  user:     root 
+  password:
+
+monitor:
+  name:                   origin
+  apiUrl:                 'http://localhost:8082/api'
+  pollingInterval:        10000      # ten seconds
+  timeout:                5000       # five seconds
+
+analyzer:
+  updateInterval:         60000      # one minute
+  qosAggregationInterval: 600000     # ten minutes
+  pingHistory:            8035200000 # three months
+
+autoStartMonitor: true
+
+server:
+  port:     8082
+</code></pre>
+
+<p>To modify this configuration, create a <code>development.yaml</code> or a <code>production.yaml</code> file in the same directory, and override just the settings you need. For instance, to run Uptime on port 80 in production, create a <code>production.yaml</code> file as follows:</p>
+
+<pre><code>server:
+  port:     80
+</code></pre>
+
+<p>Node that Uptime works great behind a proxy - it uses the http_proxy environment variable transparently.</p>
+
+<h2>Running The Monitor In a Separate Process</h2>
+
+<p>Heavily browsing the web dashboard may slow down the server - including the polling monitor. In other terms, using the application can influence the uptime measurements. To avoid this effect, it is recommended to run the polling monitor in a separate process.</p>
+
+<p>To that extent, set the <code>autoStartMonitor</code> setting to <code>false</code> in the <code>production.yaml</code>, and launch the monitor by hand:</p>
+
+<pre><code>&gt; node monitor.js &amp;
+&gt; node app.js
+</code></pre>
+
+<p>You can also run the monitor in a different server. This second server must be able to reach the API of the dashboard server: set the <code>monitor.apiUrl</code> setting accordingly in the <code>production.yaml</code> file of the monitor server.</p>
+
+<p>You can even run several monitor servers in several datacenters to get average response time. In that case, make sure you set a different <code>monitor.name</code> setting for all monitor servers to be able to tell which server make a particular ping.</p>
+
+<h2>Using Plugins</h2>
+
+<p>Uptime provides plugins that you can enable to add more functionality.</p>
+
+<p>To enable plugins, create a <code>plugins/index.js</code> module. This module must offer a public <code>init()</code> method, where you will require and initialize plugin modules. For instance, to enable only the <code>console</code> plugin:</p>
+
+<pre><code>// in plugins/index.js
+exports.init = function() {
+  require('./console').init();
+}
+</code></pre>
+
+<p>Currently supported plugins:</p>
+
+<ul>
+<li>
+<code>console</code>: log pings and events in the console in real time</li>
+</ul><p>You can add your own plugins under the <code>plugins</code> directory. A plugin is simply a module with a public <code>init()</code> method. For instance, if you had to recreate a simple version of the <code>console</code> plugin, you could write it as follows:</p>
+
+<pre><code>// in plugins/console/index.js
+var CheckEvent = require('../../models/checkEvent');
+exports.init = function() {
+  CheckEvent.on('postInsert', function(checkEvent) {
+    checkEvent.findCheck(function(err, check) {
+      console.log(new Date() + check.name + checkEvent.isGoDown ? ' goes down' : ' goes back up');
+    });
+  });
+}
+</code></pre>
+
+<p>All Uptime entities emit lifecycle events that you can listen to on the Model class. These events are <code>preInsert</code>, <code>postInsert</code>, <code>preUpdate</code>, <code>postUpdate</code>, <code>preSave</code> (called for both inserts and updates), <code>postSave</code> (called for both inserts and updates), <code>preRemove</code>, and <code>postRemove</code>.</p>
+
+<h2>License</h2>
+
+<p>The Uptime code is free to use and distribute, under the <a href="https://raw.github.com/fzaninotto/uptime/master/LICENSE">MIT license</a>.</p>
+
+<p>Uptime uses third-party libraries:</p>
+
+<ul>
+<li>
+<a href="http://nodejs.org/">NodeJS</a>, licensed under the <a href="https://github.com/joyent/node/blob/master/LICENSE#L5-22">MIT License</a>,</li>
+<li>
+<a href="http://socket.io/">Socket.io</a>, licensed under the <a href="https://github.com/LearnBoost/socket.io/blob/master/Readme.md">MIT License</a>,</li>
+<li>
+<a href="http://mongoosejs.com/">MongooseJS</a>, licensed under the <a href="https://github.com/LearnBoost/mongoose/blob/master/README.md">MIT License</a>,</li>
+<li>
+<a href="http://jquery.com/">jQuery</a>, licensed under the <a href="http://jquery.org/license">MIT License</a>,</li>
+<li>
+<a href="http://twitter.github.com/bootstrap/">TwitterBootstrap</a>, licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License v2.0</a>,</li>
+<li>
+<a href="http://shop.highsoft.com/highcharts.html">Highcharts.js</a>, free for non-commercial use under the <a href="http://creativecommons.org/licenses/by-nc/3.0/">Creative Commons Attribution-NonCommercial 3.0 License</a>.</li>
+</ul><p>If you like the software, please help improving it by contributing PRs on the <a href="https://github.com/fzaninotto/uptime">GitHub project</a>!</p>
+
+<h2>TODO</h2>
+
+<ul>
+<li>Allow email alerts in case of non-availability (not sure if this should be part of the lib)</li>
+<li>Account for scheduled maintenance (and provide two QoS calculations: with and without scheduled maintenance)</li>
+<li>Allow for JavaScript execution in the monitored resources by using a headless browser (probably zombie.js)</li>
+<li>Unit tests</li>
+</ul>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/fzaninotto">fzaninotto</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA–30862276–1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
