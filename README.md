@@ -55,10 +55,12 @@ Uptime uses [node-config](https://github.com/lorenwest/node-config) to allow YAM
       name:                   origin
       apiUrl:                 'http://localhost:8082/api'
       pollingInterval:        10000      # ten seconds
+      timeout:                5000       # five seconds
+    
+    analyzer:
       updateInterval:         60000      # one minute
       qosAggregationInterval: 600000     # ten minutes
-      timeout:                5000       # five seconds
-      pingHistory:            8035200000 # three months  
+      pingHistory:            8035200000 # three months
     
     autoStartMonitor: true
     

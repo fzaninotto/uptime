@@ -8,6 +8,7 @@ var mongoose   = require('mongoose'),
     socketIo   = require('socket.io'),
     path       = require('path'),
     monitor    = require('./lib/monitor'),
+    analyzer   = require('./lib/analyzer'),
     CheckEvent = require('./models/checkEvent');
 
 // configure mongodb
@@ -17,6 +18,9 @@ if (config.autoStartMonitor) {
   m = monitor.createMonitor(config.monitor);
   m.start();
 }
+
+a = analyzer.createAnalyzer(config.analyzer);
+a.start();
 
 var app = module.exports = express.createServer();
 
