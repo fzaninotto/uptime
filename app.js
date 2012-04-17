@@ -13,6 +13,10 @@ var mongoose   = require('mongoose'),
 
 // configure mongodb
 mongoose.connect('mongodb://' + config.mongodb.user + ':' + config.mongodb.password + '@' + config.mongodb.server +'/' + config.mongodb.database);
+mongoose.connection.on('error', function (err) {
+  console.error('MongoDB error: ' + err.message);
+  console.error('Make sure a mongoDB server is running and accessible by this application')
+});
 
 if (config.autoStartMonitor) {
   m = monitor.createMonitor(config.monitor);
