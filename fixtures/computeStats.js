@@ -31,7 +31,7 @@ var updateLastHourQos = function(callback) {
   console.log('Updating last hour Qos for all checks');
   async.series([
     function(cb) { Ping.updateLast24HoursQos(cb); },
-    function(cb) { Ping.updateLastHourQos(callback); }
+    function(cb) { Ping.updateLastHourQos(cb); }
   ], callback);
 }
 
