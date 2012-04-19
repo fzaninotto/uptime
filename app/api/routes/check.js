@@ -39,7 +39,19 @@ module.exports = function(app) {
       res.json(check);
     });
   });
-
+  
+  app.get('/check/:id/pause', function(req, res, next) {
+    Check.find({ _id: req.params.id }).exclude('qos').findOne(function(err, check) {
+      if (err) return next(err);
+      if (!check) return next(new Error('failed to load check ' + req.params.id));
+      check.togglePause();
+      check.save(function(err) {
+        if (err) return next(new Error('failed to togle pause on check' + req.params.id));
+        res.send();
+      });
+    });
+  });
+  
   app.get('/check/:id/stats/:type/:page?', function(req, res, next) {
     Check.find({ _id: req.params.id }).exclude('qos').findOne(function(err, check) {
       if (err) return next(err);

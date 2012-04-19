@@ -51,6 +51,7 @@
         <% } else { %>
         <button type="submit" class="btn btn-primary">Save changes</button>
         <button type="submit" class="btn btn-danger" name="delete">Delete</button>
+        <button type="submit" class="btn btn-info pull-right" name="pause"><%= check.isPaused ? 'Restart' : 'Pause' %></button>
         <% } %>
       </div>
     </fieldset>
@@ -70,6 +71,13 @@ function updatePollingIntervalTooltip() {
   }
 }
 $(document).ready(function() {
+  $('#check_form button[name="pause"]').click(function(e) {
+    var button = $(this);
+    $.getJSON('/api/check/<%= check._id %>/pause', function() {
+      button.html(button.html() == 'Pause' ? 'Restart' : 'Pause');
+    });
+    e.preventDefault();
+  });
   $('#check_form button[name="delete"]').click(function() {
     if (!confirm("This will delete the check and related pings and stats.\nAre you sure?")) return false;
     $('#check_form input[name="_method"]').val('delete');

@@ -69,7 +69,7 @@ Ping.statics.updateHourlyQos = function(now, callback) {
   var CheckHourlyStat = require('./checkHourlyStat');
   var TagHourlyStat   = require('./tagHourlyStat');
   QosAggregator.getQosForPeriod(this.collection, mapCheckAndTags, start, end, function(err, results) {
-    if (err) return;
+    if (err) return callback(err);
     async.forEach(results, function(result, cb) {
       var stat = result.value;
       if (result._id.substr) {
@@ -98,7 +98,7 @@ Ping.statics.updateLast24HoursQos = function(callback) {
   var Check = require('../models/check');
   var Tag   = require('../models/tag');
   QosAggregator.getQosForPeriod(this.collection, mapCheckAndTags, start, end, function(err, results) {
-    if (err) return;
+    if (err) return callback(err);
     async.forEach(results, function(result, cb) {
       if (result._id.substr) {
         // the key is a string, so it's a tag
@@ -107,7 +107,7 @@ Ping.statics.updateLast24HoursQos = function(callback) {
       } else {
         // the key is a check
         Check.findById(result._id, function (err, check) {
-          if (err || !check) return;
+          if (err || !check) return cb(err);
           check.qos = result.value;
           check.markModified('qos');
           check.save(cb);
