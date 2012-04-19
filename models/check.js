@@ -19,6 +19,7 @@ var Check = new Schema({
   maxTime     : { type: Number, default: 1500 },  // time under which a ping is considered responsive
   tags        : [String],
   lastChanged : Date,
+  firstTested : Date,
   lastTested  : Date,
   isUp        : Boolean,
   isPaused    : { type:Boolean, default: false },
@@ -54,8 +55,9 @@ Check.methods.removeStats = function(callback) {
 
 Check.methods.needsPoll = function() {
   if (this.isPaused) return false;
-  if (!this.lastTested) return true;
-  return (Date.now() - this.lastTested.getTime()) > (this.interval || 60000);
+  if (!this.firstTested) return true;
+  var delay = (this.lastTested.getTime() - this.firstTested.getTime()) % this.interval;
+  return (Date.now() - this.lastTested.getTime() + delay) >= (this.interval || 60000);
 }
 
 Check.methods.togglePause = function() {
@@ -64,6 +66,7 @@ Check.methods.togglePause = function() {
 
 Check.methods.setLastTest = function(status, time) {
   var now = time ? new Date(time) : new Date();
+  if (!this.firstTested) this.firstTested = now;
   this.lastTested = now;
   if (this.isUp != status) {
     var event = new CheckEvent({
