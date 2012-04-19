@@ -4,6 +4,7 @@ Uptime Changelog
 To be released, V1.2
 --------------------
 
+* Fix polling interval to mimic the behavior of a cron
 * Add a way to pause checks in the dashboard GUI, in the API, and in the model
 * Split Monitor class and configuration, to fix polling when `autoStartMonitor` is false
 * Fixed failure to add check in the dashboard when the protocol wasn't set
