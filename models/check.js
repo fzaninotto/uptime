@@ -21,6 +21,7 @@ var Check = new Schema({
   lastChanged : Date,
   lastTested  : Date,
   isUp        : Boolean,
+  isPaused    : { type:Boolean, default: false },
   uptime      : { type: Number, default: 0 },
   downtime    : { type: Number, default: 0 },
   qos         : {},
@@ -52,7 +53,13 @@ Check.methods.removeStats = function(callback) {
 };
 
 Check.methods.needsPoll = function() {
-  return !this.lastTested || (Date.now() - this.lastTested.getTime()) > (this.interval || 60000);
+  if (this.isPaused) return false;
+  if (!this.lastTested) return true;
+  return (Date.now() - this.lastTested.getTime()) > (this.interval || 60000);
+}
+
+Check.methods.togglePause = function() {
+  this.isPaused = !this.isPaused;
 }
 
 Check.methods.setLastTest = function(status, time) {
@@ -258,9 +265,7 @@ Check.statics.callForChecksNeedingPoll = function(callback) {
 }
 
 Check.statics.needingPoll = function() {
-  return this.$where(function() {
-    return !this.lastTested || (Date.now() - this.lastTested.getTime()) > (this.interval || 60000);
-  });
+  return this.$where(Check.methods.needsPoll);
 }
 
 Check.statics.updateAllQos = function(callback) {
