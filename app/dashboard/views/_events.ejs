@@ -5,13 +5,23 @@
   <span class="label label-{{= label }}">{{= event.message }}</span>
   <a href="{{=  route + '/check/' + event.check._id }}">{{= event.check.name }}</a>
   <a href="{{= event.check.url }}" target="_blank"><img src="{{= route }}/images/external-link-ltr-icon.png"></a>
-  {{ if (event.message == 'paused' || event.message == 'restarted') { }}
-    <span class="blue">was {{= event.message }}</span>
-  {{ } else { }}
-    {{= (event.message == 'down') ? 'went down' : event.downtime ? 'went back up' : 'is now up' }}
-    {{ if (event.message == 'up' && event.downtime) { }}
-    after {{= $.timeago.inWords(event.downtime) }} of downtime
-    {{ } }}
+  {{ switch (event.message) { // cannot close ejs tag here or compilation fails, sorry
+       case 'paused': }}
+    {{ case 'restarted': }}
+      was {{= event.message }}
+    {{ break; }}
+    {{ case 'down': }}
+      went down ({{= event.details }})
+    {{ break; }}
+    {{ case 'up': }}
+      {{ if (event.downtime) { }}
+      went back up after {{= $.timeago.inWords(event.downtime) }} of downtime
+      {{ } else { }}
+      is now up
+      {{ } }}
+    {{ break; }}
+    {{ default: }}
+      unnown event
   {{ } }}
 </li>
 </script>

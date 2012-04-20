@@ -44,7 +44,7 @@ Ping.statics.createForCheck = function(status, time, check, monitorName, error, 
   ping.save(function(err) {
     callback(err, ping);
     if (!err) {
-      check.setLastTest(status, timestamp);
+      check.setLastTest(status, timestamp, error);
       check.save();
     };
   });

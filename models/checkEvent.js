@@ -6,6 +6,7 @@ var CheckEvent = new Schema({
   check       : { type: Schema.ObjectId, ref: 'Check' },
   tags        : [String],
   message     : String,
+  details     : String,
   // for error events, more details need to be persisted
   downtime    : Number
 });

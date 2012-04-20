@@ -64,7 +64,7 @@ Check.methods.togglePause = function() {
   this.isPaused = !this.isPaused;
 }
 
-Check.methods.setLastTest = function(status, time) {
+Check.methods.setLastTest = function(status, time, error) {
   var now = time ? new Date(time) : new Date();
   if (!this.firstTested) this.firstTested = now;
   this.lastTested = now;
@@ -74,6 +74,7 @@ Check.methods.setLastTest = function(status, time) {
       check: this,
       tags: this.tags,
       message: status ? 'up' : 'down',
+      details: error
     });
     if (status && this.lastChanged) {
       event.downtime = now.getTime() - this.lastChanged.getTime();
