@@ -73,7 +73,7 @@ Check.methods.setLastTest = function(status, time) {
       timestamp: now,
       check: this,
       tags: this.tags,
-      isGoDown: this.isUp,
+      message: status ? 'up' : 'down',
     });
     if (status && this.lastChanged) {
       event.downtime = now.getTime() - this.lastChanged.getTime();

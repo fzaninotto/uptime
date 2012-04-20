@@ -23,9 +23,25 @@ module.exports = function(app) {
   });
 
   app.get('/pings/events', function(req, res, next) {
-    CheckEvent.find({ timestamp: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} }).desc('timestamp').populate('check').run(function(err, events) {
+    CheckEvent.find({ timestamp: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} }).desc('timestamp').exclude('tags').run(function(err, events) {
       if (err) return next(err);
-      res.json(CheckEvent.aggregateEventsByDay(events));
+      // populate checks by hand to avoid duplicate findOne queries
+      var checkIds = [];
+      events.forEach(function(event) {
+        var check = event.check.toString();
+        if (checkIds.indexOf(check) == -1) checkIds.push(check);
+      });
+      var indexedChecks = {};
+      Check.find({ _id: { $in: checkIds } }).only('_id', 'name', 'url').run(function(err2, checks) {
+        if (err2) return next(err2);
+        checks.forEach(function(check) {
+          indexedChecks[check._id] = check;
+        });
+        events.forEach(function(event) {
+          event.check = indexedChecks[event.check];
+        });
+        res.json(CheckEvent.aggregateEventsByDay(events));
+      });
     });
   });
 

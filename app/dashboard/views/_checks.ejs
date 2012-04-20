@@ -21,7 +21,13 @@
     <a href="{{= check.url }}" target="_blank"><img src="{{= route }}/images/external-link-ltr-icon.png"></a>
   </td>
   {{ if (check.lastTested) { }}
-  <td data-sort="{{= check.isUp ? check.uptime : -check.downtime }}"><span class="label {{= (check.isUp ? 'label-success' : 'label-important') }}">{{= (check.isUp ? 'Up' : 'Down') }}</span> <span class="{{= check.isUp ? 'green' : 'red' }}"> for <span class="timeago" title="{{= check.lastChanged }}"></span></span></td>
+    {{ if (check.isPaused) { }}
+  <td data-sort="{{= check.isUp ? check.uptime : -check.downtime }}"><span class="label label-info">paused</span> <span class="blue"> for <span class="timeago" title="{{= check.lastTested }}"></span></span></td>
+    {{ } else if (check.isUp) { }}
+  <td data-sort="{{= check.uptime }}"><span class="label label-success">Up</span> <span class="green"> for <span class="timeago" title="{{= check.lastChanged }}"></span></span></td>
+    {{ } else { }}
+  <td data-sort="{{= -check.downtime }}"><span class="label label-important">Down</span> <span class="red"> for <span class="timeago" title="{{= check.lastChanged }}"></span></span></td>
+    {{ } }}
   {{ } else { }}
   <td data-sort="0"><span class="label label-important">down</span> <span class="label label-warning">new</span></td>
   {{ } }}

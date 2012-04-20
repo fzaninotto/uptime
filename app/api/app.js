@@ -17,11 +17,21 @@ app.configure(function(){
 // up count
 var upCount;
 var refreshUpCount = function(callback) {
-  Check.count({}, function(err, total) {
-    Check.count({ isUp: true}, function(err, nbUp) {
-      upCount = { up: nbUp, down: total - nbUp, total: total };
+  var count = { up: 0, down: 0, paused: 0, total: 0 };
+  Check.find({}).only(['isUp', 'isPaused']).each(function(err, check) {
+    if (check) {
+      count.total++;
+      if (check.isPaused) {
+        count.paused++;
+      } else if (check.isUp) {
+        count.up++;
+      } else {
+        count.down++;
+      }
+    } else {
+      upCount = count;
       callback();
-    });
+    }
   });
 }
 

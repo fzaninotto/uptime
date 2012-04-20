@@ -1,11 +1,17 @@
 <script id="event_template" type="text/template">
 <li>
   <span class="label">{{= new Date(event.timestamp).toLocaleTimeString() }}</span>
+  {{ var label = (event.message == 'paused' || event.message == 'restarted') ? 'info' : (event.message == 'up') ? 'success' : 'important' }}
+  <span class="label label-{{= label }}">{{= event.message }}</span>
   <a href="{{=  route + '/check/' + event.check._id }}">{{= event.check.name }}</a>
   <a href="{{= event.check.url }}" target="_blank"><img src="{{= route }}/images/external-link-ltr-icon.png"></a>
-  <span class="{{= (event.isGoDown ? 'red' : 'green') }}">{{= (event.isGoDown ? 'went down' : event.downtime ? 'went back up' : 'is now up') }}</span>
-  {{ if (!event.isGoDown && event.downtime) { }}
-  after {{= $.timeago.inWords(event.downtime) }} of downtime
+  {{ if (event.message == 'paused' || event.message == 'restarted') { }}
+    <span class="blue">was {{= event.message }}</span>
+  {{ } else { }}
+    {{= (event.message == 'down') ? 'went down' : event.downtime ? 'went back up' : 'is now up' }}
+    {{ if (event.message == 'up' && event.downtime) { }}
+    after {{= $.timeago.inWords(event.downtime) }} of downtime
+    {{ } }}
   {{ } }}
 </li>
 </script>
@@ -26,6 +32,7 @@ $(document).ready(function() {
       $.each(events, function(key, eventGroup) {
         lines.push('<ul><li class="day"><h3>' + key + '</h3><ul>');
         $.each(eventGroup, function(key, event) {
+          if (!event.message) return;
           lines.push(ejs.render(event_template, { event: event, route: '<%= route %>' }));
         });
         lines.push('</ul></li></ul>');

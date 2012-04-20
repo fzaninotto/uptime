@@ -49,6 +49,12 @@ module.exports = function(app) {
         if (err) return next(new Error('failed to togle pause on check' + req.params.id));
         res.send();
       });
+      new CheckEvent({
+        timestamp: new Date(),
+        check: check,
+        tags: check.tags,
+        message: check.isPaused ? 'paused' : 'restarted',
+      }).save();
     });
   });
   
@@ -64,7 +70,7 @@ module.exports = function(app) {
   });
   
   app.get('/check/:id/events', function(req, res, next) {
-    CheckEvent.find({ check: req.params.id, timestamp: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} }).desc('timestamp').populate('check').run(function(err, events) {
+    CheckEvent.find({ check: req.params.id, timestamp: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} }).desc('timestamp').exclude('tags').populate('check', ['name', 'url', '_id']).run(function(err, events) {
       if (err) return next(err);
       res.json(CheckEvent.aggregateEventsByDay(events));
     });

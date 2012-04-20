@@ -36,7 +36,7 @@ module.exports = function(app) {
   });
 
   app.get('/tag/:name/events', function(req, res) {
-    CheckEvent.find({ tags: req.params.name, timestamp: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} }).desc('timestamp').populate('check').run(function(err, events) {
+    CheckEvent.find({ tags: req.params.name, timestamp: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} }).desc('timestamp').exclude('tags').populate('check', ['name', 'url', '_id']).run(function(err, events) {
       if (err) return next(err);
       res.json(CheckEvent.aggregateEventsByDay(events));
     });
