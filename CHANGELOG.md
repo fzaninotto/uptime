@@ -4,6 +4,7 @@ Uptime Changelog
 To be released, v1.2
 --------------------
 
+* Ping list is now updated in real time
 * Added 'Save and add' button in new check form to facilitate batch check creation
 * Changed the CheckEvent format for better extensibility (use the fixtures/fixEvents.js fix to migrate existing events)
 * Fix polling interval to mimic the behavior of a cron

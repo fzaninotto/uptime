@@ -10,6 +10,7 @@ var path       = require('path');
 var monitor    = require('./lib/monitor');
 var analyzer   = require('./lib/analyzer');
 var CheckEvent = require('./models/checkEvent');
+var Ping       = require('./models/ping');
 
 // configure mongodb
 mongoose.connect('mongodb://' + config.mongodb.user + ':' + config.mongodb.password + '@' + config.mongodb.server +'/' + config.mongodb.database);
@@ -73,6 +74,19 @@ io.configure('development', function() {
 
 CheckEvent.on('postInsert', function(event) {
   io.sockets.emit('CheckEvent', event.toJSON());
+});
+
+io.sockets.on('connection', function(socket) {
+  socket.on('set check', function(check) {
+    socket.set('check', check);
+  });
+  Ping.on('postInsert', function(ping) {
+    socket.get('check', function(err, check) {
+      if (ping.check == check) {
+        socket.emit('ping', ping);
+      }
+    });
+  });
 });
 
 // load plugins

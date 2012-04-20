@@ -4,9 +4,6 @@
       <a class="old btn" href="#">&lt;</a>
       <a class="recent btn" href="#">&gt;</a>
     </div>
-    <div class="btn-group pull-right">
-      <a class="btn" data-toggle="button" id="autoupdate" href="#">Auto-update</a>
-    </div>
   </div>
   <table class="table">
     <thead>
@@ -47,14 +44,15 @@ $(document).ready(function() {
       $('#pings tbody').html(lines.join(''));
     });
   };
-  interval = window.setInterval(updatePings, 10000);
-  $('#autoupdate').button('toggle').click(function(e) {
-    if (interval) {
-      window.clearInterval(interval);
-    } else {
-      interval = window.setInterval(updatePings, 10000);
-    }
-    e.preventDefault();
+  socket.on('connect', function() {
+    socket.emit('set check', '<%= check._id %>');
+    socket.on('ping', function(ping) {
+      if (page.ping == 1) {
+        var line = $(ejs.render(ping_template, { ping: ping }));
+        $('#pings tbody').prepend(line);
+        line.fadeOut().fadeIn();
+      }
+    });
   });
   handlePagination('ping', '#pings', updatePings);
 });
