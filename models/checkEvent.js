@@ -17,19 +17,40 @@ CheckEvent.methods.findCheck = function(callback) {
   return this.db.model('Check').findById(this.check, callback);
 }
 
-CheckEvent.statics.aggregateEventsByDay = function(events) {
-  var currentDay;
-  var aggregatedEvents = {};
-  var currentAggregate = [];
+CheckEvent.statics.aggregateEventsByDay = function(events, callback) {
+  // list checks concerned by all events
+  var checkIds = [];
   events.forEach(function(event) {
-    var date = new Date(event.timestamp).toLocaleDateString();
-    if (date != currentDay) {
-      currentDay = date;
-      currentAggregate = aggregatedEvents[date] = [];
-    }
-    currentAggregate.push(event);
+    var check = event.check.toString();
+    if (checkIds.indexOf(check) == -1) checkIds.push(check);
   });
-  return aggregatedEvents;
+  this.db.model('Check').find({ _id: { $in: checkIds } }).only('_id', 'name', 'url').run(function(err, checks) {
+    // populate related check for each event
+    if (err) return callback(err);
+    var indexedChecks = {};
+    checks.forEach(function(check) {
+      indexedChecks[check._id] = check;
+    });
+    events.forEach(function(event, index) {
+      event = event.toJSON(); // bypass mongoose's magic setters
+      event.check = indexedChecks[event.check];
+      events[index] = event;
+    });
+
+    // aggregate events by day
+    var currentDay;
+    var aggregatedEvents = {};
+    var currentAggregate = [];
+    events.forEach(function(event) {
+      var date = new Date(event.timestamp).toLocaleDateString();
+      if (date != currentDay) {
+        currentDay = date;
+        currentAggregate = aggregatedEvents[date] = [];
+      }
+      currentAggregate.push(event);
+    });
+    callback(null, aggregatedEvents);
+  });
 }
 
 CheckEvent.statics.cleanup = function(maxAge, callback) {
