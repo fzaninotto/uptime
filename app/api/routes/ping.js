@@ -31,14 +31,16 @@ module.exports = function(app) {
         var check = event.check.toString();
         if (checkIds.indexOf(check) == -1) checkIds.push(check);
       });
-      var indexedChecks = {};
       Check.find({ _id: { $in: checkIds } }).only('_id', 'name', 'url').run(function(err2, checks) {
         if (err2) return next(err2);
+        var indexedChecks = {};
         checks.forEach(function(check) {
           indexedChecks[check._id] = check;
         });
-        events.forEach(function(event) {
+        events.forEach(function(event, index) {
+          event = event.toJSON(); // bypass mongoose's magic setters
           event.check = indexedChecks[event.check];
+          events[index] = event;
         });
         res.json(CheckEvent.aggregateEventsByDay(events));
       });
