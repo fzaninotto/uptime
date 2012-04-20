@@ -1,4 +1,7 @@
 <h1>Create a new check</h1>
+<% if (info.length) { %>
+<div class="alert alert-success"><%= info %></div>
+<% } %>
 <%- partial('_check_details', { check: check }) %>
 <script>
 jQuery(document).ready(function($) {

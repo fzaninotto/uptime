@@ -47,6 +47,7 @@
       <div class="form-actions">
         <% if (check.isNew) { %>
         <button type="submit" class="btn btn-primary">Save</button>
+        <button type="submit" name="saveandadd" value="true" class="btn btn-primary">Save and add</button>
         <a class="btn" href="<%= route %>/checks">Cancel</a>
         <% } else { %>
         <button type="submit" class="btn btn-primary">Save changes</button>

@@ -57,7 +57,7 @@ app.get('/checks', function(req, res) {
 });
 
 app.get('/check', function(req, res) {
-  res.render('check_new', { check: new Check() });
+  res.render('check_new', { check: new Check(), info: req.flash('info') });
 });
 
 app.post('/check', function(req, res) {
@@ -67,7 +67,7 @@ app.post('/check', function(req, res) {
   check.type = Check.guessType(check.url);
   check.save(function(err) {
     req.flash('info', 'New check has been created');
-    res.redirect('/check/' + check._id);
+    res.redirect(req.body.saveandadd ? '/check' : ('/check/' + check._id));
   });
 });
 
