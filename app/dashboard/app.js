@@ -2,9 +2,13 @@
  * Module dependencies.
  */
 var express = require('express');
+var async = require('async');
 
 var Check = require('../../models/check');
 var Tag = require('../../models/tag');
+var TagDailyStat = require('../../models/tagDailyStat');
+var CheckMonthlyStat = require('../../models/checkMonthlyStat');
+var TimeCalculator = require('../../lib/timeCalculator');
 
 var app = module.exports = express.createServer();
 
@@ -111,6 +115,27 @@ app.get('/tag/:name', function(req, res, next) {
     if (err) return next(err);
     if (!tag) return next(new Error('failed to load tag ' + req.params.name));
     res.render('tag', { tag: tag });
+  });
+});
+
+app.get('/tag/:name/report/:date', function(req, res, next) {
+  var begin = TimeCalculator.resetMonth(req.params.date);
+  var end = TimeCalculator.completeMonth(req.params.date);
+  async.parallel({
+    tag: function(callback) {
+      Tag.findOne({ name: req.params.name }, callback)
+    },
+    tagStats: function(callback) {
+      TagDailyStat.find({ name: req.params.name, timestamp: { $gte: begin, $lte: end }}).asc('timestamp').run(callback);
+    },
+    checkStats: function(callback) {
+      Check.find({ tags: req.params.name }).run(function(getCheckErr, checks) {
+        CheckMonthlyStat.find({ check: { $in: checks }, timestamp: { $gte: begin, $lte: end }}).desc('downtime').populate('check', ['name']).run(callback);
+      });
+    }
+  }, function(err, results) {
+    if (err) return next(err);
+    res.render('tagReport', { tag: results.tag, begin: begin, end: end, tagStats: results.tagStats, checkStats: results.checkStats });
   });
 });
 
