@@ -14,7 +14,7 @@ var page = {};
   Tag "<%= tag.name %>"
 </h1>
 <ul class="nav nav-tabs">
-  <li class="active"><a href="#stats" data-toggle="tab">History</a></li>
+  <li><a href="#stats" data-toggle="tab">History</a></li>
   <li><a href="#events" data-toggle="tab">Events</a></li>
   <li><a href="#tagchecks" data-toggle="tab">Checks</a></li>
 </ul>
@@ -30,6 +30,6 @@ var page = {};
 <script>
 $(document).ready(function() {
   $('.navbar-inner li').eq(2).addClass('active');
-  $('#stats').addClass('active');
+  $('.nav-tabs a:first').tab('show');
 });
 </script>

@@ -128,31 +128,33 @@ var getBoundaries = function(series) {
 }
 
 $(document).ready(function() {
-  var timezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
-  var stat_template = document.getElementById('stat_template').innerHTML;
-  var updateStats = function() {
-    $.getJSON('<%= url %>' + chartPeriod + '/' + page.stat, function(stats) {
-      var lines = [];
-      var uptime = [];
-      var responseTime = [];
-      $.each(stats, function(key, stat) {
-        lines.unshift(ejs.render(stat_template, { stat: stat }));
-        uptime.push([stat.timestamp - timezoneOffset, stat.uptime]);
-        responseTime.push([stat.timestamp - timezoneOffset, stat.responseTime]);
+  $('a[data-toggle="tab"][href="#stats"]').one('shown', function(e) { 
+    var timezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
+    var stat_template = document.getElementById('stat_template').innerHTML;
+    var updateStats = function() {
+      $.getJSON('<%= url %>' + chartPeriod + '/' + page.stat, function(stats) {
+        var lines = [];
+        var uptime = [];
+        var responseTime = [];
+        $.each(stats, function(key, stat) {
+          lines.unshift(ejs.render(stat_template, { stat: stat }));
+          uptime.push([stat.timestamp - timezoneOffset, stat.uptime]);
+          responseTime.push([stat.timestamp - timezoneOffset, stat.responseTime]);
+        });
+        $('#stats tbody').html(lines.join(''));
+        drawChart(uptime, responseTime, chartPeriod);
       });
-      $('#stats tbody').html(lines.join(''));
-      drawChart(uptime, responseTime, chartPeriod);
+    }
+    $('#chartPeriod a').click(function(e) {
+      chartPeriod = $(this).data('period');
+      page.stat = 1;
+      $('#stats .recent').hide();
+      updateStats();
+      e.preventDefault();
     });
-  }
-  $('#chartPeriod a').click(function(e) {
-    chartPeriod = $(this).data('period');
     page.stat = 1;
-    $('#stats .recent').hide();
-    updateStats();
-    e.preventDefault();
+    chartPeriod = '7d';
+    handlePagination('stat', '#stats', updateStats);
   });
-  page.stat = 1;
-  chartPeriod = '7d';
-  handlePagination('stat', '#stats', updateStats);
 });
 </script>

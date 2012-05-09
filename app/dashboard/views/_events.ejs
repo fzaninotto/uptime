@@ -27,30 +27,37 @@
 </script>
 <script>
 $(document).ready(function() {
-  $.timeago.settings.strings.suffixAgo = null;
-  var event_template = document.getElementById('event_template').innerHTML;
-  var ejs = require('ejs');
-  ejs.open = '{{';
-  ejs.close = '}}';
-  var updateEvents = function() {
-    $.getJSON('<%= url %>', function(events) {
-      if ($.isEmptyObject(events)) {
-        $('#events').html('<p>Nothing happened lately. All Green!</p>');
-        return;
-      }
-      var lines = [];
-      $.each(events, function(key, eventGroup) {
-        lines.push('<ul><li class="day"><h3>' + key + '</h3><ul>');
-        $.each(eventGroup, function(key, event) {
-          if (!event.message) return;
-          lines.push(ejs.render(event_template, { event: event, route: '<%= route %>' }));
+  var init = function() { 
+    $.timeago.settings.strings.suffixAgo = null;
+    var event_template = document.getElementById('event_template').innerHTML;
+    var ejs = require('ejs');
+    ejs.open = '{{';
+    ejs.close = '}}';
+    var updateEvents = function() {
+      $.getJSON('<%= url %>', function(events) {
+        if ($.isEmptyObject(events)) {
+          $('#events').html('<p>Nothing happened lately. All Green!</p>');
+          return;
+        }
+        var lines = [];
+        $.each(events, function(key, eventGroup) {
+          lines.push('<ul><li class="day"><h3>' + key + '</h3><ul>');
+          $.each(eventGroup, function(key, event) {
+            if (!event.message) return;
+            lines.push(ejs.render(event_template, { event: event, route: '<%= route %>' }));
+          });
+          lines.push('</ul></li></ul>');
         });
-        lines.push('</ul></li></ul>');
+        $('#events').html(lines.join(''));
       });
-      $('#events').html(lines.join(''));
-    });
+    }
+    socket.on('CheckEvent', updateEvents);
+    updateEvents();
+  };
+  if ($('a[data-toggle="tab"]').length) {
+    $('a[data-toggle="tab"][href="#events"]').one('shown', init);
+  } else {
+    init();
   }
-  socket.on('CheckEvent', updateEvents);
-  updateEvents();
 });
 </script>

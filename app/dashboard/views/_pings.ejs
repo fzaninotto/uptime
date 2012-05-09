@@ -34,27 +34,29 @@
 page.ping = 1;
 var interval;
 $(document).ready(function() {
-  var ping_template = document.getElementById('ping_template').innerHTML;
-  var updatePings = function() {
-    $.getJSON('/api/pings/check/<%= check._id %>/' + page.ping, function(pings) {
-      var lines = [];
-      $.each(pings, function(key, ping) {
-        lines.push(ejs.render(ping_template, { ping: ping }));
+  $('a[data-toggle="tab"][href="#pings"]').one('shown', function(e) { 
+    var ping_template = document.getElementById('ping_template').innerHTML;
+    var updatePings = function() {
+      $.getJSON('/api/pings/check/<%= check._id %>/' + page.ping, function(pings) {
+        var lines = [];
+        $.each(pings, function(key, ping) {
+          lines.push(ejs.render(ping_template, { ping: ping }));
+        });
+        $('#pings tbody').html(lines.join(''));
       });
-      $('#pings tbody').html(lines.join(''));
+    };
+    socket.on('connect', function() {
+      socket.emit('set check', '<%= check._id %>');
+      socket.on('ping', function(ping) {
+        if (page.ping == 1) {
+          var line = $(ejs.render(ping_template, { ping: ping }));
+          $('#pings tbody').prepend(line);
+          line.fadeOut().fadeIn();
+        }
+      });
     });
-  };
-  socket.on('connect', function() {
-    socket.emit('set check', '<%= check._id %>');
-    socket.on('ping', function(ping) {
-      if (page.ping == 1) {
-        var line = $(ejs.render(ping_template, { ping: ping }));
-        $('#pings tbody').prepend(line);
-        line.fadeOut().fadeIn();
-      }
-    });
+    handlePagination('ping', '#pings', updatePings);
   });
-  handlePagination('ping', '#pings', updatePings);
 });
 </script>
 

@@ -46,37 +46,44 @@
 </script>
 <script>
 jQuery(document).ready(function($) {
-  $('#checks').tablesorter({
-    textExtraction: function(node) {
-      return $(node).data('sort');
-    },
-    sortList: [[1,0]]
-  });
-  $.timeago.settings.strings.suffixAgo = null;
-  var check_template = document.getElementById('check_template').innerHTML;
-  var ejs = require('ejs');
-  ejs.open = '{{';
-  ejs.close = '}}';
-  var updateChecks = function() {
-    $.getJSON('<%= url %>', function(checks) {
-      var lines = [];
-      var lastTest = 0;
-      $.each(checks, function(key, check) {
-        if (new Date(check.lastTested) > lastTest) {
-          lastTest = new Date(check.lastTested);
-        }
-        lines.push(ejs.render(check_template, { check: check, route: '<%= route %>' }));
-      });
-      $('#checks tbody').html(lines.join(''));
-      $('#checks').trigger('update');
-      $('#checks .timeago').timeago();
-      if (lastTest) {
-        $('#last_update').text('Last updated on ' + new Date(lastTest).toLocaleString());
-      }
+  var init = function() { 
+    $('#checks').tablesorter({
+      textExtraction: function(node) {
+        return $(node).data('sort');
+      },
+      sortList: [[1,0]]
     });
+    $.timeago.settings.strings.suffixAgo = null;
+    var check_template = document.getElementById('check_template').innerHTML;
+    var ejs = require('ejs');
+    ejs.open = '{{';
+    ejs.close = '}}';
+    var updateChecks = function() {
+      $.getJSON('<%= url %>', function(checks) {
+        var lines = [];
+        var lastTest = 0;
+        $.each(checks, function(key, check) {
+          if (new Date(check.lastTested) > lastTest) {
+            lastTest = new Date(check.lastTested);
+          }
+          lines.push(ejs.render(check_template, { check: check, route: '<%= route %>' }));
+        });
+        $('#checks tbody').html(lines.join(''));
+        $('#checks').trigger('update');
+        $('#checks .timeago').timeago();
+        if (lastTest) {
+          $('#last_update').text('Last updated on ' + new Date(lastTest).toLocaleString());
+        }
+      });
+    }
+    updateChecks();
+    socket.on('CheckEvent', updateChecks);
+    window.setInterval(updateChecks, 5 * 60 * 1000); // refresh every 5 minutes to update the qos scores
+  };
+  if ($('a[data-toggle="tab"]').length) {
+    $('a[data-toggle="tab"][href="#tagchecks"]').one('shown', init);
+  } else {
+    init();
   }
-  updateChecks();
-  socket.on('CheckEvent', updateChecks);
-  window.setInterval(updateChecks, 5 * 60 * 1000); // refresh every 5 minutes to update the qos scores
 });
 </script>

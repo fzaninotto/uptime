@@ -72,30 +72,32 @@ function updatePollingIntervalTooltip() {
   }
 }
 $(document).ready(function() {
-  $('#check_form button[name="pause"]').click(function(e) {
-    var button = $(this);
-    $.getJSON('/api/check/<%= check._id %>/pause', function() {
-      button.html(button.html() == 'Pause' ? 'Restart' : 'Pause');
+  $('a[data-toggle="tab"][href="#admin"]').one('shown', function(e) { 
+    $('#check_form button[name="pause"]').click(function(e) {
+      var button = $(this);
+      $.getJSON('/api/check/<%= check._id %>/pause', function() {
+        button.html(button.html() == 'Pause' ? 'Restart' : 'Pause');
+      });
+      e.preventDefault();
     });
-    e.preventDefault();
-  });
-  $('#check_form button[name="delete"]').click(function() {
-    if (!confirm("This will delete the check and related pings and stats.\nAre you sure?")) return false;
-    $('#check_form input[name="_method"]').val('delete');
-  });
-  updatePollingIntervalTooltip();
-  $(intervalFieldSelector).bind('keypress keyup', updatePollingIntervalTooltip);
-  $('#check_form input[name*="url"]').blur(function() {
-    var field = $(this);
-    if (field.val().indexOf('://') == -1) {
-      field.val('http://' + field.val());
-    } 
-  });
-  var tagField = $('#check_form textarea');
-  var tags = tagField.val().split(', ');
-  tagField.tagsInput();
-  $('.tagsinput span.tag span').live('click', function() {
-    window.location = '/dashboard/tag/' + $(this).text();
+    $('#check_form button[name="delete"]').click(function() {
+      if (!confirm("This will delete the check and related pings and stats.\nAre you sure?")) return false;
+      $('#check_form input[name="_method"]').val('delete');
+    });
+    updatePollingIntervalTooltip();
+    $(intervalFieldSelector).bind('keypress keyup', updatePollingIntervalTooltip);
+    $('#check_form input[name*="url"]').blur(function() {
+      var field = $(this);
+      if (field.val().indexOf('://') == -1) {
+        field.val('http://' + field.val());
+      } 
+    });
+    var tagField = $('#check_form textarea');
+    var tags = tagField.val().split(', ');
+    tagField.tagsInput();
+    $('.tagsinput span.tag span').live('click', function() {
+      window.location = '/dashboard/tag/' + $(this).text();
+    });
   });
 });
 </script>
