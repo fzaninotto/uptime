@@ -74,4 +74,29 @@ Tag.methods.getStatsForPeriod = function(period, page, callback) {
   });
 }
 
+var singleStatsProvider = {
+  'hour': { model: 'TagHourlyStat', beginMethod: 'resetHour', endMethod: 'completeHour' },
+  'day':  { model: 'TagDailyStat', beginMethod: 'resetDay', endMethod: 'completeDay' },
+  'month': { model: 'TagMonthlyStat', beginMethod: 'resetMonth', endMethod: 'completeMonth' }
+};
+
+Tag.methods.getSingleStatsForPeriod = function(period, date, callback) {
+  var periodPrefs = singleStatsProvider[period];
+  var begin = TimeCalculator[periodPrefs['beginMethod']](date);
+  var end = TimeCalculator[periodPrefs['endMethod']](date);
+  var query = { name: this.name, timestamp: { $gte: begin, $lte: end } };
+  this.db.model(periodPrefs['model']).findOne(query, function(err, stat) {
+    if (err || !stat) return callback(err);
+    return callback(null, {
+      timestamp: Date.parse(stat.timestamp),
+      availability: (stat.ups / stat.count * 100).toFixed(3),
+      responsiveness: (stat.responsives / stat.count * 100).toFixed(3),
+      downtime: stat.downtime / 1000,
+      responseTime: Math.round(stat.time / stat.count),
+      begin: begin.valueOf(),
+      end: end.valueOf()
+    })
+  });
+}
+
 module.exports = mongoose.model('Tag', Tag);

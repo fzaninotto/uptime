@@ -232,6 +232,31 @@ Check.methods.getStatsForPeriod = function(period, page, callback) {
   });
 }
 
+var singleStatsProvider = {
+  'hour': { model: 'CheckHourlyStat', beginMethod: 'resetHour', endMethod: 'completeHour' },
+  'day':  { model: 'CheckDailyStat', beginMethod: 'resetDay', endMethod: 'completeDay' },
+  'month': { model: 'CheckMonthlyStat', beginMethod: 'resetMonth', endMethod: 'completeMonth' }
+};
+
+Check.methods.getSingleStatsForPeriod = function(period, date, callback) {
+  var periodPrefs = singleStatsProvider[period];
+  var begin = TimeCalculator[periodPrefs['beginMethod']](date);
+  var end = TimeCalculator[periodPrefs['endMethod']](date);
+  var query = { check: this, timestamp: { $gte: begin, $lte: end } };
+  this.db.model(periodPrefs['model']).findOne(query, function(err, stat) {
+    if (err || !stat) return callback(err);
+    return callback(null, {
+      timestamp: Date.parse(stat.timestamp),
+      availability: (stat.ups / stat.count * 100).toFixed(3),
+      responsiveness: (stat.responsives / stat.count * 100).toFixed(3),
+      downtime: stat.downtime / 1000,
+      responseTime: Math.round(stat.time / stat.count),
+      begin: begin.valueOf(),
+      end: end.valueOf()
+    })
+  });
+}
+
 Check.statics.convertTags = function(tags) {
   if (typeof(tags) === 'string') {
     if (tags) {

@@ -59,6 +59,13 @@ module.exports = function(app) {
       message: req.check.isPaused ? 'paused' : 'restarted',
     }).save();
   });
+
+  app.get('/check/:id/stat/:period/:timestamp', loadCheck, function(req, res, next) {
+    req.check.getSingleStatsForPeriod(req.params.period, new Date(parseInt(req.params.timestamp)), function(err, stat) {
+      if(err) return next(err);
+      res.json(stat);
+    });
+  });
   
   app.get('/check/:id/stats/:type/:page?', loadCheck, function(req, res, next) {
     req.check.getStatsForPeriod(req.params.type, req.params.page, function(err, stats) {

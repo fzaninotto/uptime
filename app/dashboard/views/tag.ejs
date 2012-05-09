@@ -14,11 +14,13 @@ var page = {};
   Tag "<%= tag.name %>"
 </h1>
 <ul class="nav nav-tabs">
+  <li><a href="#singleStat" data-toggle="tab">Quality of Service</a></li>
   <li><a href="#stats" data-toggle="tab">History</a></li>
   <li><a href="#events" data-toggle="tab">Events</a></li>
   <li><a href="#tagchecks" data-toggle="tab">Checks</a></li>
 </ul>
 <div class="tab-content">
+  <%- partial('_singleStat', { url: '/api/tag/' + tag.name + '/stat/' } ) %>
   <%- partial('_stats', { url: '/api/tag/' + tag.name + '/stats/' } ) %>
   <div class="tab-pane" id="events">
   <%- partial('_events', { url: '/api/tag/' + tag.name + '/events', route: route }) %>

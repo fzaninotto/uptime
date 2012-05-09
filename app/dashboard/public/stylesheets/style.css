@@ -57,6 +57,15 @@ div.btn-toolbar {
   margin-bottom: 0.5em;
 }
 
+#singleStat .row {
+  text-align: center;
+  font-size: 4em;
+}
+
+#singleStat .row h3 {
+  margin: 30px 0 10px 0;
+}
+
 .green {
   color: #468847;
 }
