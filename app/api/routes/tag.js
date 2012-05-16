@@ -31,6 +31,13 @@ module.exports = function(app) {
     res.json(req.tag);
   });
 
+  app.get('/tag/:name/months', loadTag, function(req, res, next) {
+    req.tag.getMonths(function(err, months) {
+      if (err) return next(err);
+      res.json(months);
+    })
+  });
+
   app.get('/tag/:name/stat/:period/:timestamp', loadTag, function(req, res, next) {
     req.tag.getSingleStatsForPeriod(req.params.period, new Date(parseInt(req.params.timestamp)), function(err, stat) {
       if(err) return next(err);

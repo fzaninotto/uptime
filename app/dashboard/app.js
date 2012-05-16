@@ -119,8 +119,9 @@ app.get('/tag/:name', function(req, res, next) {
 });
 
 app.get('/tag/:name/report/:date', function(req, res, next) {
-  var begin = TimeCalculator.resetMonth(req.params.date);
-  var end = TimeCalculator.completeMonth(req.params.date);
+  var date = parseInt(req.params.date);
+  var begin = TimeCalculator.resetMonth(date);
+  var end = TimeCalculator.completeMonth(date);
   async.parallel({
     tag: function(callback) {
       Tag.findOne({ name: req.params.name }, callback)

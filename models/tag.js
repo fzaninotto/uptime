@@ -99,4 +99,28 @@ Tag.methods.getSingleStatsForPeriod = function(period, date, callback) {
   });
 }
 
+Tag.methods.getMonths = function(callback) {
+  TagMonthlyStat
+  .find({ name: this.name })
+  .asc('timestamp')
+  .select('timestamp')
+  .findOne(function(err, stat) {
+    if (err) return callback(err);
+    if (!stat) return callback(null, []);
+    var months = [];
+    var now = Date.now();
+    var date = new Date(stat.timestamp);
+    do {
+      months.push(date.getTime());
+      if (date.getMonth() == 11) {
+        date.setMonth(0);
+        date.setFullYear(date.getFullYear() +1);
+      } else {
+        date.setMonth(date.getMonth() + 1);
+      }
+    } while (date.getTime() < now);
+    callback(null, months);
+  });
+}
+
 module.exports = mongoose.model('Tag', Tag);
