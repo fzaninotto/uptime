@@ -7,7 +7,7 @@
 </script>
 <script>
 $(document).ready(function() {
-  $('a[data-toggle="tab"][href="#tagreports"]').one('shown', function(e) { 
+  $('a[data-toggle="tab"][href="#tagreports"]').one('shown', function(e) {
     var updateReportList = function() {
       var report_link_template = document.getElementById('report_link_template').innerHTML;
       var ejs = require('ejs');
@@ -22,6 +22,9 @@ $(document).ready(function() {
       });
     }
     updateReportList();
+  });
+  $('a[data-toggle="tab"][href="#tagreports"]').on('click', function(e) {
+    history.pushState(null, null, '#tagreports');
   });
 });
 </script>

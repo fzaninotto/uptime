@@ -56,6 +56,9 @@ $(document).ready(function() {
   };
   if ($('a[data-toggle="tab"]').length) {
     $('a[data-toggle="tab"][href="#events"]').one('shown', init);
+    $('a[data-toggle="tab"][href="#events"]').on('click', function(e) {
+      history.pushState(null, null, '#events');
+    });
   } else {
     init();
   }

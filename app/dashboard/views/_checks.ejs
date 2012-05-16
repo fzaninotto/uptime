@@ -82,6 +82,9 @@ jQuery(document).ready(function($) {
   };
   if ($('a[data-toggle="tab"]').length) {
     $('a[data-toggle="tab"][href="#tagchecks"]').one('shown', init);
+    $('a[data-toggle="tab"][href="#tagchecks"]').on('click', function(e) {
+      history.pushState(null, null, '#tagchecks');
+    });
   } else {
     init();
   }

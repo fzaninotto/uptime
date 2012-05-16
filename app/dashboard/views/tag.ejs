@@ -34,6 +34,13 @@ var page = {};
 <script>
 $(document).ready(function() {
   $('.navbar-inner li').eq(2).addClass('active');
-  $('.nav-tabs a:first').tab('show');
+  window.addEventListener("popstate", function(e) {
+    var activeTab = $('[href=' + location.hash + ']');
+    if (activeTab.length) {
+      activeTab.tab('show');
+    } else {
+      $('.nav-tabs a:first').tab('show');
+    }
+  });
 });
 </script>

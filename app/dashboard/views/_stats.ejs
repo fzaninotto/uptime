@@ -156,5 +156,8 @@ $(document).ready(function() {
     chartPeriod = '7d';
     handlePagination('stat', '#stats', updateStats);
   });
+  $('a[data-toggle="tab"][href="#stats"]').on('click', function(e) {
+    history.pushState(null, null, '#stats');
+  });
 });
 </script>
