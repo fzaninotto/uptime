@@ -71,7 +71,7 @@ app.post('/check', function(req, res) {
   check.type = Check.guessType(check.url);
   check.save(function(err) {
     req.flash('info', 'New check has been created');
-    res.redirect(req.body.saveandadd ? '/check' : ('/check/' + check._id));
+    res.redirect(req.body.saveandadd ? '/check' : ('/check/' + check._id + '#admintab'));
   });
 });
 
@@ -91,7 +91,7 @@ app.put('/check/:id', function(req, res, next) {
   Check.update({ _id: req.params.id }, { $set: check }, { upsert: true }, function(err) {
     if (err) return next(err);
     req.flash('info', 'Changes have been saved');
-    res.redirect('/check/' + req.params.id);
+    res.redirect('/check/' + req.params.id + '#admintab');
   });
 });
 

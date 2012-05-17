@@ -34,8 +34,11 @@ var page = {};
 <script>
 $(document).ready(function() {
   $('.navbar-inner li').eq(2).addClass('active');
+  $('a[data-toggle="tab"]').on('click', function(e) {
+    history.pushState(null, null, $(this).attr('href') + 'tab');
+  });
   window.addEventListener("popstate", function(e) {
-    var activeTab = $('[href=' + location.hash + ']');
+    var activeTab = $('[href=' + location.hash.substr(0, location.hash.length - 3) + ']');
     if (activeTab.length) {
       activeTab.tab('show');
     } else {

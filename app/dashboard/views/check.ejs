@@ -35,11 +35,17 @@ var page = {};
 <script>
 $(document).ready(function() {
   $('.navbar-inner li').eq(1).addClass('active');
-<% if (info.length) { %>
-  $('.nav-tabs a:last').tab('show');
-<% } else { %>
-  $('.nav-tabs a:first').tab('show');
-<% } %>
+  $('a[data-toggle="tab"]').on('click', function(e) {
+    history.pushState(null, null, $(this).attr('href') + 'tab');
+  });
+  window.addEventListener("popstate", function(e) {
+    var activeTab = $('[href=' + location.hash.substr(0, location.hash.length - 3) + ']');
+    if (activeTab.length) {
+      activeTab.tab('show');
+    } else {
+      $('.nav-tabs a:first').tab('show');
+    }
+  });
   $.timeago.settings.strings.suffixAgo = null;
   var updateLast24h = function() {
     $.getJSON('/api/check/<%= check._id %>', function(check) {
