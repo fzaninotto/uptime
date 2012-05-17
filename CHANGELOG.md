@@ -4,6 +4,9 @@ Uptime Changelog
 To be released, v1.2
 --------------------
 
+* Added a Reports tab for tags, offering easily accessible monthly reports
+* Made tabs compatible with direct links and back button in tag and check view
+
 2012-04-21, v1.2
 ----------------
 
