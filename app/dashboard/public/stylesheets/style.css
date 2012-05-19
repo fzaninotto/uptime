@@ -82,6 +82,10 @@ div.btn-toolbar {
   color: #3A87AD;
 }
 
+.week-end {
+  background-color: #eee;
+}
+
 tfoot {
   color: #DDD;
 }

@@ -1,6 +1,6 @@
 <script id="event_template" type="text/template">
 <li>
-  <span class="label">{{= new Date(event.timestamp).toLocaleTimeString() }}</span>
+  <span class="label">{{= moment(event.timestamp).format('LT') }}</span>
   {{ var label = (event.message == 'paused' || event.message == 'restarted') ? 'info' : (event.message == 'up') ? 'success' : 'important' }}
   <span class="label label-{{= label }}">{{= event.message }}</span>
   <a href="{{=  route + '/check/' + event.check._id }}">{{= event.check.name }}</a>
@@ -41,7 +41,7 @@ $(document).ready(function() {
         }
         var lines = [];
         $.each(events, function(key, eventGroup) {
-          lines.push('<ul><li class="day"><h3>' + key + '</h3><ul>');
+          lines.push('<ul><li class="day"><h3>' + moment(key).format('LL') + '</h3><ul>');
           $.each(eventGroup, function(key, event) {
             if (!event.message) return;
             lines.push(ejs.render(event_template, { event: event, route: '<%= route %>' }));

@@ -5,17 +5,17 @@
       <a class="recent btn" href="#">&gt;</a>
     </div>
     <div class="btn-group pull-right" data-toggle="buttons-radio" id="chartPeriod">
-      <a class="btn" data-period="1h" href="#">1h</a>
-      <a class="btn" data-period="6h" href="#">6h</a>
-      <a class="btn" data-period="1d" href="#">1d</a>
-      <a class="btn active" data-period="7d" href="#">7d</a>
-      <a class="btn" data-period="MTD" href="#">MTD</a>
-      <a class="btn" data-period="1m" href="#">1m</a>
-      <a class="btn" data-period="3m" href="#">3m</a>
-      <a class="btn" data-period="6m" href="#">6m</a>
-      <a class="btn" data-period="YTD" href="#">YTD</a>
-      <a class="btn" data-period="1y" href="#">1y</a>
-      <a class="btn" data-period="3y" href="#">3y</a>
+      <a class="btn" data-period="1h" data-format="LLLL" href="#">1h</a>
+      <a class="btn" data-period="6h" data-format="LLLL" href="#">6h</a>
+      <a class="btn" data-period="1d" data-format="LLLL" href="#">1d</a>
+      <a class="btn active" data-period="7d" data-format="LLLL" href="#">7d</a>
+      <a class="btn" data-period="MTD" data-format="LL" href="#">MTD</a>
+      <a class="btn" data-period="1m" data-format="LL" href="#">1m</a>
+      <a class="btn" data-period="3m" data-format="LL" href="#">3m</a>
+      <a class="btn" data-period="6m" data-format="MMMM YYYY" href="#">6m</a>
+      <a class="btn" data-period="YTD" data-format="MMMM YYYY" href="#">YTD</a>
+      <a class="btn" data-period="1y" data-format="MMMM YYYY" href="#">1y</a>
+      <a class="btn" data-period="3y" data-format="MMMM YYYY" href="#">3y</a>
     </div>
   </div>
   <div id="chart" style="width:920px;height: 400px"></div>
@@ -41,8 +41,8 @@
   <div style="clear:left"></div>
 </div>
 <script id="stat_template" type="text/template">
-<tr class="{{= (stat.uptime < 100) ? 'red' : (stat.responsiveness < 100) ? 'orange' : '' }}">
-  <td>{{= new Date(stat.timestamp).toLocaleDateString() }}, {{= new Date(stat.timestamp).toLocaleTimeString() }}</td>
+<tr class="{{= (stat.uptime < 100) ? 'red' : (stat.responsiveness < 100) ? 'orange' : '' }}{{= ['0','6'].indexOf(moment(stat.timestamp).format('d')) !== -1 ? ' week-end' : '' }}">
+  <td>{{= moment(stat.timestamp).format(dateFormat) }}</td>
   <td>{{= String(stat.uptime).replace('.000', '') }}%</td>
   <td>{{= String(stat.responsiveness).replace('.000', '') }}%</td>
   <td>{{= stat.downtime }}s</td>
@@ -52,7 +52,8 @@
 <script>
 var chartPeriod;
 var chart;
-var drawChart = function(uptime, responseTime, period) {
+var dateFormat = 'LLLL';
+var drawChart = function(uptime, responseTime) {
   var uptimeBoundaries = getBoundaries(uptime);
   chart = new Highcharts.Chart({
     chart: {
@@ -91,20 +92,7 @@ var drawChart = function(uptime, responseTime, period) {
     },
     tooltip: {
       formatter: function() {
-        var dateFormat;
-        if ('1h' == period || '6h' == period) {
-          dateFormat = '%e. %b %Y, %H:%M';
-        }
-        if ('1d' == period || '7d' == period) {
-          dateFormat = '%e. %b %Y, %H:00';
-        };
-        if ('MTD' == period || '1m' == period || '3m' == period) {
-          dateFormat = '%e. %b %Y';
-        };
-        if ('6m' == period || 'YTD' == period || '1y' == period || 'max' == period) {
-          dateFormat = '%b %Y';
-        }
-        return Highcharts.dateFormat(dateFormat, this.x) +'<br/>' 
+        return moment(this.x).format(dateFormat) +'<br/>' 
            + (this.series.name == 'Uptime' ? 'Uptime: ' : 'Response Time: ')
            + this.y
            + (this.series.name == 'Uptime' ? '%' : 'ms');
@@ -142,11 +130,12 @@ $(document).ready(function() {
           responseTime.push([stat.timestamp - timezoneOffset, stat.responseTime]);
         });
         $('#stats tbody').html(lines.join(''));
-        drawChart(uptime, responseTime, chartPeriod);
+        drawChart(uptime, responseTime);
       });
     }
     $('#chartPeriod a').click(function(e) {
       chartPeriod = $(this).data('period');
+      dateFormat = $(this).data('format');
       page.stat = 1;
       $('#stats .recent').hide();
       updateStats();

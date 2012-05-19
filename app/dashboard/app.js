@@ -39,7 +39,8 @@ app.helpers({
     } else {
       return '';
     }
-  }
+  },
+  moment: require('./public/javascripts/moment.min.js')
 });
 
 app.dynamicHelpers({

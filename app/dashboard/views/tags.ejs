@@ -48,7 +48,7 @@ jQuery(document).ready(function($) {
       $('#tags tbody').html(lines.join(''));
       $('#tags').trigger('update');
       if( lastUpdated )
-        $('#last_update').text('Last updated on ' + lastUpdated.toLocaleString());
+        $('#last_update').text('Last updated on ' + moment(lastUpdated).format('LLLL'));
     });
   }
   updateTags();

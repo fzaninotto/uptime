@@ -2,7 +2,7 @@
 </ul>
 <script id="report_link_template" type="text/template">
 <li>
-  <a href="{{= url + new Date(month).getTime() }}">{{= new Date(month).toLocaleDateString() }}</a>
+  <a href="{{= url + new Date(month).getTime() }}">{{= moment(month).format('MMMM YYYY') }}</a>
 </li>
 </script>
 <script>

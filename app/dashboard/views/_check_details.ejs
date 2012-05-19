@@ -40,7 +40,7 @@
       <div class="control-group">
         <label class="control-label">Last edited on</label>
         <div class="controls">
-          <span class="span4 uneditable-input"><%= check.lastTested.toLocaleString() %></span>
+          <span class="span4 uneditable-input"><%= check.lastTested.getTime() %></span>
         </div>
       </div>
       <% } %>
@@ -73,6 +73,7 @@ function updatePollingIntervalTooltip() {
 }
 $(document).ready(function() {
   $('a[data-toggle="tab"][href="#admin"]').one('shown', function(e) { 
+    $('.uneditable-input').text(moment(parseInt($('.uneditable-input').html())).format('LLLL'));
     $('#check_form button[name="pause"]').click(function(e) {
       var button = $(this);
       $.getJSON('/api/check/<%= check._id %>/pause', function() {
