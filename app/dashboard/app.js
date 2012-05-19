@@ -7,6 +7,7 @@ var async = require('async');
 var Check = require('../../models/check');
 var Tag = require('../../models/tag');
 var TagDailyStat = require('../../models/tagDailyStat');
+var TagMonthlyStat = require('../../models/tagMonthlyStat');
 var CheckMonthlyStat = require('../../models/checkMonthlyStat');
 var TimeCalculator = require('../../lib/timeCalculator');
 
@@ -126,7 +127,10 @@ app.get('/tag/:name/report/:date', function(req, res, next) {
     tag: function(callback) {
       Tag.findOne({ name: req.params.name }, callback)
     },
-    tagStats: function(callback) {
+    tagMonthlyStat: function(callback) {
+      TagMonthlyStat.findOne({ name: req.params.name, timestamp: begin }, callback);
+    },
+    tagDailyStats: function(callback) {
       TagDailyStat.find({ name: req.params.name, timestamp: { $gte: begin, $lte: end }}).asc('timestamp').run(callback);
     },
     checkStats: function(callback) {
@@ -136,7 +140,7 @@ app.get('/tag/:name/report/:date', function(req, res, next) {
     }
   }, function(err, results) {
     if (err) return next(err);
-    res.render('tagReport', { tag: results.tag, begin: begin, end: end, tagStats: results.tagStats, checkStats: results.checkStats });
+    res.render('tagReport', { tag: results.tag, tagMonthlyStat: results.tagMonthlyStat, begin: begin, end: end, tagDailyStats: results.tagDailyStats, checkStats: results.checkStats });
   });
 });
 

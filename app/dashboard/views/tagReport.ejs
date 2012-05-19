@@ -2,7 +2,7 @@
   Monthly Report Tor Tag "<%= tag.name %>"
   <small><%= new Date(end).getMonth()+1 %>-<%= new Date(end).getFullYear() %></small>
 </h1>
-<h2 style="page-break-before:always">By day</h2>
+<h2>Overall Quality of Service</h2>
 <table class="table">
   <thead>
     <tr>
@@ -10,11 +10,33 @@
       <th title="Percentage of all pings up in the month">Availability</th>
       <th title="Percentage of all pings below slow threshold in the month">Responsiveness</th>
       <th title="Total downtime in the month">Downtime</th>
-      <th title="Average response time of all pings in the last 24h">Avg. Response time</th>
+      <th title="Average response time of all pings in the month">Avg. Response time</th>
     </tr>
   </thead>
   <tbody>
-<% tagStats.forEach(function(stat){ %>
+  <tr class="<%= (tagMonthlyStat.uptime < 100) ? 'red' : (tagMonthlyStat.responsiveness < 100) ? 'orange' : '' %>">
+  <td><%= new Date(tagMonthlyStat.timestamp).toLocaleString() %></td>
+  <td data-ups="<%= tagMonthlyStat.ups %>" data-count="<%= tagMonthlyStat.count %>"><%= (tagMonthlyStat.ups / tagMonthlyStat.count * 100).toFixed(3).replace('.000', '') %>%</td>
+  <td><%= (tagMonthlyStat.responsives / tagMonthlyStat.count * 100).toFixed(3).replace('.000', '') %>%</td>
+  <td><%= tagMonthlyStat.downtime / 1000 %>s</td>
+  <td><%= Math.round(tagMonthlyStat.time / tagMonthlyStat.count) %>ms</td>
+</tr>
+  </tbody>
+</table>
+
+<h2 style="page-break-before:always">Detail by day</h2>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th title="Percentage of all pings up in the day">Availability</th>
+      <th title="Percentage of all pings below slow threshold in the day">Responsiveness</th>
+      <th title="Total downtime in the day">Downtime</th>
+      <th title="Average response time of all pings in the day">Avg. Response time</th>
+    </tr>
+  </thead>
+  <tbody>
+<% tagDailyStats.forEach(function(stat){ %>
   <tr class="<%= (stat.uptime < 100) ? 'red' : (stat.responsiveness < 100) ? 'orange' : '' %>">
   <td><%= new Date(stat.timestamp).toLocaleString() %></td>
   <td data-ups="<%= stat.ups %>" data-count="<%= stat.count %>"><%= (stat.ups / stat.count * 100).toFixed(3).replace('.000', '') %>%</td>
@@ -25,7 +47,7 @@
 <% })%>
   </tbody>
 </table>
-<h2 style="page-break-before:always">By Check</h2>
+<h2 style="page-break-before:always">Detail by Check</h2>
 <table class="table">
   <thead>
     <tr>
