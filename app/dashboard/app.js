@@ -120,27 +120,13 @@ app.get('/tag/:name', function(req, res, next) {
 });
 
 app.get('/tag/:name/report/:date', function(req, res, next) {
-  var date = parseInt(req.params.date);
-  var begin = TimeCalculator.resetMonth(date);
-  var end = TimeCalculator.completeMonth(date);
-  async.parallel({
-    tag: function(callback) {
-      Tag.findOne({ name: req.params.name }, callback)
-    },
-    tagMonthlyStat: function(callback) {
-      TagMonthlyStat.findOne({ name: req.params.name, timestamp: begin }, callback);
-    },
-    tagDailyStats: function(callback) {
-      TagDailyStat.find({ name: req.params.name, timestamp: { $gte: begin, $lte: end }}).asc('timestamp').run(callback);
-    },
-    checkStats: function(callback) {
-      Check.find({ tags: req.params.name }).run(function(getCheckErr, checks) {
-        CheckMonthlyStat.find({ check: { $in: checks }, timestamp: { $gte: begin, $lte: end }}).desc('downtime').populate('check', ['name']).run(callback);
-      });
-    }
-  }, function(err, results) {
+  Tag.findOne({ name: req.params.name }, function(err, tag) {
     if (err) return next(err);
-    res.render('tagReport', { tag: results.tag, tagMonthlyStat: results.tagMonthlyStat, begin: begin, end: end, tagDailyStats: results.tagDailyStats, checkStats: results.checkStats });
+    if (!tag) return next(new Error('failed to load tag ' + req.params.name));
+    tag.getMonthlyReport(parseInt(req.params.date), function (err2, report) {
+      if (err2) return next(err2);
+      res.render('tagReport', report);
+    })
   });
 });
 

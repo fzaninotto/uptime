@@ -4,9 +4,11 @@ var TimeCalculator = require('../lib/timeCalculator');
 var async    = require('async');
 
 // model dependencies
-var TagHourlyStat  = require('../models/tagHourlyStat');
-var TagDailyStat   = require('../models/tagDailyStat');
-var TagMonthlyStat = require('../models/tagMonthlyStat');
+var TagHourlyStat    = require('../models/tagHourlyStat');
+var TagDailyStat     = require('../models/tagDailyStat');
+var TagMonthlyStat   = require('../models/tagMonthlyStat');
+var Check            = require('../models/check');
+var CheckMonthlyStat = require('../models/checkMonthlyStat');
 
 // main model
 var Tag = new Schema({
@@ -120,6 +122,31 @@ Tag.methods.getMonths = function(callback) {
       }
     } while (date.getTime() < now);
     callback(null, months);
+  });
+}
+
+Tag.methods.getMonthlyReport = function(date, callback) {
+  var tag = this;
+  var begin = TimeCalculator.resetMonth(date);
+  var end = TimeCalculator.completeMonth(date);
+  async.parallel({
+    tagMonthlyStat: function(cb) {
+      TagMonthlyStat.findOne({ name: tag.name, timestamp: begin }, cb);
+    },
+    tagDailyStats: function(cb) {
+      TagDailyStat.find({ name: tag.name, timestamp: { $gte: begin, $lte: end }}).asc('timestamp').run(cb);
+    },
+    checkStats: function(cb) {
+      Check.find({ tags: tag.name }).run(function(getCheckErr, checks) {
+        CheckMonthlyStat.find({ check: { $in: checks }, timestamp: { $gte: begin, $lte: end }}).desc('downtime').populate('check', ['name']).run(cb);
+      });
+    }
+  }, function(err, results) {
+    if (err) return callback(err);
+    results.begin = begin;
+    results.end = end;
+    results.tag = tag;
+    callback(null, results);
   });
 }
 
