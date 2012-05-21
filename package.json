@@ -1,5 +1,5 @@
 {
-  "name":    "uptime",
+  "name":    "node-uptime",
   "description": "Remote monitoring for HTTP applications",
   "version": "1.2.0",
   "author": "Francois Zaninotto",
