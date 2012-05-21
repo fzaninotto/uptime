@@ -23,13 +23,22 @@ Features
 * Easy installation and zero administration
 
 Installing Uptime
------------------------
+-----------------
 
-As for every Node.js application, the installation is straightforward:
+One line:
+
+    > npm install node-uptime
+
+Alternatively, clone the repository from GitHub and install dependencies using npm:
 
     > git clone git://github.com/fzaninotto/uptime.git
     > npm install
+
+Lastly, start the application with:
+
     > node app.js
+
+Note that Uptime requires at least Node.js 0.6.
 
 Adding Checks
 -------------
