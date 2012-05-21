@@ -15,7 +15,7 @@
     {{ break; }}
     {{ case 'up': }}
       {{ if (event.downtime) { }}
-      went back up after {{= $.timeago.inWords(event.downtime) }} of downtime
+      went back up after {{= moment.duration(event.downtime).humanize() }} of downtime
       {{ } else { }}
       is now up
       {{ } }}
@@ -28,7 +28,6 @@
 <script>
 $(document).ready(function() {
   var init = function() { 
-    $.timeago.settings.strings.suffixAgo = null;
     var event_template = document.getElementById('event_template').innerHTML;
     var ejs = require('ejs');
     ejs.open = '{{';

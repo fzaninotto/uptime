@@ -46,7 +46,6 @@ $(document).ready(function() {
       $('.nav-tabs a:first').tab('show');
     }
   });
-  $.timeago.settings.strings.suffixAgo = null;
   var updateLast24h = function() {
     $.getJSON('/api/check/<%= check._id %>', function(check) {
       var html = '';

@@ -11,7 +11,6 @@
   </thead>
   <tbody></tbody>
 </table>
-<script src="<%= route %>/javascripts/jquery.timeago.js"></script>
 <script src="<%= route %>/javascripts/jquery.tablesorter.min.js"></script>
 <script src="<%= route %>/javascripts/ejs.min.js"></script>
 <script id="tag_template" type="text/template">
@@ -32,7 +31,6 @@ jQuery(document).ready(function($) {
     },
     sortList: [[0,0]]
   });
-  $.timeago.settings.strings.suffixAgo = null;
   var tag_template = document.getElementById('tag_template').innerHTML;
   var ejs = require('ejs');
   ejs.open = '{{';
