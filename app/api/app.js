@@ -55,6 +55,15 @@ require('./routes/check')(app);
 require('./routes/tag')(app);
 require('./routes/ping')(app);
 
+// route list
+app.get('/', function(req, res) {
+  var routes = [];
+  app.routes.all().forEach(function(route) {
+    routes.push({method: route.method.toUpperCase() , path: app.route + route.path});
+  });
+  res.json(routes);
+});
+
 if (!module.parent) {
   app.listen(3000);
   console.log('Express started on port 3000');
