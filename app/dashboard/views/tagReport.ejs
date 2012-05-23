@@ -15,7 +15,7 @@
   </thead>
   <tbody>
   <tr class="<%= (tagMonthlyStat.uptime < 100) ? 'red' : (tagMonthlyStat.responsiveness < 100) ? 'orange' : '' %>">
-  <td><%= moment(tagMonthlyStat.timestamp).format('MMMM YYYY') %></td>
+  <td title="<%= new Date(tagMonthlyStat.timestamp) %>"><%= moment(tagMonthlyStat.timestamp).format('MMMM YYYY') %></td>
   <td data-ups="<%= tagMonthlyStat.ups %>" data-count="<%= tagMonthlyStat.count %>"><%= (tagMonthlyStat.ups / tagMonthlyStat.count * 100).toFixed(3).replace('.000', '') %>%</td>
   <td><%= (tagMonthlyStat.responsives / tagMonthlyStat.count * 100).toFixed(3).replace('.000', '') %>%</td>
   <td><%= tagMonthlyStat.downtime / 1000 %>s</td>
@@ -38,7 +38,7 @@
   <tbody>
 <% tagDailyStats.forEach(function(stat){ %>
   <tr class="<%= (stat.uptime < 100) ? 'red' : (stat.responsiveness < 100) ? 'orange' : '' %>">
-  <td><%= moment(stat.timestamp).format('LL') %></td>
+  <td title="<%= new Date(stat.timestamp) %>" ><%= moment(stat.timestamp).format('LL') %></td>
   <td data-ups="<%= stat.ups %>" data-count="<%= stat.count %>"><%= (stat.ups / stat.count * 100).toFixed(3).replace('.000', '') %>%</td>
   <td><%= (stat.responsives / stat.count * 100).toFixed(3).replace('.000', '') %>%</td>
   <td><%= stat.downtime / 1000 %>s</td>
