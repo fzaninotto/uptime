@@ -211,8 +211,8 @@ Check.methods.getStatsForPeriod = function(period, page, callback) {
         // stat is a Ping
         stats.push({
           timestamp: Date.parse(stat.timestamp),
-          uptime: stat.isUp ? 100 : 0,
-          responsiveness: stat.isResponsive ? 100 : 0,
+          uptime: stat.isUp ? '100' : '0',
+          responsiveness: stat.isResponsive ? '100' : '0',
           downtime: stat.downtime ? stat.downtime / 1000 : 0,
           responseTime: Math.round(stat.time)
         });

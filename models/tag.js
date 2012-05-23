@@ -65,8 +65,8 @@ Tag.methods.getStatsForPeriod = function(period, page, callback) {
     if (stat) {
       stats.push({
         timestamp: Date.parse(stat.timestamp),
-        uptime: (stat.ups / stat.count).toFixed(5) * 100,
-        responsiveness: (stat.responsives / stat.count).toFixed(5) * 100,
+        uptime: (stat.ups / stat.count * 100).toFixed(3),
+        responsiveness: (stat.responsives / stat.count * 100).toFixed(3),
         downtime: stat.downtime / 1000,
         responseTime: Math.round(stat.time / stat.count)
       });

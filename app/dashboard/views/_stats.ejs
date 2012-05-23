@@ -43,8 +43,8 @@
 <script id="stat_template" type="text/template">
 <tr class="{{= (stat.uptime < 100) ? 'red' : (stat.responsiveness < 100) ? 'orange' : '' }}{{= ['0','6'].indexOf(moment(stat.timestamp).format('d')) !== -1 ? ' week-end' : '' }}">
   <td>{{= moment(stat.timestamp).format(dateFormat) }}</td>
-  <td>{{= String(stat.uptime).replace('.000', '') }}%</td>
-  <td>{{= String(stat.responsiveness).replace('.000', '') }}%</td>
+  <td>{{= stat.uptime.replace('.000', '') }}%</td>
+  <td>{{= stat.responsiveness.replace('.000', '') }}%</td>
   <td>{{= stat.downtime }}s</td>
   <td>{{= stat.responseTime }}ms</td>
 </tr>
