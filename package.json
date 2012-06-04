@@ -4,7 +4,7 @@
   "version": "1.2.0",
   "author": "Francois Zaninotto",
   "dependencies": {
-    "mongoose":  "2.5.11",
+    "mongoose":  "2.5.12",
     "express":   "2.5.0",
     "ejs":       "0.6.1",
     "config":    "0.4.11",
