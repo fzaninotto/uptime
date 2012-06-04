@@ -7,7 +7,7 @@
     "mongoose":  "2.6.5",
     "express":   "2.5.9",
     "ejs":       "0.7.1",
-    "config":    "0.4.14",
+    "config":    "0.4.15",
     "async":     "0.1.22",
     "socket.io": "0.9.6"
   },
