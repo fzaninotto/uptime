@@ -129,4 +129,14 @@ table .headerSortUp:after {
   opacity: 0.6;
 }
 
-div.tagsinput span.tag span { text-decoration: underline; cursor: pointer;}
+div.tagsinput span.tag span {
+  text-decoration: underline; cursor: pointer;
+}
+
+table.chart td {
+  width: 15%;
+}
+
+table.chart td:first-child {
+  width: 40%;
+}
