@@ -31,7 +31,7 @@ TagHourlyStat.statics.updateDailyQos = function(now, callback) {
   var end   = TimeCalculator.completeDay(now);
   var TagDailyStat = require('./tagDailyStat');
   QosAggregator.getQosForPeriod(this.collection, mapTag, start, end, function(err, results) {
-    if (err) return;
+    if (err) return callback(err);
     async.forEach(results, function(result, cb) {
       var stat = result.value;
       TagDailyStat.update({ name: result._id, timestamp: start }, { $set: { count: stat.count, ups: stat.ups, responsives: stat.responsives, time: stat.time, downtime: stat.downtime } }, { upsert: true }, cb);
@@ -53,7 +53,7 @@ TagHourlyStat.statics.updateMonthlyQos = function(now, callback) {
   var end   = TimeCalculator.completeMonth(now);
   var TagMonthlyStat = require('./tagMonthlyStat');
   QosAggregator.getQosForPeriod(this.collection, mapTag, start, end, function(err, results) {
-    if (err) return;
+    if (err) return callback(err);
     async.forEach(results, function(result, cb) {
       var stat = result.value;
       TagMonthlyStat.update({ name: result._id, timestamp: start }, { $set: { count: stat.count, ups: stat.ups, responsives: stat.responsives, time: stat.time, downtime: stat.downtime } }, { upsert: true }, cb);
