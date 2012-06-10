@@ -17,7 +17,7 @@
 <script id="check_template" type="text/template">
 <tr>
   <td data-sort="{{= check.name }}">
-    <a href="{{=  route + '/check/' + check._id }}">{{= check.name }}</a>
+    <a href="{{=  route + '/checks/' + check._id }}">{{= check.name }}</a>
     <a href="{{= check.url }}" target="_blank"><img src="{{= route }}/images/external-link-ltr-icon.png"></a>
   </td>
   {{ if (check.lastTested) { }}

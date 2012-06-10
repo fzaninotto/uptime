@@ -16,7 +16,7 @@ $(document).ready(function() {
       $.getJSON('<%= url %>', function(months) {
         var lines = [];
         $.each(months, function(key, month) {
-          lines.push(ejs.render(report_link_template, { url: '<%= route %>/tag/<%= tag.name %>/report/', month: month }));
+          lines.push(ejs.render(report_link_template, { url: '<%= route %>/tags/<%= tag.name %>/report/', month: month }));
         });
         $('#report_list').html(lines.join(''));
       });

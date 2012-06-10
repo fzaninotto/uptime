@@ -4,6 +4,7 @@ Uptime Changelog
 To be released, v1.3
 --------------------
 
+* Modified API routes to be more RESTful
 * Upgraded dependencies (mongoose, express, ejs, config, async, socket.io)
 * Added a Reports tab for tags, offering easily accessible monthly reports
 * Made tabs compatible with direct links and back button in tag and check view

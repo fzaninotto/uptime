@@ -25,9 +25,9 @@ var page = {};
   <li><a href="#admin" data-toggle="tab">Admin</a></li>
 </ul>
 <div class="tab-content">
-  <%- partial('_stats', { url: '/api/check/' + check._id + '/stats/' } ) %>
+  <%- partial('_stats', { url: '/api/checks/' + check._id + '/stats/' } ) %>
   <div class="tab-pane" id="events">
-  <%- partial('_events', { url: '/api/check/' + check._id + '/events', route: route }) %>
+  <%- partial('_events', { url: '/api/checks/' + check._id + '/events', route: route }) %>
   </div>
   <%- partial('_pings', { check: check, route: route }) %>
   <%- partial('_check_details', { check: check }) %>
@@ -47,7 +47,7 @@ $(document).ready(function() {
     }
   });
   var updateLast24h = function() {
-    $.getJSON('/api/check/<%= check._id %>', function(check) {
+    $.getJSON('/api/checks/<%= check._id %>', function(check) {
       var html = '';
       if (check.lastTested) {
         var status = {};

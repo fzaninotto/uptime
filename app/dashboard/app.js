@@ -62,22 +62,22 @@ app.get('/checks', function(req, res) {
   res.render('checks', { info: req.flash('info')  });
 });
 
-app.get('/check', function(req, res) {
+app.get('/checks/new', function(req, res) {
   res.render('check_new', { check: new Check(), info: req.flash('info') });
 });
 
-app.post('/check', function(req, res) {
+app.post('/checks', function(req, res) {
   var check = new Check(req.body.check);
   check.tags = Check.convertTags(req.body.check.tags);
   check.interval = req.body.check.interval * 1000;
   check.type = Check.guessType(check.url);
   check.save(function(err) {
     req.flash('info', 'New check has been created');
-    res.redirect(req.body.saveandadd ? '/check' : ('/check/' + check._id + '#admintab'));
+    res.redirect(req.body.saveandadd ? '/checks' : ('/checks/' + check._id + '#admintab'));
   });
 });
 
-app.get('/check/:id', function(req, res, next) {
+app.get('/checks/:id', function(req, res, next) {
   Check.findOne({ _id: req.params.id }, function(err, check) {
     if (err) return next(err);
     if (!check) return next(new Error('failed to load check ' + req.params.id));
@@ -85,7 +85,7 @@ app.get('/check/:id', function(req, res, next) {
   });
 });
 
-app.put('/check/:id', function(req, res, next) {
+app.put('/checks/:id', function(req, res, next) {
   var check = req.body.check;
   check.tags = Check.convertTags(check.tags);
   check.interval = req.body.check.interval * 1000;
@@ -93,11 +93,11 @@ app.put('/check/:id', function(req, res, next) {
   Check.update({ _id: req.params.id }, { $set: check }, { upsert: true }, function(err) {
     if (err) return next(err);
     req.flash('info', 'Changes have been saved');
-    res.redirect('/check/' + req.params.id + '#admintab');
+    res.redirect('/checks/' + req.params.id + '#admintab');
   });
 });
 
-app.delete('/check/:id', function(req, res, next) {
+app.delete('/checks/:id', function(req, res, next) {
   Check.findOne({ _id: req.params.id }, function(err, check) {
     if (err) return next(err);
     if (!check) return next(new Error('failed to load check ' + req.params.id));
@@ -112,7 +112,7 @@ app.get('/tags', function(req, res) {
   res.render('tags');
 });
 
-app.get('/tag/:name', function(req, res, next) {
+app.get('/tags/:name', function(req, res, next) {
   Tag.findOne({ name: req.params.name }, function(err, tag) {
     if (err) return next(err);
     if (!tag) return next(new Error('failed to load tag ' + req.params.name));
@@ -120,7 +120,7 @@ app.get('/tag/:name', function(req, res, next) {
   });
 });
 
-app.get('/tag/:name/report/:date', function(req, res, next) {
+app.get('/tags/:name/report/:date', function(req, res, next) {
   Tag.findOne({ name: req.params.name }, function(err, tag) {
     if (err) return next(err);
     if (!tag) return next(new Error('failed to load tag ' + req.params.name));

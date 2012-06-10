@@ -44,7 +44,7 @@
     var nbNewEvents = 0;
     $(document).ready(function() {
       var updateCounts = function() {
-        $.getJSON('/api/check/count', function(count) {
+        $.getJSON('/api/checks/count', function(count) {
           if (count.total > 0) {
             $('#all_up').show().children('strong').text(count.up);
           } else {

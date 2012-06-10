@@ -13,20 +13,19 @@ var CheckMonthlyStat = require('../../../models/checkMonthlyStat');
  */
 module.exports = function(app) {
 
-  app.get('/check', function(req, res) {
-    Check.find({}).asc('isUp').desc('lastChanged').run(function(err, checks) {
+  app.get('/checks', function(req, res, next) {
+    var query = {};
+    if (req.query.tag) {
+      query.tags = req.query.tag;
+    }
+    Check.find(query).asc('isUp').desc('lastChanged').run(function(err, checks) {
+      if (err) return next(err);
       res.json(checks);
     });
   });
 
-  app.get('/check/needingPoll', function(req, res) {
+  app.get('/checks/needingPoll', function(req, res, next) {
     Check.needingPoll().exclude('qos').run(function(err, checks) {
-      res.json(checks);
-    });
-  });
-
-  app.get('/check/tag/:name', function(req, res, next) {
-    Check.find({ tags: req.params.name }).asc('isUp').desc('lastChanged').find(function(err, checks) {
       if (err) return next(err);
       res.json(checks);
     });
@@ -42,11 +41,11 @@ module.exports = function(app) {
     });
   }
 
-  app.get('/check/:id', loadCheck, function(req, res, next) {
+  app.get('/checks/:id', loadCheck, function(req, res, next) {
     res.json(req.check);
   });
   
-  app.get('/check/:id/pause', loadCheck, function(req, res, next) {
+  app.get('/checks/:id/pause', loadCheck, function(req, res, next) {
     req.check.togglePause();
     req.check.save(function(err) {
       if (err) return next(new Error('failed to togle pause on check' + req.params.id));
@@ -60,21 +59,21 @@ module.exports = function(app) {
     }).save();
   });
 
-  app.get('/check/:id/stat/:period/:timestamp', loadCheck, function(req, res, next) {
+  app.get('/checks/:id/stat/:period/:timestamp', loadCheck, function(req, res, next) {
     req.check.getSingleStatsForPeriod(req.params.period, new Date(parseInt(req.params.timestamp)), function(err, stat) {
       if(err) return next(err);
       res.json(stat);
     });
   });
   
-  app.get('/check/:id/stats/:type/:page?', loadCheck, function(req, res, next) {
+  app.get('/checks/:id/stats/:type/:page?', loadCheck, function(req, res, next) {
     req.check.getStatsForPeriod(req.params.type, req.params.page, function(err, stats) {
       if(err) return next(err);
       res.json(stats);
     });
   });
   
-  app.get('/check/:id/events', function(req, res, next) {
+  app.get('/checks/:id/events', function(req, res, next) {
     CheckEvent.find({ check: req.params.id, timestamp: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} }).desc('timestamp').exclude('tags').run(function(err, events) {
       if (err) return next(err);
       CheckEvent.aggregateEventsByDay(events, function(err, aggregatedEvents) {

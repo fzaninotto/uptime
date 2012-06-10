@@ -19,15 +19,15 @@ var page = {};
   <li><a href="#tagreports" data-toggle="tab">Reports</a></li>
 </ul>
 <div class="tab-content">
-  <%- partial('_stats', { url: '/api/tag/' + tag.name + '/stats/' } ) %>
+  <%- partial('_stats', { url: '/api/tags/' + tag.name + '/stats/' } ) %>
   <div class="tab-pane" id="events">
-  <%- partial('_events', { url: '/api/tag/' + tag.name + '/events', route: route }) %>
+  <%- partial('_events', { url: '/api/tags/' + tag.name + '/events', route: route }) %>
   </div>
   <div class="tab-pane" id="tagchecks">
-  <%- partial('_checks', { url: '/api/check/tag/' + tag.name, route: route }) %>
+  <%- partial('_checks', { url: '/api/checks?tag=' + tag.name, route: route }) %>
   </div>
   <div class="tab-pane" id="tagreports">
-  <%- partial('_tagReports', { url: '/api/tag/' + tag.name + '/months', tag: tag, route: route }) %>
+  <%- partial('_tagReports', { url: '/api/tags/' + tag.name + '/months', tag: tag, route: route }) %>
   </div>
 </div>
 <script>

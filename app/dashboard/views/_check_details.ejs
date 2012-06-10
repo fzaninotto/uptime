@@ -1,6 +1,6 @@
 <% addedCss.push('jquery.tagsinput.css') %>
 <div class="tab-pane" id="admin">
-  <form id="check_form" method="post" class="form-horizontal">
+  <form id="check_form" method="post" class="form-horizontal" action="<%= route %>/checks<%= check.isNew ? '' : '/' + check._id %>">
     <input type="hidden" name="_method" value="<%= (check.isNew) ? 'post' : 'put' %>" />
     <fieldset>
       <div class="control-group">
@@ -76,7 +76,7 @@ $(document).ready(function() {
     $('.uneditable-input').text(moment(parseInt($('.uneditable-input').html())).format('LLLL'));
     $('#check_form button[name="pause"]').click(function(e) {
       var button = $(this);
-      $.getJSON('/api/check/<%= check._id %>/pause', function() {
+      $.getJSON('/api/checks/<%= check._id %>/pause', function() {
         button.html(button.html() == 'Pause' ? 'Restart' : 'Pause');
       });
       e.preventDefault();
@@ -97,7 +97,7 @@ $(document).ready(function() {
     var tags = tagField.val().split(', ');
     tagField.tagsInput();
     $('.tagsinput span.tag span').live('click', function() {
-      window.location = '/dashboard/tag/' + $(this).text();
+      window.location = '<%= route %>/tags/' + $(this).text();
     });
   });
 });

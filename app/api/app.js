@@ -39,7 +39,7 @@ Check.on('postInsert', function() { upCount = undefined; });
 Check.on('postRemove', function() { upCount = undefined; });
 CheckEvent.on('postInsert', function() { upCount = undefined; });
 
-app.get('/check/count', function(req, res) {
+app.get('/checks/count', function(req, res) {
   if (upCount) {
     res.json(upCount);
   } else {

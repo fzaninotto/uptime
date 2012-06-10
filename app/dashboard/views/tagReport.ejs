@@ -62,7 +62,7 @@
 <% checkStats.forEach(function(stat){ %>
   <tr class="<%= (stat.uptime < 100) ? 'red' : (stat.responsiveness < 100) ? 'orange' : '' %>">
   <td>
-    <a href="<%= route + '/check/' + stat.check._id %>"><%= stat.check.name %></a>
+    <a href="<%= route + '/checks/' + stat.check._id %>"><%= stat.check.name %></a>
     <a href="<%= stat.check.url %>" target="_blank"><img src="<%= route %>/images/external-link-ltr-icon.png"></a>
   </td>
   <td data-ups="<%= stat.ups %>" data-count="<%= stat.count %>"><%= (stat.ups / stat.count * 100).toFixed(3).replace('.000', '') %>%</td>

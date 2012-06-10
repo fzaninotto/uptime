@@ -7,12 +7,12 @@
 </div>
 <div id="welcome" style="display: none">
 <p>Welcome to Uptime, the web monitoring application.</p>
-<p>To begin, <a href="<%= route %>/check">create your first check</a>.</p>
+<p>To begin, <a href="<%= route %>/checks/new">create your first check</a>.</p>
 </div>
 <script>
 $(document).ready(function() {
   $('.navbar-inner li').eq(0).addClass('active');
-  $.getJSON('/api/check/count', function(nbChecks) {
+  $.getJSON('/api/checks/count', function(nbChecks) {
     if (nbChecks.total == 0) {
       $('#events').hide();
       $('h1').hide();

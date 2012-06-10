@@ -3,9 +3,9 @@
 <div class="alert alert-success"><%= info %></div>
 <% } %>
 <div style="text-align:right">
-  <a class="btn btn-primary" href="<%= route %>/check">Create check</a>
+  <a class="btn btn-primary" href="<%= route %>/checks/new">Create check</a>
 </div>
-<%- partial('_checks', { url: '/api/check', route: route }) %>
+<%- partial('_checks', { url: '/api/checks', route: route }) %>
 <script>
 jQuery(document).ready(function($) {
   $('.navbar-inner li').eq(1).addClass('active');
