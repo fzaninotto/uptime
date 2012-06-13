@@ -72,7 +72,7 @@ io.configure('development', function() {
   if (!config.verbose) io.set('log level', 1);
 });
 
-CheckEvent.on('postInsert', function(event) {
+CheckEvent.on('afterInsert', function(event) {
   io.sockets.emit('CheckEvent', event.toJSON());
 });
 
@@ -80,7 +80,7 @@ io.sockets.on('connection', function(socket) {
   socket.on('set check', function(check) {
     socket.set('check', check);
   });
-  Ping.on('postInsert', function(ping) {
+  Ping.on('afterInsert', function(ping) {
     socket.get('check', function(err, check) {
       if (ping.check == check) {
         socket.emit('ping', ping);

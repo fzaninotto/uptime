@@ -21,7 +21,7 @@ var Tag = new Schema({
   downtime    : Number
 });
 Tag.index({ name: 1 }, { unique: true });
-Tag.plugin(require('../lib/lifecycleEventsPlugin'));
+Tag.plugin(require('mongoose-lifecycle'));
 
 Tag.pre('remove', function(next) {
   this.removeStats(function() {

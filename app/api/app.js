@@ -35,9 +35,9 @@ var refreshUpCount = function(callback) {
   });
 }
 
-Check.on('postInsert', function() { upCount = undefined; });
-Check.on('postRemove', function() { upCount = undefined; });
-CheckEvent.on('postInsert', function() { upCount = undefined; });
+Check.on('afterInsert', function() { upCount = undefined; });
+Check.on('afterRemove', function() { upCount = undefined; });
+CheckEvent.on('afterInsert', function() { upCount = undefined; });
 
 app.get('/checks/count', function(req, res) {
   if (upCount) {

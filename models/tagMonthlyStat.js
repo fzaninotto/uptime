@@ -12,6 +12,6 @@ var TagMonthlyStat = new Schema({
   downtime    : Number
 });
 TagMonthlyStat.index({ name: 1, timestamp: -1 }, { unique: true });
-TagMonthlyStat.plugin(require('../lib/lifecycleEventsPlugin'));
+TagMonthlyStat.plugin(require('mongoose-lifecycle'));
 
 module.exports = mongoose.model('TagMonthlyStat', TagMonthlyStat);

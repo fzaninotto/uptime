@@ -17,7 +17,7 @@ var Ping = new Schema({
   error        : String
 });
 Ping.index({ timestamp: -1 });
-Ping.plugin(require('../lib/lifecycleEventsPlugin'));
+Ping.plugin(require('mongoose-lifecycle'));
 
 Ping.methods.findCheck = function(callback) {
   return this.db.model('Check').findById(this.check, callback);

@@ -28,7 +28,7 @@ var Check = new Schema({
   qos         : {},
   qosPerHour  : {}
 });
-Check.plugin(require('../lib/lifecycleEventsPlugin'));
+Check.plugin(require('mongoose-lifecycle'));
 
 Check.pre('remove', function(next) {
   async.parallel([this.removePings.bind(this), this.removeEvents.bind(this), this.removeStats.bind(this)], function() {

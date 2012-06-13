@@ -118,14 +118,14 @@ You can add your own plugins under the `plugins` directory. A plugin is simply a
     // in plugins/console/index.js
     var CheckEvent = require('../../models/checkEvent');
     exports.init = function() {
-      CheckEvent.on('postInsert', function(checkEvent) {
+      CheckEvent.on('afterInsert', function(checkEvent) {
         checkEvent.findCheck(function(err, check) {
           console.log(new Date() + check.name + checkEvent.isGoDown ? ' goes down' : ' goes back up');
         });
       });
     }
 
-All Uptime entities emit lifecycle events that you can listen to on the Model class. These events are `preInsert`, `postInsert`, `preUpdate`, `postUpdate`, `preSave` (called for both inserts and updates), `postSave` (called for both inserts and updates), `preRemove`, and `postRemove`.
+All Uptime entities emit lifecycle events that you can listen to on the Model class. These events are `beforeInsert`, `afterInsert`, `beforeUpdate`, `afterUpdate`, `beforeSave` (called for both inserts and updates), `afterSave` (called for both inserts and updates), `beforeRemove`, and `afterRemove`. For more information about these events, check the [mongoose-lifecycle](https://github.com/fzaninotto/mongoose-lifecycle) plugin.
 
 License
 -------

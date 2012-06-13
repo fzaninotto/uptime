@@ -15,7 +15,7 @@ var CheckHourlyStat = new Schema({
   downtime    : Number
 });
 CheckHourlyStat.index({ check: 1, timestamp: -1 }, { unique: true });
-CheckHourlyStat.plugin(require('../lib/lifecycleEventsPlugin'));
+CheckHourlyStat.plugin(require('mongoose-lifecycle'));
 
 var mapCheck = function() {
   var qos = { count: this.count, ups: this.ups , responsives: this.responsives, time: this.time, downtime: this.downtime };

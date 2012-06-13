@@ -12,6 +12,6 @@ var CheckMonthlyStat = new Schema({
   downtime    : Number
 });
 CheckMonthlyStat.index({ check: 1, timestamp: -1 }, { unique: true });
-CheckMonthlyStat.plugin(require('../lib/lifecycleEventsPlugin'));
+CheckMonthlyStat.plugin(require('mongoose-lifecycle'));
 
 module.exports = mongoose.model('CheckMonthlyStat', CheckMonthlyStat);

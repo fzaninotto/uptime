@@ -11,7 +11,7 @@ var CheckEvent = new Schema({
   downtime    : Number
 });
 CheckEvent.index({ check: 1, timestamp: -1 });
-CheckEvent.plugin(require('../lib/lifecycleEventsPlugin'));
+CheckEvent.plugin(require('mongoose-lifecycle'));
 
 CheckEvent.methods.findCheck = function(callback) {
   return this.db.model('Check').findById(this.check, callback);
