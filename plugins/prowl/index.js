@@ -14,7 +14,7 @@ var registerNewEventsLogger = function() {
       var message = "[" + check.name + '] ';
       message += !check.isUp ? 'went down.' : ('went back up after ' + Math.floor(checkEvent.downtime / 1000) + 's of downtime.');
       
-      prowl.push(message, 'uptime.lukkien.com', function( err, remaining ){
+      prowl.push(message, 'Uptime notification', function( err, remaining ){
           if( err ) throw err;
           console.log( 'I have ' + remaining + ' calls to the api during current hour.' );
       });
