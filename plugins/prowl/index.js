@@ -1,6 +1,4 @@
-//var Prowl       = require('../../node_modules/node-prowl/lib/prowl');
 var Prowl       = require('node-prowl');
-var Ping        = require('../../models/ping');
 var CheckEvent  = require('../../models/checkEvent');
 var config      = require('config');
 
