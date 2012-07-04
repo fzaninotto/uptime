@@ -18,7 +18,7 @@
   <td data-sort="{{=  tag.name }}"><a href="{{=  route + '/tags/' + tag.name }}">{{= tag.name }}</a></td>
   <td data-sort="{{= tag.ups / tag.count }}">{{= ((tag.ups / tag.count) * 100).toFixed(3).replace('.000', '') }}%</td>
   <td data-sort="{{= tag.responsives / tag.count }}">{{= ((tag.responsives / tag.count) * 100).toFixed(3).replace('.000', '') }}%</td>
-  <td data-sort="{{= tag.downtime }}">{{= (tag.downtime / 1000).toFixed() }}s</td>
+  <td data-sort="{{= tag.downtime }}">{{= tag.downtime < 300000 ? (tag.downtime / 1000).toFixed() + 's' : moment.duration(tag.downtime).humanize() }}</td>
   <td data-sort="{{= tag.time / tag.count }}">{{= Math.round(tag.time / tag.count) }}ms</td>
 </tr>
 </script>
