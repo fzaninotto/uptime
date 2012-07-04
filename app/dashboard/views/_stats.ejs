@@ -45,7 +45,7 @@
   <td title="{{= new Date(stat.timestamp) }}">{{= moment(stat.timestamp).format(dateFormat) }}</td>
   <td>{{= stat.uptime.replace('.000', '') }}%</td>
   <td>{{= stat.responsiveness.replace('.000', '') }}%</td>
-  <td>{{= stat.downtime }}s</td>
+  <td title="{{= stat.downtime }}s">{{= stat.downtime < 300 ? stat.downtime + 's' : moment.duration(stat.downtime, 'seconds').humanize() }}</td>
   <td>{{= stat.responseTime }}ms</td>
 </tr>
 </script>
