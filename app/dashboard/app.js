@@ -52,6 +52,7 @@ app.dynamicHelpers({
   }
 });
 
+
 // Routes
 
 app.get('/events', function(req, res) {
@@ -59,76 +60,97 @@ app.get('/events', function(req, res) {
 });
 
 app.get('/checks', function(req, res) {
-  res.render('checks', { info: req.flash('info')  });
+  if (! req.isAuthenticated()) res.redirect('/login'); 
+  else res.render('checks', { info: req.flash('info')  });
 });
 
 app.get('/checks/new', function(req, res) {
-  res.render('check_new', { check: new Check(), info: req.flash('info') });
+  if (! req.isAuthenticated()) res.redirect('/login'); 
+  else res.render('check_new', { check: new Check(), info: req.flash('info') });
 });
 
 app.post('/checks', function(req, res) {
-  var check = new Check(req.body.check);
-  check.tags = Check.convertTags(req.body.check.tags);
-  check.interval = req.body.check.interval * 1000;
-  check.type = Check.guessType(check.url);
-  check.save(function(err) {
-    req.flash('info', 'New check has been created');
-    res.redirect(req.body.saveandadd ? '/checks' : ('/checks/' + check._id + '#admintab'));
-  });
+  if (! req.isAuthenticated()) res.redirect('/login'); 
+  else {
+    var check = new Check(req.body.check);
+    check.tags = Check.convertTags(req.body.check.tags);
+    check.interval = req.body.check.interval * 1000;
+    check.type = Check.guessType(check.url);
+    check.save(function(err) {
+      req.flash('info', 'New check has been created');
+      res.redirect(req.body.saveandadd ? '/checks' : ('/checks/' + check._id + '#admintab'));
+    });  
+  }
 });
 
 app.get('/checks/:id', function(req, res, next) {
-  Check.findOne({ _id: req.params.id }, function(err, check) {
-    if (err) return next(err);
-    if (!check) return next(new Error('failed to load check ' + req.params.id));
-    res.render('check', { check: check, info: req.flash('info') });
-  });
+  if (! req.isAuthenticated()) res.redirect('/login'); 
+  else {
+    Check.findOne({ _id: req.params.id }, function(err, check) {
+      if (err) return next(err);
+      if (!check) return next(new Error('failed to load check ' + req.params.id));
+      res.render('check', { check: check, info: req.flash('info') });
+    });
+  }
 });
 
 app.put('/checks/:id', function(req, res, next) {
-  var check = req.body.check;
-  check.tags = Check.convertTags(check.tags);
-  check.interval = req.body.check.interval * 1000;
-  check.type = Check.guessType(check.url);
-  Check.update({ _id: req.params.id }, { $set: check }, { upsert: true }, function(err) {
-    if (err) return next(err);
-    req.flash('info', 'Changes have been saved');
-    res.redirect('/checks/' + req.params.id + '#admintab');
-  });
+  if (! req.isAuthenticated()) res.redirect('/login'); 
+  else {
+    var check = req.body.check;
+    check.tags = Check.convertTags(check.tags);
+    check.interval = req.body.check.interval * 1000;
+    check.type = Check.guessType(check.url);
+    Check.update({ _id: req.params.id }, { $set: check }, { upsert: true }, function(err) {
+      if (err) return next(err);
+      req.flash('info', 'Changes have been saved');
+      res.redirect('/checks/' + req.params.id + '#admintab');
+    });
+  }
 });
 
 app.delete('/checks/:id', function(req, res, next) {
-  Check.findOne({ _id: req.params.id }, function(err, check) {
-    if (err) return next(err);
-    if (!check) return next(new Error('failed to load check ' + req.params.id));
-    check.remove(function(err){
-      req.flash('info', 'Check has been deleted');
-      res.redirect('/checks');
+  if (! req.isAuthenticated()) res.redirect('/login'); 
+  else {
+    Check.findOne({ _id: req.params.id }, function(err, check) {
+      if (err) return next(err);
+      if (!check) return next(new Error('failed to load check ' + req.params.id));
+      check.remove(function(err){
+        req.flash('info', 'Check has been deleted');
+        res.redirect('/checks');
+      });
     });
-  });
+  }
 });
 
 app.get('/tags', function(req, res) {
-  res.render('tags');
+  if (! req.isAuthenticated()) res.redirect('/login'); 
+  else res.render('tags');
 });
 
 app.get('/tags/:name', function(req, res, next) {
-  Tag.findOne({ name: req.params.name }, function(err, tag) {
-    if (err) return next(err);
-    if (!tag) return next(new Error('failed to load tag ' + req.params.name));
-    res.render('tag', { tag: tag });
-  });
+  if (! req.isAuthenticated()) res.redirect('/login'); 
+  else {
+    Tag.findOne({ name: req.params.name }, function(err, tag) {
+      if (err) return next(err);
+      if (!tag) return next(new Error('failed to load tag ' + req.params.name));
+      res.render('tag', { tag: tag });
+    });
+  }
 });
 
 app.get('/tags/:name/report/:date', function(req, res, next) {
-  Tag.findOne({ name: req.params.name }, function(err, tag) {
-    if (err) return next(err);
-    if (!tag) return next(new Error('failed to load tag ' + req.params.name));
-    tag.getMonthlyReport(parseInt(req.params.date), function (err2, report) {
-      if (err2) return next(err2);
-      res.render('tagReport', report);
-    })
-  });
+  if (! req.isAuthenticated()) res.redirect('/login'); 
+  else {
+    Tag.findOne({ name: req.params.name }, function(err, tag) {
+      if (err) return next(err);
+      if (!tag) return next(new Error('failed to load tag ' + req.params.name));
+      tag.getMonthlyReport(parseInt(req.params.date), function (err2, report) {
+        if (err2) return next(err2);
+        res.render('tagReport', report);
+      })
+    });
+  }
 });
 
 if (!module.parent) {
