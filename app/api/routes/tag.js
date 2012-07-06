@@ -19,7 +19,7 @@ module.exports = function(app) {
 
   // tag route middleware
   var loadTag = function(req, res, next) {
-    Tag.find({ name: req.params.name }).findOne(function(err, tag) {
+    Tag.find({ name: req.params.name, owner: req.user.id }).findOne(function(err, tag) {
       if (err) return next(err);
       if (!tag) return next(new Error('failed to load tag ' + req.params.name));
       req.tag = tag;

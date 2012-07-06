@@ -18,8 +18,10 @@ var Tag = new Schema({
   ups         : Number,
   responsives : Number,
   time        : Number,
-  downtime    : Number
+  downtime    : Number,
+  user        : { type: Schema.ObjectId, ref: 'User' }
 });
+
 Tag.index({ name: 1 }, { unique: true });
 Tag.plugin(require('mongoose-lifecycle'));
 

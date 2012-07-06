@@ -18,6 +18,7 @@ module.exports = function(app) {
     if (req.query.tag) {
       query.tags = req.query.tag;
     }
+    query.owner = req.user.id
     Check.find(query).asc('isUp').desc('lastChanged').run(function(err, checks) {
       if (err) return next(err);
       res.json(checks);
@@ -33,7 +34,10 @@ module.exports = function(app) {
 
   // check route middleware
   var loadCheck = function(req, res, next) {
-    Check.find({ _id: req.params.id }).exclude('qos').findOne(function(err, check) {
+    var query ={}
+    query.owner = req.user.id
+    query._id = req.params.id
+    Check.find(query).exclude('qos').findOne(function(err, check) {
       if (err) return next(err);
       if (!check) return next(new Error('failed to load check ' + req.params.id));
       req.check = check;
@@ -74,7 +78,7 @@ module.exports = function(app) {
   });
   
   app.get('/checks/:id/events', function(req, res, next) {
-    CheckEvent.find({ check: req.params.id, timestamp: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} }).desc('timestamp').exclude('tags').run(function(err, events) {
+    CheckEvent.find({check: req.params.id, timestamp: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} }).desc('timestamp').exclude('tags').run(function(err, events) {
       if (err) return next(err);
       CheckEvent.aggregateEventsByDay(events, function(err, aggregatedEvents) {
         res.json(aggregatedEvents);
