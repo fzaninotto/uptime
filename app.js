@@ -90,7 +90,7 @@ io.sockets.on('connection', function(socket) {
 });
 
 // load plugins
-path.exists('./plugins/index.js', function(exists) {
+fs.exists('./plugins/index.js', function(exists) {
   if (exists) {
     require('./plugins').init(app, io, config, mongoose);
   };
