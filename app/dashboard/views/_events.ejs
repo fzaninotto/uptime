@@ -1,5 +1,5 @@
 <script id="event_template" type="text/template">
-<li>
+<li class="{{= highlightFrom && new Date(event.timestamp).getTime() > highlightFrom ? 'new' : ''}}">
   <span class="label" title="{{= new Date(event.timestamp) }}">{{= moment(event.timestamp).format('LT') }}</span>
   {{ var label = (event.message == 'paused' || event.message == 'restarted') ? 'info' : (event.message == 'up') ? 'success' : 'important' }}
   <span class="label label-{{= label }}">{{= event.message }}</span>
@@ -27,6 +27,7 @@
 </script>
 <script>
 $(document).ready(function() {
+  var highlightFrom = window.location.search.substring(0,15) == "?highlightFrom=" ? parseInt(window.location.search.substring(15)) : false;
   var init = function() { 
     var event_template = document.getElementById('event_template').innerHTML;
     var ejs = require('ejs');
@@ -43,7 +44,7 @@ $(document).ready(function() {
           lines.push('<ul><li class="day"><h3>' + moment(key).format('LL') + '</h3><ul>');
           $.each(eventGroup, function(key, event) {
             if (!event.message) return;
-            lines.push(ejs.render(event_template, { event: event, route: '<%= route %>' }));
+            lines.push(ejs.render(event_template, { event: event, highlightFrom: highlightFrom, route: '<%= route %>' }));
           });
           lines.push('</ul></li></ul>');
         });

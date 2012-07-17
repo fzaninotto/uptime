@@ -22,6 +22,7 @@
             <li><a href="<%= route %>/events">Events</a></li>
             <li><a href="<%= route %>/checks">Checks</a></li>
             <li><a href="<%= route %>/tags">Tags</a></li>
+            <li id="new_events"><a href="<%= route %>/events?highlightFrom=<%= Date.now() %>"></a></li> 
           </ul>
           <ul class="nav pull-right" id="check_summary">
             <li id="all_up" style="display:none;"><span class="label label-success">Up</span><strong class="green">0</strong></li>
@@ -42,6 +43,7 @@
     </div>
     <script>
     var nbNewEvents = 0;
+    var loadedAt = new Date();
     $(document).ready(function() {
       var updateCounts = function() {
         $.getJSON('/api/checks/count', function(count) {
@@ -64,6 +66,7 @@
         nbNewEvents++;
         updateCounts();
         $('#check_summary').fadeOut().fadeIn().fadeOut().fadeIn();
+        $('#new_events a').html(nbNewEvents + ' new event' + (nbNewEvents > 1 ? 's' : '') + ' since ' + moment(loadedAt).format('LLL'));
       });
       updateCounts();
     });
