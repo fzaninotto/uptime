@@ -55,6 +55,11 @@ var chart;
 var dateFormat = 'LLLL';
 var drawChart = function(uptime, responseTime) {
   var uptimeBoundaries = getBoundaries(uptime);
+  Highcharts.setOptions({
+    global: {
+        useUTC: false
+    }
+  });
   chart = new Highcharts.Chart({
     chart: {
       renderTo: 'chart',
@@ -117,7 +122,6 @@ var getBoundaries = function(series) {
 
 $(document).ready(function() {
   $('a[data-toggle="tab"][href="#stats"]').one('shown', function(e) { 
-    var timezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
     var stat_template = document.getElementById('stat_template').innerHTML;
     var updateStats = function() {
       $.getJSON('<%= url %>' + chartPeriod + '/' + page.stat, function(stats) {
@@ -126,8 +130,8 @@ $(document).ready(function() {
         var responseTime = [];
         $.each(stats, function(key, stat) {
           lines.unshift(ejs.render(stat_template, { stat: stat }));
-          uptime.push([stat.timestamp - timezoneOffset, stat.uptime]);
-          responseTime.push([stat.timestamp - timezoneOffset, stat.responseTime]);
+          uptime.push([stat.timestamp, stat.uptime]);
+          responseTime.push([stat.timestamp, stat.responseTime]);
         });
         $('#stats tbody').html(lines.join(''));
         drawChart(uptime, responseTime);
