@@ -10,7 +10,8 @@
     "ejs":       "0.7.1",
     "config":    "0.4.15",
     "async":     "0.1.22",
-    "socket.io": "0.9.6"
+    "socket.io": "0.9.6",
+    "node-prowl": "0.1.4"
   },
   "keywords": ["uptime", "monitoring", "api", "check"],
   "repository": "https://github.com/fzaninotto/uptime",
