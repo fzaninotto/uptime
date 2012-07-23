@@ -24,9 +24,12 @@
             <li><a href="<%= route %>/tags">Tags</a></li>
             <li id="new_events"><a href="<%= route %>/events?highlightFrom=<%= Date.now() %>"></a></li> 
           </ul>
-          <ul class="nav pull-right" id="check_summary">
+          <ul class="nav" id="check_summary">
             <li id="all_up" style="display:none;"><span class="label label-success">Up</span><strong class="green">0</strong></li>
             <li id="all_down" style="display: none;"><span class="label label-important">Down</span><strong class="red">0</strong></li>
+          </ul>
+          <ul class="nav pull-right">
+            <li><img src="http://www.gravatar.com/avatar/<%= email_md5 %>?s=32"></li>
           </ul>
         </div>
       </div>

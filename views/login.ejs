@@ -1,0 +1,17 @@
+          <div class="login-form">
+            <h2>User credentials</h2>
+            <form action="/login" method="POST">
+                <fieldset>
+                    <div class="clearfix">
+                        <input type="text" placeholder="Email" name="username">
+                    </div>
+                    <div class="clearfix">
+                        <input type="password" placeholder="Password" name="password">
+                    </div>
+                    <input type="hidden" name="_next" value=<%= _next %> >
+                    <button class="btn primary" type="submit">Log in</button>
+                </fieldset>
+            </form>
+          </div>  
+
+

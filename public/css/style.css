@@ -20,14 +20,6 @@ html, body {
   border-top: 1px solid #E5E5E5;
 }
 
-#new_events a {
-  color: orange;
-}
-
-#new_events a:hover {
-  color: white;
-}
-
 #check_summary li {
   padding-top: 10px;
 }
@@ -62,15 +54,7 @@ div.btn-toolbar {
 }
 
 #events li {
-  padding-bottom: 0.5em;
-}
-
-#events li.new {
-  background-color: #FFECCA;
-}
-
-#events li.new:first-child {
-  padding-top: 0.5em;
+  margin-bottom: 0.5em;
 }
 
 #singleStat .row {

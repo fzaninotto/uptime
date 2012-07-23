@@ -26,8 +26,10 @@ var Check = new Schema({
   uptime      : { type: Number, default: 0 },
   downtime    : { type: Number, default: 0 },
   qos         : {},
-  qosPerHour  : {}
+  qosPerHour  : {},
+  owner       : { type: Schema.ObjectId, ref: 'User' }
 });
+
 Check.plugin(require('mongoose-lifecycle'));
 
 Check.pre('remove', function(next) {
