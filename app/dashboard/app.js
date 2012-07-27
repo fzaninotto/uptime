@@ -73,7 +73,7 @@ app.post('/checks', function(req, res) {
   check.type = Check.guessType(check.url);
   check.save(function(err) {
     req.flash('info', 'New check has been created');
-    res.redirect(req.body.saveandadd ? '/checks' : ('/checks/' + check._id + '#admintab'));
+    res.redirect(req.body.saveandadd ? '/checks/new' : ('/checks/' + check._id + '#admintab'));
   });
 });
 
@@ -101,7 +101,8 @@ app.delete('/checks/:id', function(req, res, next) {
   Check.findOne({ _id: req.params.id }, function(err, check) {
     if (err) return next(err);
     if (!check) return next(new Error('failed to load check ' + req.params.id));
-    check.remove(function(err){
+    check.remove(function(err2) {
+      if (err2) return next(err2);
       req.flash('info', 'Check has been deleted');
       res.redirect('/checks');
     });
