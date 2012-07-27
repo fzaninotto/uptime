@@ -68,6 +68,7 @@ app.get('/checks/new', function(req, res) {
 
 app.post('/checks', function(req, res) {
   var check = new Check(req.body.check);
+  check.name = check.name || check.url;
   check.tags = Check.convertTags(req.body.check.tags);
   check.interval = req.body.check.interval * 1000;
   check.type = Check.guessType(check.url);
