@@ -140,7 +140,7 @@ Uptime uses third-party libraries:
 * [jQuery](http://jquery.com/), licensed under the [MIT License](http://jquery.org/license),
 * [TwitterBootstrap](http://twitter.github.com/bootstrap/), licensed under the [Apache License v2.0](http://www.apache.org/licenses/LICENSE-2.0),
 * [Highcharts.js](http://shop.highsoft.com/highcharts.html), free for non-commercial use under the [Creative Commons Attribution-NonCommercial 3.0 License](http://creativecommons.org/licenses/by-nc/3.0/).
-
+* [Favicon] (http://www.alexpeattie.com/projects/justvector_icons/), distributed under the Free Art License, and as such can be copied, distributed, transformed and used as you please. If you enjoy the icons, a link back to [Alex Peattie](http://www.alexpeattie.com/projects/justvector_icons/) and [iconify](http://iconify.it) would certainly be appreciated. 
 If you like the software, please help improving it by contributing PRs on the [GitHub project](https://github.com/fzaninotto/uptime)!
 
 TODO
