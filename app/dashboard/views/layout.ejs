@@ -49,6 +49,10 @@
     var nbNewEvents = 0;
     var loadedAt = new Date();
     $(document).ready(function() {
+      var changeFavicon = function(red) {
+        $('head link[rel="shortcut icon"]').remove()
+        $('head').append('<link rel="shortcut icon" type="image/x-icon" href="/dashboard/favicon' + (red ? '_red' : '') + '.ico">')
+      }
       var updateCounts = function() {
         $.getJSON('/api/checks/count', function(count) {
           if (count.total > 0) {
@@ -58,8 +62,12 @@
           }
           if (count.down > 0) {
             $('#all_down').show().children('strong').text(count.down);
+            changeFavicon(true);
           } else {
             $('#all_down').hide();
+            if (nbNewEvents > 0) {
+              changeFavicon(false);
+            }
           }
           if (nbNewEvents > 0) {
             document.title = '(' + nbNewEvents +') Uptime';

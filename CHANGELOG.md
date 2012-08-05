@@ -1,6 +1,11 @@
 Uptime Changelog
 ================
 
+To be released
+--------------
+
+* Added favicon. The favison turns red when at least one check is down.
+
 2012-08-05, v1.3
 ----------------
 
