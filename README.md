@@ -65,6 +65,7 @@ Uptime uses [node-config](https://github.com/lorenwest/node-config) to allow YAM
       apiUrl:                 'http://localhost:8082/api'
       pollingInterval:        10000      # ten seconds
       timeout:                5000       # five seconds
+      userAgent:              NodeUptime/1.3 (https://github.com/fzaninotto/uptime)
     
     analyzer:
       updateInterval:         60000      # one minute
