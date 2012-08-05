@@ -4,8 +4,13 @@ Uptime Changelog
 To be released, v1.3
 --------------------
 
+* Fixed "Save and add" redirection
+* Made check title optional (falls back to the url)
 * Fixed handling of relative Location headers
+* Fixed chart timezone and vertical scale bugs
 * Made new events more apparent in the navbar, and in the events page
+* Removed custom date display logic and added [moment.js](http://momentjs.com/) as a dependency.
+* Fixed check when http redirects to https
 * Removed lifecycleEventsPlugin and added [mongoose-lifecycle](https://github.com/fzaninotto/mongoose-lifecycle) module as a dependency. This change renames events on Mongoose models from 'pre-' to 'before-' and from 'post-' to 'after-' (e.g. 'postRemove' becomes 'afterRemove').
 * Modified API routes to be more RESTful
 * Upgraded dependencies (mongoose, express, ejs, config, async, socket.io)
