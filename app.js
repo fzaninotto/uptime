@@ -56,8 +56,11 @@ app.configure('production', function() {
 // Routes
 app.use('/api',       require('./app/api/app'));
 app.use('/dashboard', require('./app/dashboard/app'));
-app.get('/', function(reaq, res) {
+app.get('/', function(req, res) {
   res.redirect('/dashboard/events');
+});
+app.get('/favicon.ico', function(req, res) {
+  res.redirect('/dashboard/favicon.ico', 301);
 });
 
 // Sockets
