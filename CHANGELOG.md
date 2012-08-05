@@ -1,8 +1,8 @@
 Uptime Changelog
 ================
 
-To be released, v1.3
---------------------
+2012-08-05, v1.3
+----------------
 
 * Added a User-Agent header to both http and https pollers, to identify pings from the monitor in server logs; you can override the header via configuration
 * Fixed "Save and add" redirection
