@@ -12,7 +12,7 @@ var CheckEvent    = require('../../../models/checkEvent');
 module.exports = function(app) {
   
   app.get('/tags', function(req, res) {
-    Tag.find({}).asc('name').exclude('qosPerHour').run(function(err, tags) {
+    Tag.find({}).asc('name').exec(function(err, tags) {
       res.json(tags);
     });
   });
@@ -52,7 +52,7 @@ module.exports = function(app) {
   });
 
   app.get('/tags/:name/events', function(req, res) {
-    CheckEvent.find({ tags: req.params.name, timestamp: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} }).desc('timestamp').exclude('tags').run(function(err, events) {
+    CheckEvent.find({ tags: req.params.name, timestamp: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} }).desc('timestamp').select({tags: 0}).exec(function(err, events) {
       if (err) return next(err);
       CheckEvent.aggregateEventsByDay(events, function(err, aggregatedEvents) {
         res.json(aggregatedEvents);

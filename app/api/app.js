@@ -5,7 +5,7 @@ var express    = require('express');
 var Check      = require('../../models/check');
 var CheckEvent = require('../../models/checkEvent');
 
-var app = module.exports = express.createServer();
+var app = module.exports = express();
 
 // middleware
 

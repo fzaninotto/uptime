@@ -11,11 +11,25 @@ var TagMonthlyStat = require('../../models/tagMonthlyStat');
 var CheckMonthlyStat = require('../../models/checkMonthlyStat');
 var TimeCalculator = require('../../lib/timeCalculator');
 
-var app = module.exports = express.createServer();
+var app = module.exports = express();
 
 // middleware
 
 app.configure(function(){
+  app.use(function locals(req, res, next) {
+    res.locals.route = app.route;
+    res.locals.renderCssTags = function (all) {
+      if (all != undefined) {
+        return all.map(function(css) {
+          return '<link rel="stylesheet" href="' + app.route + '/stylesheets/' + css + '">';
+        }).join('\n ');
+      } else {
+        return '';
+      }
+    }
+    res.locals.moment = require('./public/javascripts/moment.min.js');
+    next();
+  });
   app.use(app.router);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'ejs');
@@ -30,26 +44,8 @@ app.configure('production', function(){
   app.use(express.errorHandler());
 });
 
-app.helpers({
-  renderCssTags: function (all) {
-    if (all != undefined) {
-      return all.map(function(css) {
-        return '<link rel="stylesheet" href="' + app.route + '/stylesheets/' + css + '">';
-      }).join('\n ');
-    } else {
-      return '';
-    }
-  },
-  moment: require('./public/javascripts/moment.min.js')
-});
-
-app.dynamicHelpers({
-  addedCss: function(req, res) {
-    return [];
-  },
-  route: function() {
-    return app.route;
-  }
+app.locals({
+  addedCss: []
 });
 
 // Routes

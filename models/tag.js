@@ -134,11 +134,11 @@ Tag.methods.getMonthlyReport = function(date, callback) {
       TagMonthlyStat.findOne({ name: tag.name, timestamp: begin }, cb);
     },
     tagDailyStats: function(cb) {
-      TagDailyStat.find({ name: tag.name, timestamp: { $gte: begin, $lte: end }}).asc('timestamp').run(cb);
+      TagDailyStat.find({ name: tag.name, timestamp: { $gte: begin, $lte: end }}).asc('timestamp').exec(cb);
     },
     checkStats: function(cb) {
-      Check.find({ tags: tag.name }).run(function(getCheckErr, checks) {
-        CheckMonthlyStat.find({ check: { $in: checks }, timestamp: { $gte: begin, $lte: end }}).desc('downtime').populate('check', ['name']).run(cb);
+      Check.find({ tags: tag.name }).exec(function(getCheckErr, checks) {
+        CheckMonthlyStat.find({ check: { $in: checks }, timestamp: { $gte: begin, $lte: end }}).desc('downtime').populate('check', ['name']).exec(cb);
       });
     }
   }, function(err, results) {

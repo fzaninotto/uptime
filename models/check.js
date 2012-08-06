@@ -105,7 +105,7 @@ Check.methods.updateUptime = function(callback) {
   .findOne()
   .where('check', self)
   .desc('timestamp')
-  .run(function(err, latestPing) {
+  .exec(function(err, latestPing) {
     if (err) return callback(err);
     if (!latestPing) return;
     self.lastTested = latestPing.timestamp;
@@ -120,7 +120,7 @@ Check.methods.updateUptime = function(callback) {
       .where('isUp', false)
       .where('timestamp').$lt(latestPing.timestamp)
       .desc('timestamp')
-      .run(function(err, latestDownPing) {
+      .exec(function(err, latestDownPing) {
         if (err) return callback(err);
         if (latestDownPing) {
           self.lastChanged = latestDownPing.timestamp;
@@ -132,7 +132,7 @@ Check.methods.updateUptime = function(callback) {
           .findOne()
           .where('check', self)
           .asc('timestamp')
-          .run(function(err, firstPing) {
+          .exec(function(err, firstPing) {
             if (err) return callback(err);
             self.lastChanged = firstPing.timestamp;
             self.uptime = latestPing.timestamp.getTime() - firstPing.timestamp.getTime();
@@ -150,7 +150,7 @@ Check.methods.updateUptime = function(callback) {
       .where('isUp', true)
       .where('timestamp').$lt( latestPing.timestamp)
       .desc('timestamp')
-      .run(function(err, latestUpPing) {
+      .exec(function(err, latestUpPing) {
         if (err) return callback(err);
         if (latestUpPing) {
           self.lastChanged = latestUpPing.timestamp;
@@ -162,7 +162,7 @@ Check.methods.updateUptime = function(callback) {
           .findOne()
           .where('check', self)
           .asc('timestamp')
-          .run(function(err, firstPing) {
+          .exec(function(err, firstPing) {
             if (err) return callback(err);
             self.lastChanged = firstPing.timestamp;
             self.downtime = latestPing.timestamp.getTime() - firstPing.timestamp.getTime();
