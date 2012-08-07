@@ -27,7 +27,7 @@
 </script>
 <script>
 $(document).ready(function() {
-  var highlightFrom = window.location.search.substring(0,15) == "?highlightFrom=" ? parseInt(window.location.search.substring(15)) : false;
+  var highlightFrom = window.location.search.substring(0,15) == "?highlightFrom=" ? parseInt(window.location.search.substring(15)) : Date.now();
   var init = function() { 
     var event_template = document.getElementById('event_template').innerHTML;
     var ejs = require('ejs');
