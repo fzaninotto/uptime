@@ -15,7 +15,7 @@
   "keywords": ["uptime", "monitoring", "api", "check"],
   "repository": "https://github.com/fzaninotto/uptime",
   "license": "MIT",
-  "engine": {
+  "engines": {
     "node": "0.6.x"
   }
 }
