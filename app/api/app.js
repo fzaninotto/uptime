@@ -18,8 +18,8 @@ app.configure(function(){
 var upCount;
 var refreshUpCount = function(callback) {
   var count = { up: 0, down: 0, paused: 0, total: 0 };
-  Check.find({}).only(['isUp', 'isPaused']).each(function(err, check) {
-    if (check) {
+  Check.find({}).select({ isUp: 1, isPaused: 1 }).exec(function(err, checks) {
+    checks.forEach(function(check) {
       count.total++;
       if (check.isPaused) {
         count.paused++;
@@ -28,10 +28,9 @@ var refreshUpCount = function(callback) {
       } else {
         count.down++;
       }
-    } else {
-      upCount = count;
-      callback();
-    }
+    });
+    upCount = count;
+    callback();
   });
 }
 

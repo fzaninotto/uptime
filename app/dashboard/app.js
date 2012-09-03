@@ -3,6 +3,8 @@
  */
 var express = require('express');
 var async = require('async');
+var partials = require('express-partials');
+var flash = require('connect-flash');
 
 var Check = require('../../models/check');
 var Tag = require('../../models/tag');
@@ -16,6 +18,10 @@ var app = module.exports = express();
 // middleware
 
 app.configure(function(){
+  app.use(partials());
+  app.use(express.cookieParser('keyboard cat'));
+  app.use(express.session({ cookie: { maxAge: 60000 }}));
+  app.use(flash());
   app.use(function locals(req, res, next) {
     res.locals.route = app.route;
     res.locals.renderCssTags = function (all) {

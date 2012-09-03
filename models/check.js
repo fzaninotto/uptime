@@ -104,7 +104,7 @@ Check.methods.updateUptime = function(callback) {
   Ping
   .findOne()
   .where('check', self)
-  .desc('timestamp')
+  .sort({ timestamp: -1 })
   .exec(function(err, latestPing) {
     if (err) return callback(err);
     if (!latestPing) return;
@@ -119,7 +119,7 @@ Check.methods.updateUptime = function(callback) {
       .where('check', self)
       .where('isUp', false)
       .where('timestamp').$lt(latestPing.timestamp)
-      .desc('timestamp')
+      .sort({ timestamp: -1 })
       .exec(function(err, latestDownPing) {
         if (err) return callback(err);
         if (latestDownPing) {
@@ -131,7 +131,7 @@ Check.methods.updateUptime = function(callback) {
           Ping
           .findOne()
           .where('check', self)
-          .asc('timestamp')
+          .sort({ timestamp: 1 })
           .exec(function(err, firstPing) {
             if (err) return callback(err);
             self.lastChanged = firstPing.timestamp;
@@ -149,7 +149,7 @@ Check.methods.updateUptime = function(callback) {
       .where('check', self)
       .where('isUp', true)
       .where('timestamp').$lt( latestPing.timestamp)
-      .desc('timestamp')
+      .sort({ timestamp: -1 })
       .exec(function(err, latestUpPing) {
         if (err) return callback(err);
         if (latestUpPing) {
@@ -161,7 +161,7 @@ Check.methods.updateUptime = function(callback) {
           Ping
           .findOne()
           .where('check', self)
-          .asc('timestamp')
+          .sort({ timestamp: 1 })
           .exec(function(err, firstPing) {
             if (err) return callback(err);
             self.lastChanged = firstPing.timestamp;
@@ -205,30 +205,31 @@ Check.methods.getStatsForPeriod = function(period, page, callback) {
   }
   var stats = [];
   var query = { check: this, timestamp: { $gte: boundary(page), $lte: boundary(page - 1) } };
-  this.db.model(statProvider[period]).find(query).asc('timestamp').each(function(err, stat) {
-    if (stat) {
-      if (typeof stat.isUp != 'undefined') {
-        // stat is a Ping
-        stats.push({
-          timestamp: Date.parse(stat.timestamp),
-          uptime: stat.isUp ? '100' : '0',
-          responsiveness: stat.isResponsive ? '100' : '0',
-          downtime: stat.downtime ? stat.downtime / 1000 : 0,
-          responseTime: Math.round(stat.time)
-        });
-      } else {
-        // stat is an aggregation
-        stats.push({
-          timestamp: Date.parse(stat.timestamp),
-          uptime: (stat.ups / stat.count * 100).toFixed(3),
-          responsiveness: (stat.responsives / stat.count * 100).toFixed(3),
-          downtime: stat.downtime / 1000,
-          responseTime: Math.round(stat.time / stat.count)
-        });
-      };
+  var stream = this.db.model(statProvider[period]).find(query).sort({ timestamp: 1 }).stream();
+  stream.on('error', function(err) {
+    callback(err);
+  }).on('data', function(stat) {
+    if (typeof stat.isUp != 'undefined') {
+      // stat is a Ping
+      stats.push({
+        timestamp: Date.parse(stat.timestamp),
+        uptime: stat.isUp ? '100' : '0',
+        responsiveness: stat.isResponsive ? '100' : '0',
+        downtime: stat.downtime ? stat.downtime / 1000 : 0,
+        responseTime: Math.round(stat.time)
+      });
     } else {
-      callback(null, stats);
-    }
+      // stat is an aggregation
+      stats.push({
+        timestamp: Date.parse(stat.timestamp),
+        uptime: (stat.ups / stat.count * 100).toFixed(3),
+        responsiveness: (stat.responsives / stat.count * 100).toFixed(3),
+        downtime: stat.downtime / 1000,
+        responseTime: Math.round(stat.time / stat.count)
+      });
+    };
+  }).on('close', function() {
+    callback(null, stats);
   });
 }
 
@@ -283,14 +284,16 @@ Check.statics.guessType = function(url) {
 /**
  * Calls a function for all checks that need to be polled.
  *
- * A check needs to be polled if it was last polled sine a longer time than its own interval.
- * This method uses Mongoose streaming cursor interface (Query.each())
+ * A check needs to be polled if it was last polled since a longer time than its own interval.
  *
  * @param {Function} Callback function to be called with each Check
  * @api   public
  */
 Check.statics.callForChecksNeedingPoll = function(callback) {
-  this.needingPoll().each(callback);
+  var stream = this.needingPoll().stream();
+  stream.on('data', function(check) {
+    callback(check);
+  });
 }
 
 Check.statics.needingPoll = function() {

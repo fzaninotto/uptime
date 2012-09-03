@@ -7,6 +7,8 @@
     "mongoose":  "3.0.0rc0",
     "mongoose-lifecycle": "1.0.0",
     "express":   "3.0.0rc2",
+    "express-partials": "0.0.5",
+    "connect-flash": "0.1.0",
     "ejs":       "0.8.0",
     "config":    "0.4.15",
     "async":     "0.1.22",

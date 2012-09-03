@@ -24,7 +24,7 @@ CheckEvent.statics.aggregateEventsByDay = function(events, callback) {
     var check = event.check.toString();
     if (checkIds.indexOf(check) == -1) checkIds.push(check);
   });
-  this.db.model('Check').find({ _id: { $in: checkIds } }).only('_id', 'name', 'url').exec(function(err, checks) {
+  this.db.model('Check').find({ _id: { $in: checkIds } }).select({ _id: 1, name: 1, url: 1 }).exec(function(err, checks) {
     // populate related check for each event
     if (err) return callback(err);
     var indexedChecks = {};

@@ -29,7 +29,7 @@ var page = {};
   <%- partial('_events', { url: '/api/checks/' + check._id + '/events', route: route }) %>
   </div>
   <%- partial('_pings', { check: check, route: route }) %>
-  <%- partial('_check_details', { check: check }) %>
+  <%- partial('_checkDetails', { check: check, route: route }) %>
 </div>
 <script>
 $(document).ready(function() {

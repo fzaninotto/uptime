@@ -12,7 +12,7 @@ var CheckEvent    = require('../../../models/checkEvent');
 module.exports = function(app) {
   
   app.get('/tags', function(req, res) {
-    Tag.find({}).asc('name').exec(function(err, tags) {
+    Tag.find({}).sort({ name: 1 }).exec(function(err, tags) {
       res.json(tags);
     });
   });
@@ -46,13 +46,14 @@ module.exports = function(app) {
   });
 
   app.get('/tags/:name/stats/:type/:page?', loadTag, function(req, res, next) {
-    req.tag.getStatsForPeriod(req.params.type, req.params.page, function(stats) {
+    req.tag.getStatsForPeriod(req.params.type, req.params.page, function(err, stats) {
+      if (err) return next(err);
       res.json(stats);
     });
   });
 
   app.get('/tags/:name/events', function(req, res) {
-    CheckEvent.find({ tags: req.params.name, timestamp: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} }).desc('timestamp').select({tags: 0}).exec(function(err, events) {
+    CheckEvent.find({ tags: req.params.name, timestamp: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} }).sort({ timestamp: -1 }).select({ tags: 0 }).exec(function(err, events) {
       if (err) return next(err);
       CheckEvent.aggregateEventsByDay(events, function(err, aggregatedEvents) {
         res.json(aggregatedEvents);

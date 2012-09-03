@@ -15,7 +15,7 @@ module.exports = function(app) {
     Check.count({ _id: req.params.id}, function(err, nb_checks) {
       if (err) return app.next(err);
       if (!nb_checks) return app.next(new Error('failed to load check ' + req.params.id));
-      Ping.find({ check: req.params.id }).desc('timestamp').limit(50).skip((req.params.page -1) * 50).exec(function(err, pings) {
+      Ping.find({ check: req.params.id }).sort({ timestamp: -1 }).limit(50).skip((req.params.page -1) * 50).exec(function(err, pings) {
         if (err) return next(err);
         res.json(pings);
       });
@@ -23,7 +23,7 @@ module.exports = function(app) {
   });
 
   app.get('/pings/events', function(req, res, next) {
-    CheckEvent.find({ timestamp: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} }).desc('timestamp').select({tags: 0}).exec(function(err, events) {
+    CheckEvent.find({ timestamp: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} }).sort({ timestamp: -1 }).select({ tags: 0 }).exec(function(err, events) {
       if (err) return next(err);
       CheckEvent.aggregateEventsByDay(events, function(err, aggregatedEvents) {
         res.json(aggregatedEvents);

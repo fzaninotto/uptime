@@ -18,7 +18,7 @@ module.exports = function(app) {
     if (req.query.tag) {
       query.tags = req.query.tag;
     }
-    Check.find(query).asc('isUp').desc('lastChanged').exec(function(err, checks) {
+    Check.find(query).sort({ isUp: 1, lastChanged: -1 }).exec(function(err, checks) {
       if (err) return next(err);
       res.json(checks);
     });
@@ -74,7 +74,7 @@ module.exports = function(app) {
   });
   
   app.get('/checks/:id/events', function(req, res, next) {
-    CheckEvent.find({ check: req.params.id, timestamp: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} }).desc('timestamp').select({tags: 0}).exec(function(err, events) {
+    CheckEvent.find({ check: req.params.id, timestamp: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} }).sort({ timestamp: -1 }).select({tags: 0}).exec(function(err, events) {
       if (err) return next(err);
       CheckEvent.aggregateEventsByDay(events, function(err, aggregatedEvents) {
         res.json(aggregatedEvents);
