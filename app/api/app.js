@@ -18,7 +18,10 @@ app.configure(function(){
 var upCount;
 var refreshUpCount = function(callback) {
   var count = { up: 0, down: 0, paused: 0, total: 0 };
-  Check.find({}).select({ isUp: 1, isPaused: 1 }).exec(function(err, checks) {
+  Check
+  .find()
+  .select({ isUp: 1, isPaused: 1 })
+  .exec(function(err, checks) {
     if (err) return callback(err);
     checks.forEach(function(check) {
       count.total++;
