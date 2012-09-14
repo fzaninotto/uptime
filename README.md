@@ -38,7 +38,7 @@ Lastly, start the application with:
 
     > node app.js
 
-Note that Uptime requires at least Node.js 0.6.
+Note that Uptime requires at least Node.js 0.8.
 
 Adding Checks
 -------------
