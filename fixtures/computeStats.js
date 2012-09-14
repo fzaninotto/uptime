@@ -36,7 +36,10 @@ var updateLastHourQos = function(callback) {
 }
 
 var updateHourlyQosSinceTheFirstPing = function(callback) {
-  Ping.find().asc('timestamp').findOne(function(err, ping) {
+  Ping
+  .find()
+  .sort({ 'timestamp': 1 })
+  .findOne(function(err, ping) {
     var date = ping.timestamp.valueOf();
     var now = Date.now();
     nbDates = 0;
@@ -56,7 +59,10 @@ var updateHourlyQosSinceTheFirstPing = function(callback) {
 }
 
 var updateDailyQosSinceTheFirstPing = function(callback) {
-  Ping.find().asc('timestamp').findOne(function(err, ping) {
+  Ping
+  .find()
+  .sort({ 'timestamp': 1 })
+  .findOne(function(err, ping) {
     var date = ping.timestamp.valueOf();
     var now = Date.now();
     nbDates = 0;
@@ -77,7 +83,10 @@ var updateDailyQosSinceTheFirstPing = function(callback) {
 }
 
 var updateMonthlyQosSinceTheFirstPing = function(callback) {
-  Ping.find().asc('timestamp').findOne(function(err, ping) {
+  Ping
+  .find()
+  .sort({ 'timestamp': 1 })
+  .findOne(function(err, ping) {
     var date = ping.timestamp.valueOf();
     var now = Date.now();
     nbDates = 0;

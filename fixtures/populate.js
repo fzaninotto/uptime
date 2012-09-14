@@ -11,7 +11,7 @@ mongoose.connection.on('error', function (err) {
   console.error('Make sure a mongoDB server is running and accessible by this application')
 });
 
-var backInTime = 30 * 24 * 60 * 60 * 1000; // defaults to 30 days ago
+var backInTime = 3 * 30 * 24 * 60 * 60 * 1000; // defaults to 3 months ago
 
 var removeChecks = function(callback) {
   console.log('Removing Checks');
@@ -33,7 +33,7 @@ var createDummyCheck = function(quality, name, tags, callback) {
   var check = new Check({
     url: 'http://localhost:8888/' + quality,
     name: name || ('dummy' + quality),
-    interval: 60000,
+    interval: 300000,
     maxTime: 500,
     tags: tags || ['all']
   });
@@ -65,7 +65,7 @@ var createFixturePings = function(callback) {
           }
           ping.save(cb);
           nbPings++;
-          if (nbPings % 1440 == 0) {
+          if (nbPings % 288 == 0) {
             console.log(ping.timestamp + ' Created pings for check "' + check.name + '"');
           };
         },
