@@ -118,7 +118,7 @@ Check.methods.updateUptime = function(callback) {
       .findOne()
       .where('check', self)
       .where('isUp', false)
-      .where('timestamp').$lt(latestPing.timestamp)
+      .where('timestamp').lt(latestPing.timestamp)
       .sort({ timestamp: -1 })
       .exec(function(err, latestDownPing) {
         if (err) return callback(err);
@@ -148,7 +148,7 @@ Check.methods.updateUptime = function(callback) {
       .findOne()
       .where('check', self)
       .where('isUp', true)
-      .where('timestamp').$lt( latestPing.timestamp)
+      .where('timestamp').lt( latestPing.timestamp)
       .sort({ timestamp: -1 })
       .exec(function(err, latestUpPing) {
         if (err) return callback(err);
