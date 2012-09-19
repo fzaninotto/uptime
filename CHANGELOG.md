@@ -1,6 +1,13 @@
 Uptime Changelog
 ================
 
+2012-09-19, v2.0rc0
+-------------------
+
+* Upgraded Node.js to 0.8
+* Bumped main dependencies (Express and Mongoose) to v3. This lead to some refactoring in the model classes.
+* Switched to local jQuery to avoid networking issue
+
 2012-09-19, v1.4
 ----------------
 
