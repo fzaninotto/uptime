@@ -11,9 +11,32 @@ exports.init = function(enableNewEvents, enableNewPings) {
 var registerNewEventsLogger = function() {
   CheckEvent.on('afterInsert', function(checkEvent) {
     checkEvent.findCheck(function(err, check) {
+      var messageColor;
       var message = check.name + ' ';
-      message += (checkEvent.isGoDown) ? 'goes down' : ('goes back up after ' + Math.floor(checkEvent.downtime / 1000) + 's of downtime');
-      console.log(timestamp() + color(message, checkEvent.isGoDown ? 'red+bold' : 'green+bold'));
+      switch (checkEvent.message) {
+        case 'paused':
+        case 'restarted':
+          message += 'was ' + checkEvent.message;
+          messageColor = 'blue+bold';
+          break;
+        case 'down':
+          message += 'went down ' + checkEvent.details;
+          messageColor = 'red+bold';
+          break;
+        case 'up':
+          if (checkEvent.downtime) {
+            message += 'went back up after ' +  Math.floor(checkEvent.downtime / 1000) + 's of downtime';
+          } else {
+            message += 'is now up';
+          }
+          messageColor = 'green+bold';
+          break;
+        default:
+         message += '(unnown event)';
+         messageColor = 'bold';
+      }
+
+      console.log(timestamp() + color(message, messageColor));
     });
   });
 };
