@@ -5,7 +5,7 @@ var express    = require('express');
 var Check      = require('../../models/check');
 var CheckEvent = require('../../models/checkEvent');
 
-var app = module.exports = express.createServer();
+var app = module.exports = express();
 
 // middleware
 
@@ -18,8 +18,12 @@ app.configure(function(){
 var upCount;
 var refreshUpCount = function(callback) {
   var count = { up: 0, down: 0, paused: 0, total: 0 };
-  Check.find({}).only(['isUp', 'isPaused']).each(function(err, check) {
-    if (check) {
+  Check
+  .find()
+  .select({ isUp: 1, isPaused: 1 })
+  .exec(function(err, checks) {
+    if (err) return callback(err);
+    checks.forEach(function(check) {
       count.total++;
       if (check.isPaused) {
         count.paused++;
@@ -28,10 +32,9 @@ var refreshUpCount = function(callback) {
       } else {
         count.down++;
       }
-    } else {
-      upCount = count;
-      callback();
-    }
+    });
+    upCount = count;
+    callback();
   });
 }
 
@@ -39,11 +42,12 @@ Check.on('afterInsert', function() { upCount = undefined; });
 Check.on('afterRemove', function() { upCount = undefined; });
 CheckEvent.on('afterInsert', function() { upCount = undefined; });
 
-app.get('/checks/count', function(req, res) {
+app.get('/checks/count', function(req, res, next) {
   if (upCount) {
     res.json(upCount);
   } else {
-    refreshUpCount(function() {
+    refreshUpCount(function(err) {
+      if (err) return next(err);
       res.json(upCount);
     });
   }
@@ -58,9 +62,11 @@ require('./routes/ping')(app);
 // route list
 app.get('/', function(req, res) {
   var routes = [];
-  app.routes.all().forEach(function(route) {
-    routes.push({method: route.method.toUpperCase() , path: app.route + route.path});
-  });
+  for (verb in app.routes) {
+    app.routes[verb].forEach(function(route) {
+      routes.push({method: verb.toUpperCase() , path: app.route + route.path});
+    });
+  }
   res.json(routes);
 });
 

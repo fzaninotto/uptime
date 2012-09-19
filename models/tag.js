@@ -61,18 +61,19 @@ Tag.methods.getStatsForPeriod = function(period, page, callback) {
   var boundary = TimeCalculator.boundaryFunction[period];
   var stats = [];
   var query = { name: this.name, timestamp: { $gte: boundary(page), $lte: boundary(page - 1) } };
-  this.db.model(statProvider[period]).find(query).asc('timestamp').each(function(err, stat) {
-    if (stat) {
-      stats.push({
-        timestamp: Date.parse(stat.timestamp),
-        uptime: (stat.ups / stat.count * 100).toFixed(3),
-        responsiveness: (stat.responsives / stat.count * 100).toFixed(3),
-        downtime: stat.downtime / 1000,
-        responseTime: Math.round(stat.time / stat.count)
-      });
-    } else {
-      callback(stats);
-    }
+  var stream = this.db.model(statProvider[period]).find(query).sort({ timestamp: 1 }).stream();
+  stream.on('error', function(err) {
+    callback(err);
+  }).on('data', function(stat) {
+    stats.push({
+      timestamp: Date.parse(stat.timestamp),
+      uptime: (stat.ups / stat.count * 100).toFixed(3),
+      responsiveness: (stat.responsives / stat.count * 100).toFixed(3),
+      downtime: stat.downtime / 1000,
+      responseTime: Math.round(stat.time / stat.count)
+    });
+  }).on('close', function() {
+    callback(null, stats);
   });
 }
 
@@ -104,7 +105,7 @@ Tag.methods.getSingleStatsForPeriod = function(period, date, callback) {
 Tag.methods.getMonths = function(callback) {
   TagMonthlyStat
   .find({ name: this.name })
-  .asc('timestamp')
+  .sort({ timestamp: 1 })
   .select('timestamp')
   .findOne(function(err, stat) {
     if (err) return callback(err);
@@ -134,11 +135,11 @@ Tag.methods.getMonthlyReport = function(date, callback) {
       TagMonthlyStat.findOne({ name: tag.name, timestamp: begin }, cb);
     },
     tagDailyStats: function(cb) {
-      TagDailyStat.find({ name: tag.name, timestamp: { $gte: begin, $lte: end }}).asc('timestamp').run(cb);
+      TagDailyStat.find({ name: tag.name, timestamp: { $gte: begin, $lte: end }}).sort({ timestamp: 1 }).exec(cb);
     },
     checkStats: function(cb) {
-      Check.find({ tags: tag.name }).run(function(getCheckErr, checks) {
-        CheckMonthlyStat.find({ check: { $in: checks }, timestamp: { $gte: begin, $lte: end }}).desc('downtime').populate('check', ['name']).run(cb);
+      Check.find({ tags: tag.name }).exec(function(getCheckErr, checks) {
+        CheckMonthlyStat.find({ check: { $in: checks }, timestamp: { $gte: begin, $lte: end }}).sort({ downtime: -1 }).populate('check', ['name']).exec(cb);
       });
     }
   }, function(err, results) {
