@@ -2,11 +2,12 @@
  * Monitor remote server uptime.
  */
 
+var http       = require('http');
 var mongoose   = require('mongoose');
 var express    = require('express');
 var config     = require('config');
 var socketIo   = require('socket.io');
-var path       = require('path');
+var fs         = require('fs');
 var monitor    = require('./lib/monitor');
 var analyzer   = require('./lib/analyzer');
 var CheckEvent = require('./models/checkEvent');
@@ -27,7 +28,8 @@ if (config.autoStartMonitor) {
 a = analyzer.createAnalyzer(config.analyzer);
 a.start();
 
-var app = module.exports = express.createServer();
+var app = module.exports = express();
+var server = http.createServer(app);
 
 // Site
 
@@ -60,11 +62,11 @@ app.get('/', function(req, res) {
   res.redirect('/dashboard/events');
 });
 app.get('/favicon.ico', function(req, res) {
-  res.redirect('/dashboard/favicon.ico', 301);
+  res.redirect(301, '/dashboard/favicon.ico');
 });
 
 // Sockets
-var io = socketIo.listen(app);
+var io = socketIo.listen(server);
 
 io.configure('production', function() {
   io.enable('browser client etag');
@@ -93,11 +95,11 @@ io.sockets.on('connection', function(socket) {
 });
 
 // load plugins
-path.exists('./plugins/index.js', function(exists) {
+fs.exists('./plugins/index.js', function(exists) {
   if (exists) {
     require('./plugins').init(app, io, config, mongoose);
   };
 });
 
-app.listen(config.server.port);
+server.listen(config.server.port);
 console.log("Express server listening on port %d in %s mode", config.server.port, app.settings.env);

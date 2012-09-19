@@ -4,18 +4,20 @@
   "version": "1.4.0",
   "author": "Francois Zaninotto",
   "dependencies": {
-    "mongoose":  "2.6.5",
+    "mongoose":  "3.1.2",
     "mongoose-lifecycle": "1.0.0",
-    "express":   "2.5.9",
-    "ejs":       "0.7.1",
+    "express":   "3.0.0rc3",
+    "express-partials": "0.0.6",
+    "connect-flash": "0.1.0",
+    "ejs":       "0.8.0",
     "config":    "0.4.15",
     "async":     "0.1.22",
-    "socket.io": "0.9.6"
+    "socket.io": "0.9.10"
   },
   "keywords": ["uptime", "monitoring", "api", "check"],
   "repository": "https://github.com/fzaninotto/uptime",
   "license": "MIT",
   "engine": {
-    "node": "0.6.x"
+    "node": "0.8.x"
   }
 }

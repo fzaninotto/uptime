@@ -18,14 +18,20 @@ module.exports = function(app) {
     if (req.query.tag) {
       query.tags = req.query.tag;
     }
-    Check.find(query).asc('isUp').desc('lastChanged').run(function(err, checks) {
+    Check
+    .find(query)
+    .sort({ isUp: 1, lastChanged: -1 })
+    .exec(function(err, checks) {
       if (err) return next(err);
       res.json(checks);
     });
   });
 
   app.get('/checks/needingPoll', function(req, res, next) {
-    Check.needingPoll().exclude('qos').run(function(err, checks) {
+    Check
+    .needingPoll()
+    .select({qos: 0})
+    .exec(function(err, checks) {
       if (err) return next(err);
       res.json(checks);
     });
@@ -33,9 +39,12 @@ module.exports = function(app) {
 
   // check route middleware
   var loadCheck = function(req, res, next) {
-    Check.find({ _id: req.params.id }).exclude('qos').findOne(function(err, check) {
+    Check
+    .find({ _id: req.params.id })
+    .select({qos: 0})
+    .findOne(function(err, check) {
       if (err) return next(err);
-      if (!check) return next(new Error('failed to load check ' + req.params.id));
+      if (!check) return res.json(404, { error: 'failed to load check ' + req.params.id });
       req.check = check;
       next();
     });
@@ -48,15 +57,15 @@ module.exports = function(app) {
   app.get('/checks/:id/pause', loadCheck, function(req, res, next) {
     req.check.togglePause();
     req.check.save(function(err) {
-      if (err) return next(new Error('failed to togle pause on check' + req.params.id));
-      res.send();
+      if (err) return next(new Error('failed to toggle pause on check' + req.params.id));
+      new CheckEvent({
+        timestamp: new Date(),
+        check: req.check,
+        tags: req.check.tags,
+        message: req.check.isPaused ? 'paused' : 'restarted',
+      }).save();
+      res.redirect(app.route + '/checks/' + req.params.id);
     });
-    new CheckEvent({
-      timestamp: new Date(),
-      check: req.check,
-      tags: req.check.tags,
-      message: req.check.isPaused ? 'paused' : 'restarted',
-    }).save();
   });
 
   app.get('/checks/:id/stat/:period/:timestamp', loadCheck, function(req, res, next) {
@@ -74,9 +83,17 @@ module.exports = function(app) {
   });
   
   app.get('/checks/:id/events', function(req, res, next) {
-    CheckEvent.find({ check: req.params.id, timestamp: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} }).desc('timestamp').exclude('tags').run(function(err, events) {
+    CheckEvent
+    .find({
+      check: req.params.id,
+      timestamp: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
+    })
+    .sort({ timestamp: -1 })
+    .select({tags: 0})
+    .exec(function(err, events) {
       if (err) return next(err);
       CheckEvent.aggregateEventsByDay(events, function(err, aggregatedEvents) {
+        if(err) return next(err);
         res.json(aggregatedEvents);
       });
     });
