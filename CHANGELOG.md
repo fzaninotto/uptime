@@ -1,6 +1,16 @@
 Uptime Changelog
 ================
 
+To be released
+--------------
+
+* Added support for setting the full MongoDB connection string in the config file
+* Fixed engine requirement in package.json
+* Updated Node poller user agent version
+* Fixed console plugin
+* Fixed fixtures to let them generate CheckEvents
+* Fixed pings list not refreshing live in dashboard
+
 2012-09-19, v2.0rc0
 -------------------
 

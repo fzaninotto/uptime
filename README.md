@@ -25,7 +25,9 @@ Features
 Installing Uptime
 -----------------
 
-One line:
+Uptime 2.0 requires Node.js 0.8 (if you're stuck with Node 0.6, try Uptime v1.4, available as a tag and on npm).
+
+One line install:
 
     > npm install node-uptime
 
@@ -37,8 +39,6 @@ Alternatively, clone the repository from GitHub and install dependencies using n
 Lastly, start the application with:
 
     > node app.js
-
-Note that Uptime requires at least Node.js 0.8.
 
 Adding Checks
 -------------
@@ -59,6 +59,7 @@ Uptime uses [node-config](https://github.com/lorenwest/node-config) to allow YAM
       database: uptime
       user:     root 
       password:
+      connectionString:       # alternative to setting server, database, user and password separately
     
     monitor:
       name:                   origin

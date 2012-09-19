@@ -3,6 +3,7 @@ mongodb:
   database: uptime
   user:     root 
   password:
+  connectionString:       # alternative to setting server, database, user and password separately
 
 monitor:
   name:                   origin
