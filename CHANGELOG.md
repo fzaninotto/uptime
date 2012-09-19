@@ -1,9 +1,11 @@
 Uptime Changelog
 ================
 
-To be released
---------------
+2012-09-19, v1.4
+----------------
 
+* This is the last release compatible with Node 0.6.
+* New events appear as such when watching event list
 * Added favicon. The favison turns red when at least one check is down.
 
 2012-08-05, v1.3
