@@ -69,7 +69,7 @@ module.exports = function(app) {
         return res.send('Error: This check was already polled. No ping was created', 403);
       };
       var status = req.body.status === 'true';
-      Ping.createForCheck(status, req.body.time, check, req.body.name, req.body.error, function(err2, ping) {
+      Ping.createForCheck(status, req.body.timestamp, req.body.time, check, req.body.name, req.body.error, function(err2, ping) {
         if (err2) {
           return res.send(err2.message, 500);
         }

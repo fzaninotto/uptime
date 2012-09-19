@@ -1,8 +1,9 @@
-var mongoose = require('mongoose');
-var config   = require('config').mongodb;
-var async    = require('async');
-var Check    = require('../models/check');
-var Ping     = require('../models/ping');
+var mongoose   = require('mongoose');
+var config     = require('config').mongodb;
+var async      = require('async');
+var Check      = require('../models/check');
+var CheckEvent = require('../models/checkEvent');
+var Ping       = require('../models/ping');
 
 // configure mongodb
 mongoose.connect('mongodb://' + config.user + ':' + config.password + '@' + config.server +'/' + config.database);
@@ -15,7 +16,10 @@ var backInTime = 3 * 30 * 24 * 60 * 60 * 1000; // defaults to 3 months ago
 
 var removeChecks = function(callback) {
   console.log('Removing Checks');
-  Check.collection.remove(callback);
+  async.series([
+    function(cb) { CheckEvent.collection.remove(cb); },
+    function(cb) { Check.collection.remove(cb); },
+  ], callback);
 }
 
 var createFixtureChecks = function(callback) {
@@ -50,20 +54,15 @@ var createFixturePings = function(callback) {
       async.whilst(
         function() { date += check.interval; return date < now; },
         function(cb) {
-          var ping = new Ping();
-          ping.timestamp = date;
-          ping.isUp = Math.random() < (quality / 100);
-          ping.time = check.maxTime + (Math.random() - 0.9) * 200;
-          ping.check = check;
-          ping.tags = check.tags;
-          if (!ping.isUp) {
-            ping.isResponsive = false;
-            ping.downtime = check.interval;
-            ping.error = 'Dummy Error';
-          } else {
-            ping.isResponsive = ping.time < check.maxTime;
-          }
-          ping.save(cb);
+          Ping.createForCheck(
+            Math.random() < (quality / 100),
+            date,
+            check.maxTime + (Math.random() - 0.9) * 200,
+            check,
+            'populator',
+            'Dummy Error',
+            cb
+          );
           nbPings++;
           if (nbPings % 288 == 0) {
             console.log(ping.timestamp + ' Created pings for check "' + check.name + '"');
