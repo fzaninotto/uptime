@@ -45,15 +45,13 @@ $(document).ready(function() {
         $('#pings tbody').html(lines.join(''));
       });
     };
-    socket.on('connect', function() {
-      socket.emit('set check', '<%= check._id %>');
-      socket.on('ping', function(ping) {
-        if (page.ping == 1) {
-          var line = $(ejs.render(ping_template, { ping: ping }));
-          $('#pings tbody').prepend(line);
-          line.fadeOut().fadeIn();
-        }
-      });
+    socket.emit('set check', '<%= check._id %>');
+    socket.on('ping', function(ping) {
+      if (page.ping == 1) {
+        var line = $(ejs.render(ping_template, { ping: ping }));
+        $('#pings tbody').prepend(line);
+        line.fadeOut().fadeIn();
+      }
     });
     handlePagination('ping', '#pings', updatePings);
   });
