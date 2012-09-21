@@ -17,6 +17,7 @@ var Ping = new Schema({
   error        : String
 });
 Ping.index({ timestamp: -1 });
+Ping.index({ check: 1 });
 Ping.plugin(require('mongoose-lifecycle'));
 
 Ping.methods.findCheck = function(callback) {
@@ -25,7 +26,7 @@ Ping.methods.findCheck = function(callback) {
 
 Ping.statics.createForCheck = function(status, timestamp, time, check, monitorName, error, callback) {
   timestamp = constructor == Date ? timestamp : new Date(parseInt(timestamp));
-  ping = new this();
+  var ping = new this();
   ping.timestamp = timestamp;
   ping.isUp = status;
   if (status && check.maxTime) {
@@ -41,12 +42,13 @@ Ping.statics.createForCheck = function(status, timestamp, time, check, monitorNa
     ping.downtime = check.interval || 60000;
     ping.error = error;
   };
-  ping.save(function(err) {
-    callback(err, ping);
-    if (!err) {
-      check.setLastTest(status, timestamp, error);
-      check.save();
-    };
+  ping.save(function(err1) {
+    if (err1) return callback(err1);
+    check.setLastTest(status, timestamp, error);
+    check.save(function(err2) {
+      if (err2) return callback(err2);
+      callback(null, ping);
+    })
   });
 }
 
