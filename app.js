@@ -3,7 +3,6 @@
  */
 
 var http       = require('http');
-var mongoose   = require('mongoose');
 var express    = require('express');
 var config     = require('config');
 var socketIo   = require('socket.io');
@@ -13,12 +12,11 @@ var analyzer   = require('./lib/analyzer');
 var CheckEvent = require('./models/checkEvent');
 var Ping       = require('./models/ping');
 
-// configure mongodb
-mongoose.connect(config.mongodb.connectionString || 'mongodb://' + config.mongodb.user + ':' + config.mongodb.password + '@' + config.mongodb.server +'/' + config.mongodb.database);
-mongoose.connection.on('error', function (err) {
-  console.error('MongoDB error: ' + err.message);
-  console.error('Make sure a mongoDB server is running and accessible by this application')
-});
+// database
+
+var mongoose   = require('./bootstrap');
+
+// monitor
 
 if (config.autoStartMonitor) {
   m = monitor.createMonitor(config.monitor);
@@ -28,10 +26,10 @@ if (config.autoStartMonitor) {
 a = analyzer.createAnalyzer(config.analyzer);
 a.start();
 
+// web front
+
 var app = module.exports = express();
 var server = http.createServer(app);
-
-// Site
 
 app.configure(function(){
   app.use(app.router);
