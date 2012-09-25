@@ -67,7 +67,7 @@ describe('uptimeCalculator', function() {
 
   describe('#getUptimePeriods', function() {
 
-    it('should return empty array when there is no ping', function(done) {
+    it('should return an empty array when there is no ping at all', function(done) {
       var calculator = new UptimeCalculator(check2);
       calculator.getUptimePeriods(Date.now(), Date.now() + 1000, function(err, periods) {
         if (err) throw (err);
@@ -76,16 +76,7 @@ describe('uptimeCalculator', function() {
       });
     });
 
-    it('should return the correct period for not finished check', function(done) {
-      var calculator = new UptimeCalculator(check1);
-      calculator.getUptimePeriods(now + 3000, now + 6000, function(err, periods) {
-        if (err) throw (err);
-        periods.should.eql([ [now + 3000, now + 6000] ]);
-        done();
-      });
-    });
-
-    it('should return the correct period for not started check', function(done) {
+    it('should return an empty array when there is no up ping', function(done) {
       var calculator = new UptimeCalculator(check1);
       calculator.getUptimePeriods(now - 6000, now - 3000, function(err, periods) {
         if (err) throw (err);
@@ -94,16 +85,34 @@ describe('uptimeCalculator', function() {
       });
     });
 
-    it('should return the correct period for crossing checks', function(done) {
+    it('should return a period ending at the end of the lookup period when the latest ping is up', function(done) {
       var calculator = new UptimeCalculator(check1);
-      calculator.getUptimePeriods(now - 6000, now, function(err, periods) {
+      calculator.getUptimePeriods(now + 3000, now + 6000, function(err, periods) {
         if (err) throw (err);
-        periods.should.eql([ [ now - 1000, now ]]);
+        periods.should.eql([ [now + 3000, now + 6000] ]);
         done();
       });
     });
 
-    it('should return the correct periods', function(done) {
+    it('should return a period starting at the beginning of the lookup period when the previous ping is up', function(done) {
+      var calculator = new UptimeCalculator(check1);
+      calculator.getUptimePeriods(now, now + 1000, function(err, periods) {
+        if (err) throw (err);
+        periods.should.eql([ [now, now + 1000] ]);
+        done();
+      });
+    });
+
+    it('should return an uptime period even if the state at the beginning and at the end are down', function(done) {
+      var calculator = new UptimeCalculator(check1);
+      calculator.getUptimePeriods(now - 3000, now + 2000, function(err, periods) {
+        if (err) throw (err);
+        periods.should.eql([ [ now - 1000, now + 2000 ]]);
+        done();
+      });
+    });
+
+    it('should return the several periods when a downtime period lies in the middle of the interval', function(done) {
       var calculator = new UptimeCalculator(check1);
       calculator.getUptimePeriods(now - 3000, now + 3000, function(err, periods) {
         if (err) throw (err);
