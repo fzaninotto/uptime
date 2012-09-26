@@ -198,6 +198,13 @@ var statProvider = {
   '3y':  'CheckMonthlyStat'
 };
 
+var statProviderDuration = {
+  'Ping': 0,
+  'CheckHourlyStat': 1000 * 60 * 60,
+  'CheckDailyStat': 1000 * 60 * 60 * 24,
+  'CheckMonthlyStat': 1000 * 60 * 60 * 24 * 365 / 12
+}
+
 Check.methods.getStatsForPeriod = function(period, page, callback) {
   var boundary = TimeCalculator.boundaryFunction[period];
   if (typeof boundary == 'undefined') {
@@ -222,10 +229,12 @@ Check.methods.getStatsForPeriod = function(period, page, callback) {
       // stat is an aggregation
       stats.push({
         timestamp: Date.parse(stat.timestamp),
+        end: Date.parse(stat.timestamp) + statProviderDuration[statProvider[period]],
         uptime: (stat.ups / stat.count * 100).toFixed(3),
         responsiveness: (stat.responsives / stat.count * 100).toFixed(3),
         downtime: stat.downtime / 1000,
-        responseTime: Math.round(stat.time / stat.count)
+        responseTime: Math.round(stat.time / stat.count),
+        periods: stat.periods || []
       });
     };
   }).on('close', function() {

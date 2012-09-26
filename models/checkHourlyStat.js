@@ -12,7 +12,8 @@ var CheckHourlyStat = new Schema({
   ups         : Number,
   responsives : Number,
   time        : Number,
-  downtime    : Number
+  downtime    : Number,
+  periods     : Array
 });
 CheckHourlyStat.index({ check: 1, timestamp: -1 }, { unique: true });
 CheckHourlyStat.plugin(require('mongoose-lifecycle'));

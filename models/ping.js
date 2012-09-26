@@ -70,6 +70,7 @@ Ping.statics.updateHourlyQos = function(now, callback) {
   var end   = TimeCalculator.completeHour(now);
   var CheckHourlyStat = require('./checkHourlyStat');
   var TagHourlyStat   = require('./tagHourlyStat');
+  var UptimeCalculator = require('../lib/uptimeCalculator');
   QosAggregator.getQosForPeriod(this.collection, mapCheckAndTags, start, end, function(err, results) {
     if (err) return callback(err);
     async.forEach(results, function(result, cb) {
@@ -79,7 +80,11 @@ Ping.statics.updateHourlyQos = function(now, callback) {
         TagHourlyStat.update({ name: result._id, timestamp: start }, { $set: { count: stat.count, ups: stat.ups, responsives: stat.responsives, time: stat.time, downtime: stat.downtime } }, { upsert: true }, cb);
       } else {
         // the key is a check
-        CheckHourlyStat.update({ check: result._id, timestamp: start }, { $set: { count: stat.count, ups: stat.ups, responsives: stat.responsives, time: stat.time, downtime: stat.downtime } }, { upsert: true }, cb);
+        var calculator = new UptimeCalculator(result._id);
+        calculator.getUptimePeriods(start, end, function(err2, periods) {
+          if (err2) return cb(err2);
+          CheckHourlyStat.update({ check: result._id, timestamp: start }, { $set: { periods: periods, count: stat.count, ups: stat.ups, responsives: stat.responsives, time: stat.time, downtime: stat.downtime } }, { upsert: true }, cb);
+        });
       }
     }, callback);
   });
