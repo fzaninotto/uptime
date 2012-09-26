@@ -43,6 +43,28 @@ describe('uptimeCalculator', function() {
     check2.save(done);
   });
 
+  describe('#constructor', function() {
+
+    it('should accept Check objects', function(done) {
+      var calculator = new UptimeCalculator(check1);
+      calculator.getPingBeforeTime(now - 3000, function(err, ping) {
+        if (err) throw (err);
+        ping.monitorName.should.eql('dummy1');
+        done();
+      });
+    });
+
+    it('should accept Check identifiers', function(done) {
+      var calculator = new UptimeCalculator(check1._id);
+      calculator.getPingBeforeTime(now - 3000, function(err, ping) {
+        if (err) throw (err);
+        ping.monitorName.should.eql('dummy1');
+        done();
+      });
+    });
+
+  });
+
   describe('#getPingBeforeTime', function() {
 
     it('should return nothing for new Checks', function(done) {
