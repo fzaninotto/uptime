@@ -63,10 +63,7 @@ var updateDailyQosSinceTheFirstPing = function(callback) {
       function() { date += 24 * 60 * 60 * 1000; return date < now; },
       function(cb) {
         var dateObject = new Date(date);
-        async.parallel([
-          function(callme) { CheckHourlyStat.updateDailyQos(dateObject, callme); },
-          function(callme) { TagHourlyStat.updateDailyQos(dateObject, callme); },
-        ], cb);
+        QosAggregator.updateDailyQos(dateObject, cb);
         nbDates++;
         console.log('Computing daily stats for ' + dateObject.toUTCString());
       },
@@ -87,10 +84,7 @@ var updateMonthlyQosSinceTheFirstPing = function(callback) {
       function() { date += 28 * 24 * 60 * 60 * 1000; return date < now; },
       function(cb) {
         var dateObject = new Date(date);
-        async.parallel([
-          function(callme) { CheckHourlyStat.updateMonthlyQos(dateObject, callme); },
-          function(callme) { TagHourlyStat.updateMonthlyQos(dateObject, callme); },
-        ], cb);
+        QosAggregator.updateMonthlyQos(dateObject, cb);
         nbDates++;
         console.log('Computing monthly stats for ' + dateObject.toUTCString());
       },
