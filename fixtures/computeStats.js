@@ -4,6 +4,7 @@ var Ping            = require('../models/ping');
 var Check           = require('../models/check');
 var CheckHourlyStat = require('../models/checkHourlyStat');
 var TagHourlyStat   = require('../models/tagHourlyStat');
+var QosAggregator   = require('../lib/qosAggregator');
 
 var emptyStats = function(callback) {
   console.log('Emptying stat collections');
@@ -22,8 +23,8 @@ var updateUptime = function(callback) {
 var updateLastHourQos = function(callback) {
   console.log('Updating last hour Qos for all checks');
   async.series([
-    function(cb) { Ping.updateLast24HoursQos(cb); },
-    function(cb) { Ping.updateLastHourQos(cb); }
+    function(cb) { QosAggregator.updateLast24HoursQos(cb); },
+    function(cb) { QosAggregator.updateLastHourQos(cb); }
   ], callback);
 }
 
@@ -39,7 +40,7 @@ var updateHourlyQosSinceTheFirstPing = function(callback) {
       function() { date += 60 * 60 * 1000; return date < now; },
       function(cb) {
         var dateObject = new Date(date);
-        Ping.updateHourlyQos(dateObject, cb);
+        QosAggregator.updateHourlyQos(dateObject, cb);
         nbDates++;
         if (nbDates % 24 == 0) {
           console.log('Computing hourly stats for ' + dateObject.toUTCString());
