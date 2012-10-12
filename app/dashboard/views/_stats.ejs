@@ -41,11 +41,11 @@
   <div style="clear:left"></div>
 </div>
 <script id="stat_template" type="text/template">
-<tr class="{{= (stat.uptime < 100) ? 'red' : (stat.responsiveness < 100) ? 'orange' : '' }}{{= ['0','6'].indexOf(moment(stat.timestamp).format('d')) !== -1 ? ' week-end' : '' }}">
+<tr class="{{= (stat.availability < 100) ? 'red' : (stat.responsiveness < 100) ? 'orange' : '' }}{{= ['0','6'].indexOf(moment(stat.timestamp).format('d')) !== -1 ? ' week-end' : '' }}">
   <td title="{{= new Date(stat.timestamp) }}">{{= moment(stat.timestamp).format(dateFormat) }}</td>
-  <td>{{= stat.uptime.replace('.000', '') }}%</td>
+  <td>{{= stat.availability.replace('.000', '') }}%</td>
   <td>{{= stat.responsiveness.replace('.000', '') }}%</td>
-  <td title="{{= stat.downtime }}s">{{= stat.downtime < 300 ? stat.downtime + 's' : moment.duration(stat.downtime, 'seconds').humanize() }}</td>
+  <td title="{{= stat.downtime }}s">{{= stat.downtime == 0 ? '' : stat.downtime < 300 ? stat.downtime + 's' : moment.duration(stat.downtime, 'seconds').humanize() }}</td>
   <td>{{= stat.responseTime }}ms</td>
 </tr>
 </script>
@@ -53,8 +53,8 @@
 var chartPeriod;
 var chart;
 var dateFormat = 'LLLL';
-var drawChart = function(uptime, responseTime) {
-  var uptimeBoundaries = getBoundaries(uptime);
+var drawChart = function(availability, responseTime) {
+  var uptimeBoundaries = getBoundaries(availability);
   Highcharts.setOptions({
     global: {
         useUTC: false
@@ -70,7 +70,7 @@ var drawChart = function(uptime, responseTime) {
     legend: { enabled: false },
     xAxis: { type: 'datetime' },
     yAxis: [{
-       title: { text: 'Uptime', style: { color: '#4572A7' }},
+       title: { text: 'Availability', style: { color: '#4572A7' }},
        labels: { style: { color: '#4572A7' }},
        min: uptimeBoundaries.min < 10 ? uptimeBoundaries.min : uptimeBoundaries.min < 90 ? uptimeBoundaries.min - 10 : (uptimeBoundaries.min - 1),
        max: 100
@@ -82,7 +82,7 @@ var drawChart = function(uptime, responseTime) {
       gridLineWidth: 0
     }],
     series: [
-      { name: "Uptime", data: uptime, type: 'area', color: '#4572A7' }, 
+      { name: "Availability", data: availability, type: 'area', color: '#4572A7' }, 
       { name: "Response Time", data: responseTime, yAxis: 1, type: 'spline', color: '#89A54E' }
     ],
     plotOptions: {
@@ -99,9 +99,9 @@ var drawChart = function(uptime, responseTime) {
     tooltip: {
       formatter: function() {
         return moment(this.x).format(dateFormat) +'<br/>' 
-           + (this.series.name == 'Uptime' ? 'Uptime: ' : 'Response Time: ')
+           + (this.series.name == 'Availability' ? 'Availability: ' : 'Response Time: ')
            + this.y
-           + (this.series.name == 'Uptime' ? '%' : 'ms');
+           + (this.series.name == 'Availability' ? '%' : 'ms');
       }
     }
   });
@@ -127,15 +127,15 @@ $(document).ready(function() {
     var updateStats = function() {
       $.getJSON('<%= url %>' + chartPeriod + '/' + page.stat, function(stats) {
         var lines = [];
-        var uptime = [];
+        var availability = [];
         var responseTime = [];
         $.each(stats, function(key, stat) {
           lines.unshift(ejs.render(stat_template, { stat: stat }));
-          uptime.push([stat.timestamp, stat.uptime]);
+          availability.push([stat.timestamp, stat.availability]);
           responseTime.push([stat.timestamp, stat.responseTime]);
         });
         $('#stats tbody').html(lines.join(''));
-        drawChart(uptime, responseTime);
+        drawChart(availability, responseTime);
       });
     }
     $('#chartPeriod a').click(function(e) {

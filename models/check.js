@@ -220,7 +220,7 @@ Check.methods.getStatsForPeriod = function(period, page, callback) {
       // stat is a Ping
       stats.push({
         timestamp: Date.parse(stat.timestamp),
-        uptime: stat.isUp ? '100' : '0',
+        availability: stat.isUp ? '100' : '0',
         responsiveness: stat.isResponsive ? '100' : '0',
         downtime: stat.downtime ? stat.downtime / 1000 : 0,
         responseTime: Math.round(stat.time)
@@ -229,12 +229,12 @@ Check.methods.getStatsForPeriod = function(period, page, callback) {
       // stat is an aggregation
       stats.push({
         timestamp: Date.parse(stat.timestamp),
-        end: Date.parse(stat.timestamp) + statProviderDuration[statProvider[period]],
-        uptime: (stat.ups / stat.count * 100).toFixed(3),
-        responsiveness: (stat.responsives / stat.count * 100).toFixed(3),
-        downtime: stat.downtime / 1000,
-        responseTime: Math.round(stat.time / stat.count),
-        periods: stat.periods || []
+        availability: (stat.availability * 100).toFixed(3),
+        responsiveness: (stat.responsiveness * 100).toFixed(3),
+        downtime: parseInt(stat.downtime / 1000),
+        responseTime: parseInt(stat.responseTime),
+        periods: stat.periods || [],
+        end: Date.parse(stat.timestamp) + statProviderDuration[statProvider[period]]
       });
     };
   }).on('close', function() {
@@ -257,10 +257,10 @@ Check.methods.getSingleStatsForPeriod = function(period, date, callback) {
     if (err || !stat) return callback(err);
     return callback(null, {
       timestamp: Date.parse(stat.timestamp),
-      availability: (stat.ups / stat.count * 100).toFixed(3),
-      responsiveness: (stat.responsives / stat.count * 100).toFixed(3),
-      downtime: stat.downtime / 1000,
-      responseTime: Math.round(stat.time / stat.count),
+      availability: (stat.availability * 100).toFixed(3),
+      responsiveness: (stat.responsiveness * 100).toFixed(3),
+      downtime: parseInt(stat.downtime / 1000),
+      responseTime: parseInt(stat.responseTime),
       begin: begin.valueOf(),
       end: end.valueOf()
     })

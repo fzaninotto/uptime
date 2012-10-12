@@ -20,14 +20,6 @@ var updateUptime = function(callback) {
   });
 }
 
-var updateLastHourQos = function(callback) {
-  console.log('Updating last hour Qos for all checks');
-  async.series([
-    function(cb) { QosAggregator.updateLast24HoursQos(cb); },
-    function(cb) { QosAggregator.updateLastHourQos(cb); }
-  ], callback);
-}
-
 var updateHourlyQosSinceTheFirstPing = function(callback) {
   Ping
   .find()
@@ -93,7 +85,12 @@ var updateMonthlyQosSinceTheFirstPing = function(callback) {
   });
 }
 
-async.series([emptyStats, updateUptime, updateLastHourQos, updateHourlyQosSinceTheFirstPing, updateDailyQosSinceTheFirstPing, updateMonthlyQosSinceTheFirstPing], function(err) {
+var updateLastDayQos = function(callback) {
+  console.log('Updating last hour Qos for all checks');
+  QosAggregator.updateLast24HoursQos(callback);
+}
+
+async.series([emptyStats, updateUptime, updateHourlyQosSinceTheFirstPing, updateDailyQosSinceTheFirstPing, updateMonthlyQosSinceTheFirstPing, updateLastDayQos], function(err) {
   if (err) {
     console.dir(err);
   } else {

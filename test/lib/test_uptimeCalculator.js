@@ -144,5 +144,25 @@ describe('uptimeCalculator', function() {
     });
 
   });
+  
+  describe('#testFlattenPeriod', function() {
+    it('should return empty array when passed an empty array', function() {
+      UptimeCalculator.flattenPeriods([]).should.eql([]);
+    });
+    it('should return a single periods array when passed a single periods array', function() {
+      UptimeCalculator.flattenPeriods([[[1, 2]]]).should.eql([[1, 2]]);
+    });
+    it('should return a two periods array when passed a two non adjacent periods array', function() {
+      UptimeCalculator.flattenPeriods([[[1, 2]], [[3, 4]]]).should.eql([[1, 2], [3, 4]]);
+    });
+    it('should concatenate adjacent periods array', function() {
+      UptimeCalculator.flattenPeriods([[[1, 2]], [[2, 3]]]).should.eql([[1, 3]]);
+    });
+    it('should flatten period arrays', function() {
+      UptimeCalculator
+      .flattenPeriods([ [[1, 2], [4, 5], [8, 9]], [[9, 11], [13, 14]], [[16, 18], [20, 21]], [[21, 22]] ])
+      .should.eql([ [1, 2], [4, 5], [8, 11], [13, 14], [16, 18], [20, 22] ]);
+    });
+  });
 
 });

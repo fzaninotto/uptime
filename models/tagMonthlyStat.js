@@ -3,13 +3,14 @@ var Schema = mongoose.Schema;
 
 // main model
 var TagMonthlyStat = new Schema({
-  name        : String,
-  timestamp   : Date,
-  count       : Number,
-  ups         : Number,
-  responsives : Number,
-  time        : Number,
-  downtime    : Number
+  name           : String,
+  timestamp      : Date,
+  count          : Number,
+  availability   : Number,
+  responsiveness : Number,
+  responseTime   : Number,
+  downtime       : Number,
+  periods        : Array,
 });
 TagMonthlyStat.index({ name: 1, timestamp: -1 }, { unique: true });
 TagMonthlyStat.plugin(require('mongoose-lifecycle'));
