@@ -10,7 +10,7 @@ var TagHourlyStat = new Schema({
   responsiveness : Number,
   responseTime   : Number,
   downtime       : Number,
-  periods        : Array,
+  outages        : Array,
 });
 TagHourlyStat.index({ name: 1, timestamp: -1 }, { unique: true });
 TagHourlyStat.plugin(require('mongoose-lifecycle'));

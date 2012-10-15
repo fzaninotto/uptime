@@ -10,7 +10,7 @@ var TagDailyStat = new Schema({
   responsiveness : Number,
   responseTime   : Number,
   downtime       : Number,
-  periods        : Array,
+  outages        : Array,
 });
 TagDailyStat.index({ name: 1, timestamp: -1 }, { unique: true });
 TagDailyStat.plugin(require('mongoose-lifecycle'));

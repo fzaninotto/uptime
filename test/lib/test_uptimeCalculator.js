@@ -87,62 +87,52 @@ describe('uptimeCalculator', function() {
 
   });
 
-  describe('#getUptimePeriods', function() {
+  describe('#getOutages', function() {
 
     it('should return an empty array when there is no ping at all', function(done) {
       var calculator = new UptimeCalculator(check2);
-      calculator.getUptimePeriods(Date.now(), Date.now() + 1000, function(err, periods) {
+      calculator.getOutages(Date.now(), Date.now() + 1000, function(err, periods) {
         if (err) throw (err);
         periods.should.eql([]);
         done();
       });
     });
 
-    it('should return an empty array when there is no up ping', function(done) {
+    it('should return an empty array when there is no down ping', function(done) {
       var calculator = new UptimeCalculator(check1);
-      calculator.getUptimePeriods(now - 6000, now - 3000, function(err, periods) {
+      calculator.getOutages(now + 3000, now + 6000, function(err, periods) {
         if (err) throw (err);
         periods.should.eql([ ]);
         done();
       });
     });
 
-    it('should return a period ending at the end of the lookup period when the latest ping is up', function(done) {
+    it('should return a period ending at the end of the lookup period when the latest ping is down', function(done) {
       var calculator = new UptimeCalculator(check1);
-      calculator.getUptimePeriods(now + 3000, now + 6000, function(err, periods) {
+      calculator.getOutages(now - 2500, now - 2000, function(err, periods) {
         if (err) throw (err);
-        periods.should.eql([ [now + 3000, now + 6000] ]);
+        periods.should.eql([ [now - 2500, now - 2000] ]);
         done();
       });
     });
 
-    it('should return a period starting at the beginning of the lookup period when the previous ping is up', function(done) {
+    it('should return an outage period even if the state at the beginning and at the end are up', function(done) {
       var calculator = new UptimeCalculator(check1);
-      calculator.getUptimePeriods(now, now + 1000, function(err, periods) {
+      calculator.getOutages(now - 1000, now + 3000, function(err, periods) {
         if (err) throw (err);
-        periods.should.eql([ [now, now + 1000] ]);
+        periods.should.eql([ [ now + 2000, now + 3000 ]]);
         done();
       });
     });
 
-    it('should return an uptime period even if the state at the beginning and at the end are down', function(done) {
+    it('should return several periods when an uptime period lies in the middle of the interval', function(done) {
       var calculator = new UptimeCalculator(check1);
-      calculator.getUptimePeriods(now - 3000, now + 2000, function(err, periods) {
+      calculator.getOutages(now - 4000, now + 3000, function(err, periods) {
         if (err) throw (err);
-        periods.should.eql([ [ now - 1000, now + 2000 ]]);
+        periods.should.eql([ [now - 3000, now - 1000], [now + 2000, now + 3000] ]);
         done();
       });
     });
-
-    it('should return the several periods when a downtime period lies in the middle of the interval', function(done) {
-      var calculator = new UptimeCalculator(check1);
-      calculator.getUptimePeriods(now - 3000, now + 3000, function(err, periods) {
-        if (err) throw (err);
-        periods.should.eql([ [now - 1000, now + 2000], [now + 3000, now + 3000] ]);
-        done();
-      });
-    });
-
   });
   
   describe('#testMergeConsecutivePeriods', function() {
@@ -183,11 +173,14 @@ describe('uptimeCalculator', function() {
   });
 
   describe('#testMergePeriods', function() {
-    it('should return a full period when passed a full uptime array', function() {
+    it('should return a full period when passed a full outage array', function() {
       UptimeCalculator.mergePeriods([[[1, 10]]]).should.eql([[1, 10]]);
     });
-    it('should return an empty period when passed no uptime periods', function() {
+    it('should return an empty period when passed no outage periods', function() {
       UptimeCalculator.mergePeriods([]).should.eql([]);
+    });
+    it('should return an empty period when passed empty outage periods', function() {
+      UptimeCalculator.mergePeriods([[[]], [[]]]).should.eql([]);
     });
     it('should return the flattened list of periods when there is only one', function() {
       UptimeCalculator.mergePeriods([[[1, 3], [5, 7], [8, 9]]]).should.eql([[1, 3], [5, 7], [8, 9]]);
@@ -247,4 +240,11 @@ describe('uptimeCalculator', function() {
     });
   });
   
+  after(function(done) {
+    async.parallel([
+      function(cb) { Ping.collection.drop(cb) },
+      function(cb) { Check.collection.drop(cb) },
+      function(cb) { CheckEvent.collection.drop(cb) },
+    ], done);
+  });
 });

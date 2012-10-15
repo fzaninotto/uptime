@@ -9,6 +9,7 @@ var QosAggregator   = require('../lib/qosAggregator');
 var emptyStats = function(callback) {
   console.log('Emptying stat collections');
   Check.find({}, function(err, checks) {
+    if (!checks.length) return callback(new Error('No check in database, please use the populate script first'));
     async.forEach(checks, function(check, cb) { check.removeStats(cb); }, callback);
   });
 }

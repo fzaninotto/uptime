@@ -233,7 +233,7 @@ Check.methods.getStatsForPeriod = function(period, page, callback) {
         responsiveness: (stat.responsiveness * 100).toFixed(3),
         downtime: parseInt(stat.downtime / 1000),
         responseTime: parseInt(stat.responseTime),
-        periods: stat.periods || [],
+        outages: stat.outages || [],
         end: Date.parse(stat.timestamp) + statProviderDuration[statProvider[period]]
       });
     };
@@ -261,6 +261,7 @@ Check.methods.getSingleStatsForPeriod = function(period, date, callback) {
       responsiveness: (stat.responsiveness * 100).toFixed(3),
       downtime: parseInt(stat.downtime / 1000),
       responseTime: parseInt(stat.responseTime),
+      outages: stat.outages || [],
       begin: begin.valueOf(),
       end: end.valueOf()
     })

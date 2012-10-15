@@ -10,7 +10,7 @@ var CheckMonthlyStat = new Schema({
   responsiveness : Number,
   responseTime   : Number,
   downtime       : Number,
-  periods        : Array,
+  outages        : Array,
   tags           : Array
 });
 CheckMonthlyStat.index({ check: 1, timestamp: -1 }, { unique: true });
