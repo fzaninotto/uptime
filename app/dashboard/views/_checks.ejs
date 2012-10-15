@@ -31,10 +31,10 @@
   <td data-sort="0"><span class="label label-important">down</span> <span class="label label-warning">new</span></td>
   {{ } }}
   {{ if (check.qos) { }}
-  <td data-sort="{{= check.qos.ups / check.qos.count }}">{{= ((check.qos.ups / check.qos.count) * 100).toFixed(3).replace('.000', '') }}%</td>
-  <td data-sort="{{= check.qos.responsives / check.qos.count }}">{{= ((check.qos.responsives / check.qos.count) * 100).toFixed(3).replace('.000', '') }}%</td>
+  <td data-sort="{{= check.qos.availability }}">{{= (check.qos.availability * 100).toFixed(3).replace('.000', '') }}%</td>
+  <td data-sort="{{= check.qos.responsiveness }}">{{= (check.qos.responsiveness * 100).toFixed(3).replace('.000', '') }}%</td>
   <td data-sort="{{= check.qos.downtime }}">{{= check.qos.downtime < 300000 ? (check.qos.downtime / 1000).toFixed() + 's' : moment.duration(check.qos.downtime).humanize() }}</td>
-  <td data-sort="{{= check.qos.time / check.qos.count }}">{{= Math.round(check.qos.time / check.qos.count) }}ms</td>
+  <td data-sort="{{= check.qos.resopnseTime }}">{{= Math.round(check.qos.responseTime) }}ms</td>
   {{ } else { }}
   <td data-sort="0">-</td>
   <td data-sort="0">-</td>

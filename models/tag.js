@@ -12,13 +12,14 @@ var CheckMonthlyStat = require('../models/checkMonthlyStat');
 
 // main model
 var Tag = new Schema({
-  name        : String,
-  lastUpdated : Date,
-  count       : Number,
-  ups         : Number,
-  responsives : Number,
-  time        : Number,
-  downtime    : Number
+  name           : String,
+  lastUpdated    : Date,
+  count          : Number,
+  availability   : Number,
+  responsiveness : Number,
+  responseTime   : Number,
+  downtime       : Number,
+  outages        : Array,
 });
 Tag.index({ name: 1 }, { unique: true });
 Tag.plugin(require('mongoose-lifecycle'));
@@ -67,10 +68,11 @@ Tag.methods.getStatsForPeriod = function(period, page, callback) {
   }).on('data', function(stat) {
     stats.push({
       timestamp: Date.parse(stat.timestamp),
-      uptime: (stat.ups / stat.count * 100).toFixed(3),
-      responsiveness: (stat.responsives / stat.count * 100).toFixed(3),
+      availability: (stat.availability * 100).toFixed(3),
+      responsiveness: (stat.responsiveness * 100).toFixed(3),
       downtime: stat.downtime / 1000,
-      responseTime: Math.round(stat.time / stat.count)
+      responseTime: Math.round(stat.responseTime),
+      outages: stat.outages || [],
     });
   }).on('close', function() {
     callback(null, stats);
@@ -92,10 +94,10 @@ Tag.methods.getSingleStatsForPeriod = function(period, date, callback) {
     if (err || !stat) return callback(err);
     return callback(null, {
       timestamp: Date.parse(stat.timestamp),
-      availability: (stat.ups / stat.count * 100).toFixed(3),
-      responsiveness: (stat.responsives / stat.count * 100).toFixed(3),
+      availability: (stat.availability * 100).toFixed(3),
+      responsiveness: (stat.responsiveness * 100).toFixed(3),
       downtime: stat.downtime / 1000,
-      responseTime: Math.round(stat.time / stat.count),
+      responseTime: Math.round(stat.resopnseTime),
       begin: begin.valueOf(),
       end: end.valueOf()
     })
