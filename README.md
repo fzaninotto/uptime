@@ -114,6 +114,7 @@ To enable plugins, create a `plugins/index.js` module. This module must offer a 
 Currently supported plugins:
 
  * `console`: log pings and events in the console in real time
+ * `webhook`: sends pings via JSON to a remote HTTP service (config opts: `host`, `port` and `path`)
 
 You can add your own plugins under the `plugins` directory. A plugin is simply a module with a public `init()` method. For instance, if you had to recreate a simple version of the `console` plugin, you could write it as follows:
 
