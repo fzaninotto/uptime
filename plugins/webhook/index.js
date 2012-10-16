@@ -1,13 +1,12 @@
 
 var http = require('http');
 var Ping = require('../../models/ping');
-var CheckEvent  = require('../../models/checkEvent');
 
-var config = require('config');
+var config = require('config').webhook;
 var http_options = {
-  host: config.webhook.host,
-  port: config.webhook.port,
-  path: config.webhook.path,
+  host: config.host,
+  port: config.port,
+  path: config.path,
   method: 'POST'
 };
 
