@@ -22,4 +22,9 @@ autoStartMonitor: true
 server:
   port:     8082
 
-verbose: true # only used in dev
+verbose: false
+
+webhook:
+  host: 127.0.0.1
+  port: 5001
+  path: '/custom'
