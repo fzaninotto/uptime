@@ -13,7 +13,7 @@ var http_options = {
 var req = http.request(http_options, function(res) {
   res.setEncoding('utf8');
   res.on('data', function (chunk) {
-    console.log('BODY: ' + chunk);
+    console.log('BODY: ' + chunk) if (config.verbose);
   });
 });
 
