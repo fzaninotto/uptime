@@ -1,17 +1,16 @@
 <table class="table" id="checks">
   <thead>
     <tr>
-      <th>Name</th>
-      <th>Status</th>
-      <th title="Percentage of all pings up in the last 24h">Availability</th>
-      <th title="Percentage of all pings below slow threshold in the last 24h">Responsiveness</th>
-      <th title="Total downtime in the last 24h">Downtime</th>
-      <th title="Average response time of all pings in the last 24h">Avg. Response time</th>
+      <th style="width:30%">Name</th>
+      <th style="width:20%">Status</th>
+      <th style="width:35%" title="Outage periods in the last 24h">Uptime</th>
+      <th style="width:15%" title="Average response time in the last 24h">Response Time</th>
     </tr>
   </thead>
   <tbody></tbody>
 </table>
 <script src="<%= route %>/javascripts/jquery.tablesorter.min.js"></script>
+<script src="<%= route %>/javascripts/uptimeBar.js"></script>
 <script src="<%= route %>/javascripts/ejs.min.js"></script>
 <script id="check_template" type="text/template">
 <tr>
@@ -31,13 +30,9 @@
   <td data-sort="0"><span class="label label-important">down</span> <span class="label label-warning">new</span></td>
   {{ } }}
   {{ if (check.qos) { }}
-  <td data-sort="{{= check.qos.availability }}">{{= (check.qos.availability * 100).toFixed(3).replace('.000', '') }}%</td>
-  <td data-sort="{{= check.qos.responsiveness }}">{{= (check.qos.responsiveness * 100).toFixed(3).replace('.000', '') }}%</td>
-  <td data-sort="{{= check.qos.downtime }}">{{= check.qos.downtime < 300000 ? (check.qos.downtime / 1000).toFixed() + 's' : moment.duration(check.qos.downtime).humanize() }}</td>
-  <td data-sort="{{= check.qos.resopnseTime }}">{{= Math.round(check.qos.responseTime) }}ms</td>
+  <td data-sort="{{= check.qos.availability }}">{{- uptimeBar(Date.now() - 24 * 60 * 60 * 1000, Date.now(), check.qos.outages) }}</td>
+  <td data-sort="{{= check.qos.responseTime }}">{{= Math.round(check.qos.responseTime) }}ms</td>
   {{ } else { }}
-  <td data-sort="0">-</td>
-  <td data-sort="0">-</td>
   <td data-sort="0">-</td>
   <td data-sort="0">-</td>
   {{ } }}
@@ -68,9 +63,6 @@ jQuery(document).ready(function($) {
         });
         $('#checks tbody').html(lines.join(''));
         $('#checks').trigger('update');
-        if (lastTest) {
-          $('#last_update').text('Last updated on ' + moment(lastTest).format('LLLL'));
-        }
       });
     }
     updateChecks();

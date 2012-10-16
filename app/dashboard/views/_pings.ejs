@@ -26,7 +26,7 @@
     <span class="label {{= (ping.isUp ? 'label-success' : 'label-important') }}">{{= (ping.isUp ? 'Up' : 'Down') }}</span>
     {{ if (ping.isUp && !ping.isResponsive) { }}<span class="label label-warning">Slow</span>{{ } }}
   </td>
-  <td>{{= ping.time }}</td>
+  <td>{{= ping.time }}ms</td>
   <td>{{= ping.error || '' }}</td>
 </tr>
 </script>

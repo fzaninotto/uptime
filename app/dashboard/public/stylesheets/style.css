@@ -189,9 +189,13 @@ div.tagsinput span.tag span {
 }
 
 table.chart td {
-  width: 15%;
+  width: 12%;
 }
 
-table.chart td:first-child {
-  width: 40%;
+table.chart th.date {
+  width: 30%;
+}
+
+table.chart th.uptimeBar {
+  width: 22%;
 }

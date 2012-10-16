@@ -1,24 +1,23 @@
-<h1>Tags <small id="last_update"></small></h1>
+<h1>Tags <small class="pull-right">last 24 hours</small></h1>
 <table class="table chart" id="tags">
   <thead>
     <tr>
-      <th>Name</th>
-      <th title="Percentage of all pings up in the last 24h">Availability</th>
-      <th title="Percentage of all pings below slow threshold in the last 24h">Responsiveness</th>
-      <th title="Total downtime in the last 24h">Downtime</th>
-      <th title="Average response time of all pings in the last 24h">Avg. Response time</th>
+      <th style="width:30%">Name</th>
+      <th style="width:20%" title="Percentage of all pings up in the last 24h">Availability</th>
+      <th style="width:35%" title="Outage periods in the last 24h">Uptime</th>
+      <th style="width:15%" title="Average response time in the last 24h">Response Time</th>
     </tr>
   </thead>
   <tbody></tbody>
 </table>
 <script src="<%= route %>/javascripts/jquery.tablesorter.min.js"></script>
+<script src="<%= route %>/javascripts/uptimeBar.js"></script>
 <script src="<%= route %>/javascripts/ejs.min.js"></script>
 <script id="tag_template" type="text/template">
 <tr>
   <td data-sort="{{= tag.name }}"><a href="{{= route + '/tags/' + tag.name }}">{{= tag.name }}</a></td>
   <td data-sort="{{= tag.availability }}">{{= (tag.availability * 100).toFixed(3).replace('.000', '') }}%</td>
-  <td data-sort="{{= tag.responsiveness }}">{{= (tag.responsiveness * 100).toFixed(3).replace('.000', '') }}%</td>
-  <td data-sort="{{= tag.downtime }}">{{= tag.downtime < 300000 ? (tag.downtime / 1000).toFixed() + 's' : moment.duration(tag.downtime).humanize() }}</td>
+  <td data-sort="{{= tag.availability }}">{{- uptimeBar(Date.now() - 24 * 60 * 60 * 1000, Date.now(), tag.outages) }}</td>
   <td data-sort="{{= tag.responseTime }}">{{= Math.round(tag.responseTime) }}ms</td>
 </tr>
 </script>
@@ -45,8 +44,6 @@ jQuery(document).ready(function($) {
       });
       $('#tags tbody').html(lines.join(''));
       $('#tags').trigger('update');
-      if( lastUpdated )
-        $('#last_update').text('Last updated on ' + moment(lastUpdated).format('LLLL'));
     });
   }
   updateTags();

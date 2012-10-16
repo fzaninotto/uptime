@@ -10,9 +10,9 @@ http.createServer(function(req, res) {
   var chanceToGetOkResponse = parseFloat(arg) / 100;
   if (!chanceToGetOkResponse || Math.random() > chanceToGetOkResponse) {
     res.writeHead(500, {'Content-Type': 'text/plain'});
-    res.end('Bad Request');
+    setTimeout(function() { res.end('Bad Request')}, Math.random() * 1000 );
   } else {
     res.writeHead(200, {'Content-Type': 'text/plain'});
-    res.end('Success');
+    setTimeout(function() { res.end('Success')}, Math.random() * 1000 );
   }
 }).listen(8888);

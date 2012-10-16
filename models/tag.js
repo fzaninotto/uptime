@@ -58,6 +58,12 @@ var statProvider = {
   '3y':  'TagMonthlyStat'
 };
 
+var statProviderDuration = {
+  'TagHourlyStat': 1000 * 60 * 60,
+  'TagDailyStat': 1000 * 60 * 60 * 24,
+  'TagMonthlyStat': 1000 * 60 * 60 * 24 * 365 / 12
+}
+
 Tag.methods.getStatsForPeriod = function(period, page, callback) {
   var boundary = TimeCalculator.boundaryFunction[period];
   var stats = [];
@@ -73,6 +79,7 @@ Tag.methods.getStatsForPeriod = function(period, page, callback) {
       downtime: stat.downtime / 1000,
       responseTime: Math.round(stat.responseTime),
       outages: stat.outages || [],
+      end: Date.parse(stat.timestamp) + statProviderDuration[statProvider[period]]
     });
   }).on('close', function() {
     callback(null, stats);
