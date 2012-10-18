@@ -84,14 +84,7 @@ div.btn-toolbar {
 
 .uptimeBar {
   height:15px;
-}
-
-.uptimeBar div {
-  float:left;
-  height:100%;
-}
-
-.uptimeBar .up {
+  position: relative;
   background: #bfd255; /* Old browsers */
   background: -moz-linear-gradient(top,  #bfd255 0%, #8eb92a 50%, #72aa00 51%, #9ecb2d 100%); /* FF3.6+ */
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#bfd255), color-stop(50%,#8eb92a), color-stop(51%,#72aa00), color-stop(100%,#9ecb2d)); /* Chrome,Safari4+ */
@@ -102,11 +95,14 @@ div.btn-toolbar {
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#bfd255', endColorstr='#9ecb2d',GradientType=0 ); /* IE6-9 */
 }
 
-.uptimeBar .up:hover {
-  background: #468847;
+.uptimeBar div {
+  position:absolute;
+  height:inherit;
+  margin:0;
 }
 
 .uptimeBar .down {
+  min-width: 1px;
   background: #efc5ca; /* Old browsers */
   background: -moz-linear-gradient(top,  #efc5ca 0%, #d24b5a 50%, #ba2737 51%, #f18e99 100%); /* FF3.6+ */
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#efc5ca), color-stop(50%,#d24b5a), color-stop(51%,#ba2737), color-stop(100%,#f18e99)); /* Chrome,Safari4+ */
@@ -196,6 +192,6 @@ table.chart th.date {
   width: 30%;
 }
 
-table.chart th.uptimeBar {
+table.chart th.uptimeCol {
   width: 22%;
 }
