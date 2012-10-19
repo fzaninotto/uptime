@@ -60,8 +60,7 @@ var statProvider = {
 
 var statProviderDuration = {
   'TagHourlyStat': 1000 * 60 * 60,
-  'TagDailyStat': 1000 * 60 * 60 * 24,
-  'TagMonthlyStat': 1000 * 60 * 60 * 24 * 365 / 12
+  'TagDailyStat': 1000 * 60 * 60 * 24
 }
 
 Tag.methods.getStatsForPeriod = function(period, page, callback) {
@@ -79,7 +78,7 @@ Tag.methods.getStatsForPeriod = function(period, page, callback) {
       downtime: stat.downtime / 1000,
       responseTime: Math.round(stat.responseTime),
       outages: stat.outages || [],
-      end: Date.parse(stat.timestamp) + statProviderDuration[statProvider[period]]
+      end: stat.end ? stat.end.valueOf() : (Date.parse(stat.timestamp) + statProviderDuration[statProvider[period]])
     });
   }).on('close', function() {
     callback(null, stats);

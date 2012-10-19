@@ -5,6 +5,7 @@ var Schema = mongoose.Schema;
 var CheckMonthlyStat = new Schema({
   check          : { type: Schema.ObjectId, ref: 'Check' },
   timestamp      : Date,
+  end            : Date, // end is stored becaus months have an uneven duration
   count          : Number,
   availability   : Number,
   responsiveness : Number,

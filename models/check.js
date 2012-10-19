@@ -201,8 +201,7 @@ var statProvider = {
 var statProviderDuration = {
   'Ping': 0,
   'CheckHourlyStat': 1000 * 60 * 60,
-  'CheckDailyStat': 1000 * 60 * 60 * 24,
-  'CheckMonthlyStat': 1000 * 60 * 60 * 24 * 365 / 12
+  'CheckDailyStat': 1000 * 60 * 60 * 24
 }
 
 Check.methods.getStatsForPeriod = function(period, page, callback) {
@@ -234,7 +233,8 @@ Check.methods.getStatsForPeriod = function(period, page, callback) {
         downtime: parseInt(stat.downtime / 1000),
         responseTime: parseInt(stat.responseTime),
         outages: stat.outages || [],
-        end: Date.parse(stat.timestamp) + statProviderDuration[statProvider[period]]
+        end: stat.end ? stat.end.valueOf() : (Date.parse(stat.timestamp) + statProviderDuration[statProvider[period]])
+
       });
     };
   }).on('close', function() {
