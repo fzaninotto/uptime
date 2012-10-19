@@ -25,10 +25,10 @@
       <tr>
         <th class="date">Date</th>
         <th class="uptimeCol" title="Outage periods">Uptime</th>
-        <th title="Percentage of uptime">Availability</th>
-        <th title="Percentage of all pings below slow threshold">Responsiveness</th>
         <th title="Total downtime">Downtime</th>
+        <th title="Percentage of uptime">Availability</th>
         <th title="Average response time of all pings">Response time</th>
+        <th title="Percentage of all pings below slow threshold">Responsiveness</th>
       </tr>
     </thead>
     <tbody></tbody>
@@ -46,10 +46,10 @@
 <tr class="{{= (stat.availability < 100) ? 'red' : (stat.responsiveness < 100) ? 'orange' : '' }}{{= ['0','6'].indexOf(moment(stat.timestamp).format('d')) !== -1 ? ' week-end' : '' }}">
   <td title="{{= new Date(stat.timestamp) }}">{{= moment(stat.timestamp).format(dateFormat) }}</td>
   <td>{{- stat.outages ? uptimeBar(stat.timestamp, stat.end, stat.outages) : '' }}</td>
-  <td>{{= stat.availability.replace('.000', '') }}%</td>
-  <td>{{= stat.responsiveness.replace('.000', '') }}%</td>
   <td title="{{= stat.downtime }}s">{{= stat.downtime == 0 ? '' : stat.downtime < 300 ? stat.downtime + 's' : moment.duration(stat.downtime, 'seconds').humanize() }}</td>
+  <td>{{= stat.availability.replace('.000', '') }}%</td>
   <td>{{= stat.responseTime }}ms</td>
+  <td>{{= stat.responsiveness.replace('.000', '') }}%</td>
 </tr>
 </script>
 <script>
