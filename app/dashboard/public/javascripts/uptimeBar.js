@@ -5,6 +5,12 @@ var uptimeBar = (function(){
               + 'title="' + moment.duration(end-begin).humanize() + ' outage from '+ moment(begin).format('LLL') + ' to ' + moment(end).format('LLL') + '">'
          + '</div>';
   }
+  var pauseBar = function(begin, end, origin, duration) {
+    return '<div class="pause" '
+              + 'style="left:' + (begin - origin) / duration * 100 + '%;width:' + (end - begin) / duration * 100 + '%" ' 
+              + 'title="' + moment.duration(end-begin).humanize() + ' pause from '+ moment(begin).format('LLL') + ' to ' + moment(end).format('LLL') + '">'
+         + '</div>';
+  }
   var availabilityBar = function(begin, end, availability, origin, duration) {
     var availPow = Math.pow(availability, 5);
     var color = {
@@ -21,10 +27,12 @@ var uptimeBar = (function(){
     var duration = to - from;
     var nbPeriods = periods.length;
     for (var i = 0; i < nbPeriods; i++) {
-      if (periods[i][2]) {
-        ret += availabilityBar(periods[i][0], periods[i][1], periods[i][2], from, duration);
-      } else {
+      if (periods[i][2] == 0 || typeof periods[i][2] == 'undefined') {
         ret += outageBar(periods[i][0], periods[i][1], from, duration);
+      } else if(periods[i][2] == -1) {
+        ret += pauseBar(periods[i][0], periods[i][1], from, duration);
+      } else {
+        ret += availabilityBar(periods[i][0], periods[i][1], periods[i][2], from, duration);
       }
     }
     var now = Date.now();
