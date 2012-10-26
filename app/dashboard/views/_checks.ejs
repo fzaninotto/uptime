@@ -20,7 +20,7 @@
   </td>
   {{ if (check.lastTested) { }}
     {{ if (check.isPaused) { }}
-  <td data-sort="{{= check.isUp ? check.uptime : -check.downtime }}"><span class="label label-info">paused</span> <span class="blue"> for <span title="{{= new Date(check.lastTested) }}">{{= moment(check.lastTested).fromNow(true) }}</span></span></td>
+  <td data-sort="{{= check.isUp ? check.uptime : -check.downtime }}"><span class="label label-info">paused</span> <span class="blue"> for <span title="{{= new Date(check.lastChanged) }}">{{= moment(check.lastChanged).fromNow(true) }}</span></span></td>
     {{ } else if (check.isUp) { }}
   <td data-sort="{{= check.uptime }}"><span class="label label-success">Up</span> <span class="green"> for <span title="{{= new Date(check.lastChanged) }}">{{= moment(check.lastChanged).fromNow(true) }}</span></span></td>
     {{ } else { }}

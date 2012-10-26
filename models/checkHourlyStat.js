@@ -1,8 +1,5 @@
 var mongoose = require('mongoose');
 var Schema   = mongoose.Schema;
-var TimeCalculator = require('../lib/timeCalculator');
-var QosAggregator = require('../lib/qosAggregator');
-var async = require('async');
 
 // main model
 var CheckHourlyStat = new Schema({

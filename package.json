@@ -12,7 +12,6 @@
     "ejs":       "0.8.0",
     "config":    "0.4.15",
     "async":     "0.1.22",
-    "interval-query": "0.3.0",
     "socket.io": "0.9.10"
   },
   "devDependencies": {

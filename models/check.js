@@ -62,6 +62,11 @@ Check.methods.needsPoll = function() {
 
 Check.methods.togglePause = function() {
   this.isPaused = !this.isPaused;
+  if (!this.isPaused) {
+    // restarted
+    this.isUp = undefined;
+  }
+  this.lastChanged = new Date();
 }
 
 Check.methods.setLastTest = function(status, time, error) {
@@ -76,7 +81,8 @@ Check.methods.setLastTest = function(status, time, error) {
       message: status ? 'up' : 'down',
       details: error
     });
-    if (status && this.lastChanged) {
+    if (status && this.lastChanged && this.isUp != undefined) {
+      // Check comes back up
       event.downtime = now.getTime() - this.lastChanged.getTime();
     }
     event.save();
@@ -266,6 +272,10 @@ Check.methods.getSingleStatsForPeriod = function(period, date, callback) {
       end: end.valueOf()
     })
   });
+}
+
+Check.statics.findForTag = function(tag, callback) {
+  return this.find().where('tags').equals(tag).exec(callback);
 }
 
 Check.statics.convertTags = function(tags) {

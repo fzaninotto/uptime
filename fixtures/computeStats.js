@@ -26,18 +26,18 @@ var updateHourlyQosSinceTheFirstPing = function(callback) {
   .find()
   .sort({ 'timestamp': 1 })
   .findOne(function(err, ping) {
-    var date = ping.timestamp.valueOf();
-    var now = Date.now();
+    var date = Date.now() + 60 * 60 * 1000;
+    var oldestDate = ping.timestamp.valueOf();
     nbDates = 0;
     async.whilst(
-      function() { date += 60 * 60 * 1000; return date < now; },
+      function() { date -= 60 * 60 * 1000; return date > oldestDate; },
       function(cb) {
         var dateObject = new Date(date);
         QosAggregator.updateHourlyQos(dateObject, cb);
-        nbDates++;
         if (nbDates % 24 == 0) {
           console.log('Computing hourly stats for ' + dateObject.toUTCString());
         }
+        nbDates++;
       },
       callback
     );
@@ -49,15 +49,13 @@ var updateDailyQosSinceTheFirstPing = function(callback) {
   .find()
   .sort({ 'timestamp': 1 })
   .findOne(function(err, ping) {
-    var date = ping.timestamp.valueOf();
-    var now = Date.now();
-    nbDates = 0;
+    var date = Date.now() + 24 * 60 * 60 * 1000;
+    var oldestDate = ping.timestamp.valueOf();
     async.whilst(
-      function() { date += 24 * 60 * 60 * 1000; return date < now; },
+      function() { date -= 24 * 60 * 60 * 1000; return date > oldestDate; },
       function(cb) {
         var dateObject = new Date(date);
         QosAggregator.updateDailyQos(dateObject, cb);
-        nbDates++;
         console.log('Computing daily stats for ' + dateObject.toUTCString());
       },
       callback
@@ -87,13 +85,13 @@ var updateMonthlyQosSinceTheFirstPing = function(callback) {
 }
 
 var updateLastDayQos = function(callback) {
-  console.log('Updating last hour Qos for all checks');
+  console.log('Updating last day Qos for all checks');
   QosAggregator.updateLast24HoursQos(callback);
 }
 
 async.series([emptyStats, updateUptime, updateHourlyQosSinceTheFirstPing, updateDailyQosSinceTheFirstPing, updateMonthlyQosSinceTheFirstPing, updateLastDayQos], function(err) {
   if (err) {
-    console.dir(err);
+    throw err;
   } else {
     console.log('Computing complete');
   }
