@@ -17,7 +17,7 @@ exports.init = function(enableNewEvents, enableNewPings) {
   if (enableNewPings)  registerNewPingsWebhook();
 };
 
-var constructMessage = function(check, result, cb) {
+var constructMessage = function(check, result) {
   var message = {
     name: check.name,
     check_id: result.check,
@@ -33,7 +33,7 @@ var constructMessage = function(check, result, cb) {
     isUp: result.isUp,
     isResponsive: result.isResponsive
   };
-  cb(message);
+  return message;
 };
 
 var httpRequest = function(msg) {
@@ -50,7 +50,7 @@ var httpRequest = function(msg) {
 var registerNewPingsWebhook = function() {
   Ping.on('afterInsert', function(ping) {
     ping.findCheck(function(err, check) {
-      constructMessage(check, ping, httpRequest);
+      httpRequest(constructMessage(check, ping));
     });
   });
 };
@@ -58,7 +58,7 @@ var registerNewPingsWebhook = function() {
 var registerNewEventsWebhook = function() {
   CheckEvent.on('afterInsert', function(checkEvent) {
     checkEvent.findCheck(function(err, check) {
-      constructMessage(check, checkEvent, httpRequest);
+      httpRequest(constructMessage(check, checkEvent));
     });
   });
 };
