@@ -18,24 +18,24 @@
     <script src="<%= route %>/javascripts/moment.min.js"></script>
   </head>
   <body>
-    <div class="navbar">
-      <div class="navbar-inner">
-        <div class="container">
-          <a class="brand" href="<%= route %>/events">Uptime</a>
-          <ul class="nav pull-left">
-            <li><a href="<%= route %>/events">Events</a></li>
-            <li><a href="<%= route %>/checks">Checks</a></li>
-            <li><a href="<%= route %>/tags">Tags</a></li>
-            <li id="new_events"><a href="<%= route %>/events?highlightFrom=<%= Date.now() %>"></a></li> 
-          </ul>
-          <ul class="nav pull-right" id="check_summary">
-            <li id="all_up" style="display:none;"><span class="label label-success">Up</span><strong class="green">0</strong></li>
-            <li id="all_down" style="display: none;"><span class="label label-important">Down</span><strong class="red">0</strong></li>
-          </ul>
+    <div class="container">
+      <div class="navbar navbar-inverse">
+        <div class="navbar-inner">
+          <div class="container">
+            <a class="brand" href="<%= route %>/events">Uptime</a>
+            <ul class="nav pull-left">
+              <li><a href="<%= route %>/events">Events</a></li>
+              <li><a href="<%= route %>/checks">Checks</a></li>
+              <li><a href="<%= route %>/tags">Tags</a></li>
+              <li id="new_events"><a href="<%= route %>/events?highlightFrom=<%= Date.now() %>"></a></li> 
+            </ul>
+            <ul class="nav pull-right" id="check_summary">
+              <li id="all_up" style="display:none;"><span class="label label-success">Up</span><strong class="green">0</strong></li>
+              <li id="all_down" style="display: none;"><span class="label label-important">Down</span><strong class="red">0</strong></li>
+            </ul>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="container">
       <section>
         <%- body %>
       </section>

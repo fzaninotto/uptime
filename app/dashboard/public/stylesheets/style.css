@@ -1,19 +1,4 @@
-html, body {
-  background-color: #eee;
-}
 
-.container > section {
-  background-color: #fff;
-  padding: 20px;
-  margin: 0 -20px; /* negative indent the amount of the padding to maintain the grid system */
-  -webkit-border-radius: 0 0 6px 6px;
-     -moz-border-radius: 0 0 6px 6px;
-          border-radius: 0 0 6px 6px;
-  -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.15);
-     -moz-box-shadow: 0 1px 2px rgba(0,0,0,.15);
-          box-shadow: 0 1px 2px rgba(0,0,0,.15);
-  min-height: 400px;
-}
 
 .footer {
   padding: 35px 0 36px;
@@ -29,7 +14,7 @@ html, body {
 }
 
 #check_summary li {
-  padding-top: 10px;
+  padding-top: 2px;
 }
 
 #check_summary li strong {
@@ -40,10 +25,6 @@ html, body {
   font-size: 1em;
   margin: 10px;
   vertical-align: 37%;
-}
-
-h1 {
-  margin-bottom: 20px;
 }
 
 div.btn-toolbar {
@@ -94,7 +75,9 @@ div.btn-toolbar {
   background: linear-gradient(to bottom,  #bfd255 0%,#8eb92a 50%,#72aa00 51%,#9ecb2d 100%); /* W3C */
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#bfd255', endColorstr='#9ecb2d',GradientType=0 ); /* IE6-9 */
 }
-
+.timeline .uptimeBar {
+  height: 22px;
+}
 .uptimeBar div {
   position:absolute;
   height:inherit;

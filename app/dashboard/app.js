@@ -85,7 +85,7 @@ app.get('/checks/:id', function(req, res, next) {
   Check.findOne({ _id: req.params.id }, function(err, check) {
     if (err) return next(err);
     if (!check) return res.send(404, 'failed to load check ' + req.params.id);
-    res.render('check', { check: check, info: req.flash('info') });
+    res.render('check2', { check: check, info: req.flash('info'), req: req });
   });
 });
 
