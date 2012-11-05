@@ -1,26 +1,28 @@
 <script src="<%= route %>/javascripts/ejs.min.js"></script>
 <style>
-#date_navigation .title td {
+#dateNavigation .title td {
   text-align: center;
 }
-#date_navigation td.month {
-  width:75px;
-}
-#date_navigation td.day {
-  width:26px;
-}
-#date_navigation td.hour {
-  width:34px;
-}
-#date_navigation td.quarter {
-  width:200px;
-}
-#date_navigation td.month, #date_navigation td.day, #date_navigation td.hour, #date_navigation td.quarter {
+#dateNavigation td.month, #dateNavigation td.day, #dateNavigation td.hour, #dateNavigation td.quarter {
   border-left:solid 1px lightgrey;
   border-right: solid 1px lightgrey;
   text-align: center;
+  cursor: pointer;
 }
-#date_navigation td.month:hover, #date_navigation td.day:hover, #date_navigation td.hour:hover, #date_navigation td.quarter:hover {
+#dateNavigation td.month {
+  width:75px;
+}
+#dateNavigation td.day {
+  width:26px;
+}
+#dateNavigation td.hour {
+  width:34px;
+  text-align: left;
+}
+#dateNavigation td.quarter {
+  width:200px;
+}
+#dateNavigation td.month:hover, #dateNavigation td.day:hover, #dateNavigation td.hour:hover, #dateNavigation td.quarter:hover {
   background-color:lightgrey;
 }
 </style>
@@ -29,7 +31,7 @@
   <a href="<%= check.url %>" target="_blank"><img src="<%= route %>/images/external-link-ltr-icon.png"></a>
 </h1>
 <div class="tab-content">
-  <table id="date_navigation">
+  <table id="dateNavigation">
     <tbody>
       <tr class="title"></tr>
       <tr class="decomposition"></tr>
@@ -37,102 +39,105 @@
   </table>
 </div>
 <script>
-jQuery(document).ready(function($) {
-  var getParameterByName = function (name) {
-    name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
-    var regexS = "[\\?&]" + name + "=([^&#]*)";
-    var regex = new RegExp(regexS);
-    var results = regex.exec(window.location.search);
-    if (results == null) return false;
-    return decodeURIComponent(results[1].replace(/\+/g, " "));
-  }
-  var date = parseInt(getParameterByName('date')) || Date.now();
-  var momentForDate = moment(date);
-  var type = getParameterByName('type') || 'month';
-  var baseUrl = window.location.pathname;
-  var displayYearlyNavigation = function() {
-    var title = '<td colspan="14">';
-    title += momentForDate.year();
-    title += '</td>';
-    $('#date_navigation tbody tr').eq(0).html(title);
-    var begin = momentForDate.clone().startOf('year');
-    var end   = momentForDate.clone().endOf('year');
-    var months = '<td><a href="' + baseUrl + '?type=year&date=' + momentForDate.clone().subtract('years', 1) + '">&lt;</a></td>';
-    var d = begin;
-    while (d.valueOf() < end.valueOf()) {
-      months += '<td class="month"><a href="' + baseUrl + '?type=month&date=' + d.valueOf() + '">' + d.format('MMMM') + '</a></td>';
-      d.add('months', 1);
-    }
-    months += '<td><a href="' + baseUrl + '?type=year&date=' + momentForDate.clone().add('years', 1) + '">&gt;</a></td>';
-    $('#date_navigation tbody tr').eq(1).html(months);
-  }
-  var displayMonthlyNavigation = function() {
-    var title = '<td colspan="' + (momentForDate.clone().endOf('month').date() + 2) + '">';
-    title += momentForDate.format('MMMM');
-    title += ' <a href="' + baseUrl + '?type=year&date=' + date + '">' + momentForDate.year() + '</a>';
-    title += '</td>';
-    $('#date_navigation tbody tr').eq(0).html(title);
-    var begin = momentForDate.clone().startOf('month');
-    var end = momentForDate.clone().endOf('month');
-    var days = '<td><a href="' + baseUrl + '?type=month&date=' + momentForDate.clone().subtract('months', 1) + '">&lt;</a></td>';
-    var d = begin;
-    while (d.valueOf() < end.valueOf()) {
-      days += '<td class="day">';
-      days += '<a href="' + baseUrl + '?type=day&date='+ d.valueOf() +'" title="' + d.format('dddd, LL') + '">' + d.date() + '</a>';
-      days += '</td>';
-      d.add('days', 1);
-    }
-    days += '<td><a href="' + baseUrl + '?type=month&date=' + momentForDate.clone().add('months', 1) + '">&gt;</a></td>';
-    $('#date_navigation tbody tr').eq(1).html(days);
-  }
-  var displayDailyNavigation = function() {
-    var title = '<td colspan="26">';
-    title += momentForDate.format('dddd');
-    title += ', <a href="' + baseUrl + '?type=month&date=' + date + '">' + momentForDate.format('MMMM') + '</a>';
-    title += ' ' + momentForDate.format('Do, YYYY');
-    title += '</td>';
-    $('#date_navigation tbody tr').eq(0).html(title);
-    var begin = momentForDate.clone().startOf('day');
-    var end   = momentForDate.clone().endOf('day');
-    var hours = '<td><a href="' + baseUrl + '?type=day&date=' + momentForDate.clone().subtract('days', 1) + '">&lt;</a></td>';
-    var d = begin;
-    while (d.valueOf() < end.valueOf()) {
-      hours += '<td class="hour"><a href="' + baseUrl + '?type=hour&date=' + d.valueOf() + '" title="from ' + d.format('h:mma') + ' to ' + d.clone().add('hours', 1).format('h:mma') + '">' + d.format('ha') + '</a></td>';
-      d.add('hours', 1);
-    }
-    hours += '<td><a href="' + baseUrl + '?type=day&date=' + momentForDate.clone().add('days', 1) + '">&gt;</a></td>';
-    $('#date_navigation tbody tr').eq(1).html(hours);
-  }
-  var displayHourlyNavigation = function() {
-    var title = '<td colspan="6">';
-    title += momentForDate.format('h:mma') + ' to ' + momentForDate.clone().add('hours', 1).format('h:mma');
-    title += ', <a href="' + baseUrl + '?type=day&date=' + date + '">' + momentForDate.format('dddd MMMM Do') + '</a>';
-    title += ' ' + momentForDate.year();
-    title += '</td>';
-    $('#date_navigation tbody tr').eq(0).html(title);
-    var begin = momentForDate.clone().startOf('hour');
-    var end   = momentForDate.clone().endOf('hour');
-    var quarters = '<td><a href="' + baseUrl + '?type=hour&date=' + momentForDate.clone().subtract('hours', 1) + '" title="from ' + begin.clone().subtract('hours', 1).format('h:mma') + ' to ' + end.clone().subtract('hours', 1).format('h:mma') + '">&lt;</a></td>';
-    var d = begin;
-    while (d.valueOf() < end.valueOf()) {
-      quarters += '<td class="quarter">' + d.format('h:mma') + ' to ' + d.add('minutes', 15).format('h:mma') + '</td>';
-    }
-    quarters += '<td><a href="' + baseUrl + '?type=hour&date=' + momentForDate.clone().add('hours', 1) + '" title="from ' + begin.clone().add('hours', 1).format('h:mma') + ' to ' + end.clone().add('hours', 1).format('h:mma') + '">&gt;</a></td>';
-    $('#date_navigation tbody tr').eq(1).html(quarters);
-  }
-  switch (getParameterByName('type') || 'month') {
+var DateNavigation = function(type, date) {
+  this.type = type;
+  this.date = date;
+  this.redraw();
+  this.init();
+}
+DateNavigation.prototype.redraw = function() {
+  switch (this.type) {
     case 'year':
-      displayYearlyNavigation();
+      this.displayYearlyNavigation();
       break;
     case 'month':
-      displayMonthlyNavigation();
+      this.displayMonthlyNavigation();
       break;
     case 'day':
-      displayDailyNavigation();
+      this.displayDailyNavigation();
       break;
     case 'hour':
-      displayHourlyNavigation();
+      this.displayHourlyNavigation();
       break;
   }
+}
+DateNavigation.prototype.displayYearlyNavigation = function() {
+  var momentForDate = moment(this.date);
+  var title = '<td colspan="14">';
+  title += momentForDate.year();
+  title += '</td>';
+  $('#dateNavigation tbody tr').eq(0).html(title);
+  var begin = momentForDate.clone().startOf('year');
+  var end   = momentForDate.clone().endOf('year');
+  var months = '<td data-type="year" data-date="' + momentForDate.clone().subtract('years', 1) + '">&lt;</td>';
+  var d = begin;
+  while (d.valueOf() < end.valueOf()) {
+    months += '<td data-type="month" data-date="' + d.valueOf() + '" class="month">' + d.format('MMMM') + '</td>';
+    d.add('months', 1);
+  }
+  months += '<td data-type="year" data-date="' + momentForDate.clone().add('years', 1) + '">&gt;</td>';
+  $('#dateNavigation tbody tr').eq(1).html(months);
+}
+DateNavigation.prototype.displayMonthlyNavigation = function() {
+  var momentForDate = moment(this.date);
+  var title = '<td data-type="year" data-date="' + this.date + '" colspan="' + (momentForDate.clone().endOf('month').date() + 2) + '">';
+  title += momentForDate.format('MMMM YYYY');
+  title += '</td>';
+  $('#dateNavigation tbody tr').eq(0).html(title);
+  var begin = momentForDate.clone().startOf('month');
+  var end = momentForDate.clone().endOf('month');
+  var days = '<td data-type="month" data-date="' + momentForDate.clone().subtract('months', 1) + '">&lt;</td>';
+  var d = begin;
+  while (d.valueOf() < end.valueOf()) {
+    days += '<td data-type="day" data-date="' + d.valueOf() + '" class="day" title="' + d.format('dddd, LL') + '">' + d.date() + '</td>';
+    d.add('days', 1);
+  }
+  days += '<td data-type="month" data-date="' + momentForDate.clone().add('months', 1) + '">&gt;</td>';
+  $('#dateNavigation tbody tr').eq(1).html(days);
+}
+DateNavigation.prototype.displayDailyNavigation = function() {
+  var momentForDate = moment(this.date);
+  var title = '<td data-type="month" data-date="' + this.date + '" colspan="26">';
+  title += momentForDate.format('dddd MMMM Do, YYYY');
+  title += '</td>';
+  $('#dateNavigation tbody tr').eq(0).html(title);
+  var begin = momentForDate.clone().startOf('day');
+  var end   = momentForDate.clone().endOf('day');
+  var hours = '<td data-type="day" data-date="' + momentForDate.clone().subtract('days', 1) + '">&lt;</td>';
+  var d = begin;
+  while (d.valueOf() < end.valueOf()) {
+    hours += '<td data-type="hour" data-date="' + d.valueOf() + '" class="hour" title="from ' + d.format('h:mma') + ' to ' + d.clone().add('hours', 1).format('h:mma') + '">' + d.format('ha') + '</td>';
+    d.add('hours', 1);
+  }
+  hours += '<td data-type="day" data-date="' + momentForDate.clone().add('days', 1) + '">&gt;</td>';
+  $('#dateNavigation tbody tr').eq(1).html(hours);
+}
+DateNavigation.prototype.displayHourlyNavigation = function() {
+  var momentForDate = moment(this.date);
+  var title = '<td data-type="day" data-date="' + this.date + '" colspan="6">';
+  title += momentForDate.format('h:mma') + ' to ' + momentForDate.clone().add('hours', 1).format('h:mma');
+  title += ', ' + momentForDate.format('dddd MMMM Do YYYY');
+  title += '</td>';
+  $('#dateNavigation tbody tr').eq(0).html(title);
+  var begin = momentForDate.clone().startOf('hour');
+  var end   = momentForDate.clone().endOf('hour');
+  var quarters = '<td data-type="hour" date-date="' + momentForDate.clone().subtract('hours', 1) + '" title="from ' + begin.clone().subtract('hours', 1).format('h:mma') + ' to ' + end.clone().subtract('hours', 1).format('h:mma') + '">&lt;</td>';
+  var d = begin;
+  while (d.valueOf() < end.valueOf()) {
+    quarters += '<td class="quarter">' + d.format('h:mma') + ' to ' + d.add('minutes', 15).format('h:mma') + '</td>';
+  }
+  quarters += '<td data-type="hour" data-date="' + momentForDate.clone().add('hours', 1) + '" title="from ' + begin.clone().add('hours', 1).format('h:mma') + ' to ' + end.clone().add('hours', 1).format('h:mma') + '">&gt;</td>';
+  $('#dateNavigation tbody tr').eq(1).html(quarters);
+}
+DateNavigation.prototype.init = function() {
+  var self = this;
+  $(document).on('click', '#dateNavigation td', function(event) {
+    self.type = $(this).data('type');
+    self.date = parseInt($(this).data('date'));
+    self.redraw();
+  });
+}
+jQuery(document).ready(function($) {
+  new DateNavigation('<%= req.query.type || 'month' %>', <%= req.query.date || Date.now() %>);
 });
 </script>
