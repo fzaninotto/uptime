@@ -191,45 +191,23 @@ Check.methods.updateQos = function(callback) {
 }
 
 var statProvider = {
-  '1h':  'Ping',
-  '6h':  'Ping',
-  '1d':  'CheckHourlyStat',
-  '7d':  'CheckHourlyStat',
-  'MTD': 'CheckDailyStat',
-  '1m':  'CheckDailyStat',
-  '3m':  'CheckDailyStat',
-  '6m':  'CheckMonthlyStat',
-  'YTD': 'CheckMonthlyStat',
-  '1y':  'CheckMonthlyStat',
-  '3y':  'CheckMonthlyStat'
+  'hour':  { model: 'Ping', beginMethod: 'resetHour', endMethod: 'completeHour' },
+  'day':   { model: 'CheckHourlyStat', beginMethod: 'resetDay', endMethod: 'completeDay', duration: 60 * 60 * 1000 },
+  'month': { model: 'CheckDailyStat', beginMethod: 'resetMonth', endMethod: 'completeMonth', duration: 24 * 60 * 60 * 1000 },
+  'year':  { model: 'CheckMonthlyStat', beginMethod: 'resetYear', endMethod: 'completeYear' }
 };
 
-var statProviderDuration = {
-  'Ping': 0,
-  'CheckHourlyStat': 1000 * 60 * 60,
-  'CheckDailyStat': 1000 * 60 * 60 * 24
-}
-
-Check.methods.getStatsForPeriod = function(period, page, callback) {
-  var boundary = TimeCalculator.boundaryFunction[period];
-  if (typeof boundary == 'undefined') {
-    return callback(new Error('unknown period type ' + period));
-  }
+Check.methods.getStatsForPeriod = function(period, begin, end, callback) {
+  var periodPrefs = statProvider[period];
   var stats = [];
-  var query = { check: this, timestamp: { $gte: boundary(page), $lte: boundary(page - 1) } };
-  var stream = this.db.model(statProvider[period]).find(query).sort({ timestamp: 1 }).stream();
+  var query = { check: this, timestamp: { $gte: begin, $lte: end } };
+  var stream = this.db.model(periodPrefs['model']).find(query).sort({ timestamp: -1 }).stream();
   stream.on('error', function(err) {
     callback(err);
   }).on('data', function(stat) {
     if (typeof stat.isUp != 'undefined') {
       // stat is a Ping
-      stats.push({
-        timestamp: Date.parse(stat.timestamp),
-        availability: stat.isUp ? '100' : '0',
-        responsiveness: stat.isResponsive ? '100' : '0',
-        downtime: stat.downtime ? stat.downtime / 1000 : 0,
-        responseTime: Math.round(stat.time)
-      });
+      stats.push(stat);
     } else {
       // stat is an aggregation
       stats.push({
@@ -239,8 +217,7 @@ Check.methods.getStatsForPeriod = function(period, page, callback) {
         downtime: parseInt(stat.downtime / 1000),
         responseTime: parseInt(stat.responseTime),
         outages: stat.outages || [],
-        end: stat.end ? stat.end.valueOf() : (Date.parse(stat.timestamp) + statProviderDuration[statProvider[period]])
-
+        end: stat.end ? stat.end.valueOf() : (Date.parse(stat.timestamp) + periodPrefs['duration'])
       });
     };
   }).on('close', function() {
@@ -254,7 +231,7 @@ var singleStatsProvider = {
   'month': { model: 'CheckMonthlyStat', beginMethod: 'resetMonth', endMethod: 'completeMonth' }
 };
 
-Check.methods.getSingleStatsForPeriod = function(period, date, callback) {
+Check.methods.getSingleStatForPeriod = function(period, date, callback) {
   var periodPrefs = singleStatsProvider[period];
   var begin = TimeCalculator[periodPrefs['beginMethod']](date);
   var end = TimeCalculator[periodPrefs['endMethod']](date);

@@ -1,6 +1,13 @@
 <script src="<%= route %>/javascripts/bootstrap-tab.js"></script>
 <script src="<%= route %>/javascripts/ejs.min.js"></script>
+<script src="<%= route %>/javascripts/checkState.js"></script>
+<script src="<%= route %>/javascripts/dateNavigation.js"></script>
 <script src="<%= route %>/javascripts/uptimeBar.js"></script>
+<script>
+var ejs = require('ejs');
+ejs.open = '{{';
+ejs.close = '}}';
+</script>
 <style>
 #dateNavigation {
   margin-left: 100px;
@@ -51,6 +58,7 @@ ul.nav-tabs li span {
   font-weight: bold;
 }
 </style>
+<div style="float: right;" id="check_24h"></div>
 <h1>
   Check "<%= check.name %>"
   <a href="<%= check.url %>" target="_blank"><img src="<%= route %>/images/external-link-ltr-icon.png"></a>
@@ -62,145 +70,21 @@ ul.nav-tabs li span {
 </div>
 <div class="tabbable tabs-left">
   <ul class="nav nav-tabs">
-    <li class="active"><a href="#availability" data-toggle="tab">Availability<br/><span class="availability"></span>%</a></li>
-    <li><a href="#responsiveness" data-toggle="tab">Resp. Time<br/><span class="avgRespTime"></span>ms</a></li>
+    <li class="active"><a href="#responsiveness" data-toggle="tab">Resp. Time<br/><span class="avgRespTime"></span>ms</a></li>
+    <li><a href="#availability" data-toggle="tab">Availability<br/><span class="availability"></span>%</a></li>
     <li><a href="#events" data-toggle="tab">Downtime<br/><span class="downtime"></span></a></li>
-    <li><a href="#breakdown" data-toggle="tab">Data</a></li>
+    <li><a href="#data" data-toggle="tab">Data</a></li>
     <li><a href="#admin" data-toggle="tab">Admin</a></li>
   </ul>
   <div class="tab-content">
-    <div class="tab-pane" id="availability">
-
-    </div>
-    <div class="tab-pane" id="responsiveness">
-    </div>
     <div class="tab-pane" id="events">
+    <%- partial('_events', { url: '/api/checks/' + check._id + '/events', route: route }) %>
     </div>
+    <%- partial('_data', { url: '/api/checks/' + check._id + '/stats/', route: route } ) %>
   </div>
 </div>
-<ul class="nav nav-pills">
-</ul>
-<div class="tab-content">
-  <div class="tab-pane" id="stats">
-  <dl>
-    <dt>Availability</dt><dd><span class="availability"></span>%</dd>
-    <dt>Responsiveness</dt><dd><span class="responsiveness"></span>%</dd>
-    <dt>Average Response Time</dt><dd><span class="avgRespTime"></span>ms</dd>
-    <dt>Total Downtime</dt><dd><span class="downtime"></span></dd>
-  </dl>
-  </div>
-  <div class="tab-pane" id="events">
-  <%- partial('_events', { url: '/api/checks/' + check._id + '/events', route: route }) %>
-  </div>
-</div>
-
 <script>
-var DateNavigation = function(type, date, origin) {
-  this.type = type;
-  this.origin = origin;
-  this.setDate(date);
-  this.redraw();
-  this.init();
-}
-DateNavigation.prototype.setDate = function(date) {
-  this.date = Math.max(Math.min(date, Date.now()), this.origin);
-  this.momentForDate = moment(this.date);
-}
-DateNavigation.prototype.redraw = function() {
-  this.updateTitle()
-  this.updatePeriods();
-  $('#dateNavigation .timeline').width($('#dateNavigation .periods .btn-group').width() - 58);
-  $('#dateNavigation .timeline').data({ type: this.type, date: this.date }).trigger('refresh');
-}
-DateNavigation.prototype.subType = {
-  'year': 'month',
-  'month': 'day',
-  'day': 'hour',
-  'hour': 'quarter'
-}
-DateNavigation.prototype.titleForPeriod = function(date, type) {
-  switch (type) {
-    case 'month': return date.format('MMMM');
-    case 'day': return date.format('D');
-    case 'hour': return date.format('ha');
-    case 'quarter': 
-      return date.format('h:mma') + " to " + date.clone().add('minutes', 15).subtract('seconds', 1).format('h:mma');
-  }
-}
-DateNavigation.prototype.tooltipForPeriod = function(date, type) {
-  switch (type) {
-    case 'month': return date.format('MMMM YYYY');
-    case 'day': return date.format('dddd, LL');
-    case 'hour': 
-      return "from " + date.format('h:mma') + " to " + date.clone().endOf('hour').format('h:mma');
-    case 'quarter': return '';
-  }
-}
-DateNavigation.prototype.updatePeriods = function() {
-  var begin = this.momentForDate.clone().startOf(this.type);
-  var end   = this.momentForDate.clone().endOf(this.type);
-  var periods = '<div class="btn-group">';
-  if (begin.valueOf() > this.origin) {
-    periods += '<button class="btn btn-small" data-type="' + this.type + '" data-date="' + this.momentForDate.clone().subtract(this.type + 's', 1) + '">&lt;</button>';
-  } else {
-    periods += '<button class="btn btn-small" disabled="disabled">&lt;</button>';
-  }
-  var d = begin;
-  var subtype = this.subType[this.type];
-  while (d.valueOf() < end.valueOf()) {
-    if (d.valueOf() < Date.now() && d.valueOf() > this.origin && subtype != 'quarter') {
-      periods += '<button class="btn btn-small ' + subtype + ' nb' + end.date() + '" data-type="' + subtype + '" data-date="' + d.valueOf() + '" title="' + this.tooltipForPeriod(d, subtype) + '">' + this.titleForPeriod(d, subtype) + '</button>';
-    } else {
-      periods += '<button class="btn btn-small ' + subtype + ' nb' + end.date() + '" disabled="disabled">' + this.titleForPeriod(d, subtype) + '</button>';
-    }
-    if (subtype == 'quarter') {
-      d.add('minutes', 15);
-    } else {
-      d.add(subtype + 's', 1);
-    }
-  }
-  if (end.valueOf() < Date.now()) {
-    periods += '<button class="btn btn-small" data-type="' + this.type + '" data-date="' + this.momentForDate.clone().add(this.type + 's', 1) + '">&gt;</button>';
-  } else {
-    periods += '<button class="btn btn-small" disabled="disabled">&gt;</button>';
-  }
-  periods += '</div>';
-  $('#dateNavigation .periods').html(periods);
-}
-DateNavigation.prototype.updateTitle = function() {
-  var title = '';
-  switch (this.type) {
-    case 'year':
-      title += '<br/>' + this.momentForDate.year();
-      break;
-    case 'month':
-      title += '<button class="btn btn-link" data-type="year" data-date="' + this.date + '">';
-      title += this.momentForDate.year();
-      title += '</button><br/>';
-      title += this.momentForDate.format('MMMM');
-      break;
-    case 'day':
-      title += '<button class="btn btn-link" data-type="month" data-date="' + this.date + '">';
-      title += this.momentForDate.format('MMMM');
-      title += '</button><br/>';
-      title += this.momentForDate.format('dddd Do');
-      break;
-    case 'hour':
-      title += '<button class="btn btn-link" data-type="day" data-date="' + this.date + '">';
-      title += this.momentForDate.format('dddd Do');
-      title += '</button><br/>';
-      title += this.momentForDate.clone().startOf('hour').format('ha') + ' to ' + this.momentForDate.clone().endOf('hour').format('h:mma');
-  }
-  $('#dateNavigation .title').html(title);
-}
-DateNavigation.prototype.init = function() {
-  var self = this;
-  $(document).on('click', '#dateNavigation button', function(event) {
-    self.type = $(this).data('type');
-    self.setDate(parseInt($(this).data('date')));
-    self.redraw();
-  });
-}
+var dateNavigation;
 jQuery(document).ready(function($) {
   $('#dateNavigation .timeline').on('refresh', function(event) {
     var timeline = $(this);
@@ -219,9 +103,16 @@ jQuery(document).ready(function($) {
       } else {
         timeline.html(uptimeBar(begin, end, [[begin, end, -1]]));
       }
-      
     });
   });
-  new DateNavigation('<%= req.query.type || 'month' %>', <%= req.query.date || Date.now() %>, <%= check.firstTested.valueOf() %>);
+  dateNavigation = new DateNavigation('<%= req.query.type || 'month' %>', <%= req.query.date || Date.now() %>, <%= check.firstTested.valueOf() %>);
+});
+</script>
+<script>
+$(document).ready(function() {
+  updateCheckState(<%- JSON.stringify(check) %>);
+  socket.on('CheckEvent', function() {
+    $.getJSON('/api/checks/<%= check._id %>', updateCheckState);
+  });
 });
 </script>

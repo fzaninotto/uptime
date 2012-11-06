@@ -12,6 +12,7 @@ var uptimeBar = (function(){
          + '</div>';
   }
   var availabilityBar = function(begin, end, availability, origin, duration) {
+    if (availability == 1) return '';
     var availPow = Math.pow(availability, 5);
     var color = {
       red: parseInt(185 * (1 - availPow) + 191 * availPow),

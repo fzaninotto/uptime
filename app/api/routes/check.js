@@ -69,14 +69,14 @@ module.exports = function(app) {
   });
 
   app.get('/checks/:id/stat/:period/:timestamp', loadCheck, function(req, res, next) {
-    req.check.getSingleStatsForPeriod(req.params.period, new Date(parseInt(req.params.timestamp)), function(err, stat) {
+    req.check.getSingleStatForPeriod(req.params.period, new Date(parseInt(req.params.timestamp)), function(err, stat) {
       if(err) return next(err);
       res.json(stat);
     });
   });
   
-  app.get('/checks/:id/stats/:type/:page?', loadCheck, function(req, res, next) {
-    req.check.getStatsForPeriod(req.params.type, req.params.page, function(err, stats) {
+  app.get('/checks/:id/stats/:type', loadCheck, function(req, res, next) {
+    req.check.getStatsForPeriod(req.params.type, req.query.begin, req.query.end, function(err, stats) {
       if(err) return next(err);
       res.json(stats);
     });
