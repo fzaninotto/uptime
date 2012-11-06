@@ -7,10 +7,16 @@
 }
 #dateNavigation .title {
   text-align: center;
-  width: 100px;
+  width: 120px;
   position: relative;
   left: -100px;
   margin-bottom: -20px;
+  z-index:3;
+}
+#dateNavigation .title .btn-link {
+  padding: 0;
+  border: none;
+  vertical-align: inherit;
 }
 #dateNavigation .timeline {
   margin-left: 29px;
@@ -23,8 +29,17 @@
 .btn.btn-small.month {
   width: 66px;
 }
-.btn.btn-small.day {
+.btn.btn-small.day.nb31 {
   width: 26px;
+}
+.btn.btn-small.day.nb30 {
+  width: 27px;
+}
+.btn.btn-small.day.nb29 {
+  width: 28px;
+}
+.btn.btn-small.day.nb28 {
+  width: 29px;
 }
 .btn.btn-small.hour {
   width: 33px;
@@ -80,125 +95,103 @@ ul.nav-tabs li span {
 </div>
 
 <script>
-var DateNavigation = function(type, date) {
+var DateNavigation = function(type, date, origin) {
   this.type = type;
+  this.origin = origin;
   this.setDate(date);
   this.redraw();
   this.init();
 }
 DateNavigation.prototype.setDate = function(date) {
-  this.date = Math.min(date, Date.now());
+  this.date = Math.max(Math.min(date, Date.now()), this.origin);
   this.momentForDate = moment(this.date);
 }
 DateNavigation.prototype.redraw = function() {
-  switch (this.type) {
-    case 'year':
-      this.displayYearlyNavigation();
-      break;
-    case 'month':
-      this.displayMonthlyNavigation();
-      break;
-    case 'day':
-      this.displayDailyNavigation();
-      break;
-    case 'hour':
-      this.displayHourlyNavigation();
-      break;
-  }
+  this.updateTitle()
+  this.updatePeriods();
   $('#dateNavigation .timeline').width($('#dateNavigation .periods .btn-group').width() - 58);
   $('#dateNavigation .timeline').data({ type: this.type, date: this.date }).trigger('refresh');
 }
-DateNavigation.prototype.displayYearlyNavigation = function() {
-  $('#dateNavigation .title').html(this.momentForDate.year());
-  var begin = this.momentForDate.clone().startOf('year');
-  var end   = this.momentForDate.clone().endOf('year');
-  var months = '<div class="btn-group">';
-  months += '<button class="btn btn-small" data-type="year" data-date="' + this.momentForDate.clone().subtract('years', 1) + '">&lt;</button>';
-  var d = begin;
-  while (d.valueOf() < end.valueOf()) {
-    if (d.valueOf() < Date.now()) {
-      months += '<button class="btn btn-small month" data-type="month" data-date="' + d.valueOf() + '">' + d.format('MMMM') + '</button>';
-    } else {
-      months += '<button class="btn btn-small month" disabled="disabled">' + d.format('MMMM') + '</button>';
-    }
-    d.add('months', 1);
-  }
-  months += '<button class="btn btn-small" data-type="year" data-date="' + this.momentForDate.clone().add('years', 1) + '">&gt;</button>';
-  months += '</div>';
-  $('#dateNavigation .periods').html(months);
+DateNavigation.prototype.subType = {
+  'year': 'month',
+  'month': 'day',
+  'day': 'hour',
+  'hour': 'quarter'
 }
-DateNavigation.prototype.displayMonthlyNavigation = function() {
-  var title = '<button class="btn btn-link" data-type="year" data-date="' + this.date + '">';
-  title += this.momentForDate.year();
-  title += '</button><br/>';
-  title += this.momentForDate.format('MMMM');
-  $('#dateNavigation .title').html(title);
-  var begin = this.momentForDate.clone().startOf('month');
-  var end = this.momentForDate.clone().endOf('month');
-  var days = '<div class="btn-group">';
-  days += '<button class="btn btn-small" data-type="month" data-date="' + this.momentForDate.clone().subtract('months', 1) + '">&lt;</button>';
-  var d = begin;
-  while (d.valueOf() < end.valueOf()) {
-    if (d.valueOf() < Date.now()) {
-      days += '<button class="btn btn-small day" data-type="day" data-date="' + d.valueOf() + '" title="' + d.format('dddd, LL') + '">' + d.date() + '</button>';
-    } else {
-      days += '<button class="btn btn-small day" disabled="disabled" title="' + d.format('dddd, LL') + '">' + d.date() + '</button>';
-    }
-    d.add('days', 1);
+DateNavigation.prototype.titleForPeriod = function(date, type) {
+  switch (type) {
+    case 'month': return date.format('MMMM');
+    case 'day': return date.format('D');
+    case 'hour': return date.format('ha');
+    case 'quarter': 
+      return date.format('h:mma') + " to " + date.clone().add('minutes', 15).subtract('seconds', 1).format('h:mma');
   }
-  days += '<button class="btn btn-small" data-type="month" data-date="' + this.momentForDate.clone().add('months', 1) + '">&gt;</button>';
-  days += '</div>';
-  $('#dateNavigation .periods').html(days);
 }
-DateNavigation.prototype.displayDailyNavigation = function() {
-  var title = ' <button class="btn btn-link" data-type="year" data-date="' + this.date + '">';
-  title += this.momentForDate.year();
-  title += '</button><br/>';
-  title += '<button class="btn btn-link" data-type="month" data-date="' + this.date + '">';
-  title += this.momentForDate.format('MMMM');
-  title += '</button><br/>';
-  title += this.momentForDate.format('Do');
-  $('#dateNavigation .title').html(title);
-  var begin = this.momentForDate.clone().startOf('day');
-  var end   = this.momentForDate.clone().endOf('day');
-  var hours = '<div class="btn-group">';
-  hours += '<button class="btn btn-small" data-type="day" data-date="' + this.momentForDate.clone().subtract('days', 1) + '">&lt;</button>';
-  var d = begin;
-  while (d.valueOf() < end.valueOf()) {
-    if (d.valueOf() < Date.now()) {
-      hours += '<button  class="btn btn-small hour" data-type="hour" data-date="' + d.valueOf() + '" title="from ' + d.format('h:mma') + ' to ' + d.clone().add('hours', 1).format('h:mma') + '">' + d.format('ha') + '</button>';
-    } else {
-      hours += '<button class="btn btn-small hour" disabled="disabled" title="from ' + d.format('h:mma') + ' to ' + d.clone().add('hours', 1).format('h:mma') + '">' + d.format('ha') + '</button>';
-    }
-    d.add('hours', 1);
+DateNavigation.prototype.tooltipForPeriod = function(date, type) {
+  switch (type) {
+    case 'month': return date.format('MMMM YYYY');
+    case 'day': return date.format('dddd, LL');
+    case 'hour': 
+      return "from " + date.format('h:mma') + " to " + date.clone().endOf('hour').format('h:mma');
+    case 'quarter': return '';
   }
-  hours += '<button class="btn btn-small" data-type="day" data-date="' + this.momentForDate.clone().add('days', 1) + '">&gt;</button>';
-  hours += '</div>';
-  $('#dateNavigation .periods').html(hours);
 }
-DateNavigation.prototype.displayHourlyNavigation = function() {
-  var title = '<button class="btn btn-link" data-type="year" data-date="' + this.date + '">';
-  title += this.momentForDate.year();
-  title += '</button><br/>';
-  title += ' <button class="btn btn-link" data-type="month" data-date="' + this.date + '">';
-  title += this.momentForDate.format('MMMM');
-  title += '</button><br/>';
-  title += '<button class="btn btn-link" data-type="day" data-date="' + this.date + '">';
-  title += this.momentForDate.format('Do');
-  title += '</button><br/>';
-  title += this.momentForDate.clone().startOf('hour').format('ha') + '-' + this.momentForDate.clone().endOf('hour').format('h:mma');
-  $('#dateNavigation .title').html(title);
-  var begin = this.momentForDate.clone().startOf('hour');
-  var end   = this.momentForDate.clone().endOf('hour');
-  var quarters = '<div class="btn-group">';
-  quarters += '<button class="btn btn-small" data-type="hour" data-date="' + this.momentForDate.clone().subtract('hours', 1) + '" title="from ' + begin.clone().subtract('hours', 1).format('h:mma') + ' to ' + end.clone().subtract('hours', 1).format('h:mma') + '">&lt;</btn>';
-  var d = begin;
-  while (d.valueOf() < end.valueOf()) {
-    quarters += '<button class="btn btn-small quarter" disabled="disabled">' + d.format('h:mma') + ' to ' + d.add('minutes', 15).format('h:mma') + '</button>';
+DateNavigation.prototype.updatePeriods = function() {
+  var begin = this.momentForDate.clone().startOf(this.type);
+  var end   = this.momentForDate.clone().endOf(this.type);
+  var periods = '<div class="btn-group">';
+  if (begin.valueOf() > this.origin) {
+    periods += '<button class="btn btn-small" data-type="' + this.type + '" data-date="' + this.momentForDate.clone().subtract(this.type + 's', 1) + '">&lt;</button>';
+  } else {
+    periods += '<button class="btn btn-small" disabled="disabled">&lt;</button>';
   }
-  quarters += '<button class="btn btn-small" data-type="hour" data-date="' + this.momentForDate.clone().add('hours', 1) + '" title="from ' + begin.clone().add('hours', 1).format('h:mma') + ' to ' + end.clone().add('hours', 1).format('h:mma') + '">&gt;</button>';
-  quarters += '</div>';
-  $('#dateNavigation .periods').html(quarters);
+  var d = begin;
+  var subtype = this.subType[this.type];
+  while (d.valueOf() < end.valueOf()) {
+    if (d.valueOf() < Date.now() && d.valueOf() > this.origin && subtype != 'quarter') {
+      periods += '<button class="btn btn-small ' + subtype + ' nb' + end.date() + '" data-type="' + subtype + '" data-date="' + d.valueOf() + '" title="' + this.tooltipForPeriod(d, subtype) + '">' + this.titleForPeriod(d, subtype) + '</button>';
+    } else {
+      periods += '<button class="btn btn-small ' + subtype + ' nb' + end.date() + '" disabled="disabled">' + this.titleForPeriod(d, subtype) + '</button>';
+    }
+    if (subtype == 'quarter') {
+      d.add('minutes', 15);
+    } else {
+      d.add(subtype + 's', 1);
+    }
+  }
+  if (end.valueOf() < Date.now()) {
+    periods += '<button class="btn btn-small" data-type="' + this.type + '" data-date="' + this.momentForDate.clone().add(this.type + 's', 1) + '">&gt;</button>';
+  } else {
+    periods += '<button class="btn btn-small" disabled="disabled">&gt;</button>';
+  }
+  periods += '</div>';
+  $('#dateNavigation .periods').html(periods);
+}
+DateNavigation.prototype.updateTitle = function() {
+  var title = '';
+  switch (this.type) {
+    case 'year':
+      title += '<br/>' + this.momentForDate.year();
+      break;
+    case 'month':
+      title += '<button class="btn btn-link" data-type="year" data-date="' + this.date + '">';
+      title += this.momentForDate.year();
+      title += '</button><br/>';
+      title += this.momentForDate.format('MMMM');
+      break;
+    case 'day':
+      title += '<button class="btn btn-link" data-type="month" data-date="' + this.date + '">';
+      title += this.momentForDate.format('MMMM');
+      title += '</button><br/>';
+      title += this.momentForDate.format('dddd Do');
+      break;
+    case 'hour':
+      title += '<button class="btn btn-link" data-type="day" data-date="' + this.date + '">';
+      title += this.momentForDate.format('dddd Do');
+      title += '</button><br/>';
+      title += this.momentForDate.clone().startOf('hour').format('ha') + ' to ' + this.momentForDate.clone().endOf('hour').format('h:mma');
+  }
+  $('#dateNavigation .title').html(title);
 }
 DateNavigation.prototype.init = function() {
   var self = this;
@@ -229,6 +222,6 @@ jQuery(document).ready(function($) {
       
     });
   });
-  new DateNavigation('<%= req.query.type || 'month' %>', <%= req.query.date || Date.now() %>);
+  new DateNavigation('<%= req.query.type || 'month' %>', <%= req.query.date || Date.now() %>, <%= check.firstTested.valueOf() %>);
 });
 </script>
