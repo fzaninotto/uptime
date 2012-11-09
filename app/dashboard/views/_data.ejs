@@ -51,35 +51,31 @@ $(document).ready(function() {
     var stat_template = document.getElementById('stat_template').innerHTML;
     var ping_template = document.getElementById('ping_template').innerHTML;
     var updateStats = function() {
-      var data = $('#dateNavigation .timeline').data();
-      var type = dateNavigation.type;
-      var date = dateNavigation.momentForDate;
-      var begin = date.clone().startOf(type);
-      var end = date.clone().endOf(type);
+      var type = dateInterval.type;
+      var date = dateInterval.momentForDate;
+      var begin = dateInterval.begin;
+      var end = dateInterval.end;
+      var stats = dateInterval.stats;
       if (type == 'hour') {
-        $.getJSON('<%= url %>' + type + '?begin=' + begin.valueOf() + '&end=' + end.valueOf(), function(stats) {
-          var lines = [];
-          $.each(stats, function(key, stat) {
-            lines.unshift(ejs.render(ping_template, { ping: stat }));
-          });
-          $('#data table.stat').hide();
-          $('#data table.ping tbody').html(lines.join(''));
-          $('#data table.ping').show();
+        var lines = [];
+        $.each(stats, function(key, stat) {
+          lines.unshift(ejs.render(ping_template, { ping: stat }));
         });
+        $('#data table.stat').hide();
+        $('#data table.ping tbody').html(lines.join(''));
+        $('#data table.ping').show();
       } else {
-        $.getJSON('<%= url %>' + type + '?begin=' + begin.valueOf() + '&end=' + end.valueOf(), function(stats) {
-          var lines = [];
-          $.each(stats, function(key, stat) {
-            lines.unshift(ejs.render(stat_template, { stat: stat, dateFormat: dateFormats[data.type] }));
-          });
-          $('#data table.ping').hide();
-          $('#data table.stat tbody').html(lines.join(''));
-          $('#data table.stat').show();
+        var lines = [];
+        $.each(stats, function(key, stat) {
+          lines.unshift(ejs.render(stat_template, { stat: stat, dateFormat: dateFormats[type] }));
         });
+        $('#data table.ping').hide();
+        $('#data table.stat tbody').html(lines.join(''));
+        $('#data table.stat').show();
       }
     }
     updateStats();
-    $('#dateNavigation .timeline').on('refresh', updateStats);
+    dateInterval.on('refresh-stats', updateStats);
   });
 });
 </script>

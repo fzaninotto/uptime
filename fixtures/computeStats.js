@@ -68,11 +68,11 @@ var updateMonthlyQosSinceTheFirstPing = function(callback) {
   .find()
   .sort({ 'timestamp': 1 })
   .findOne(function(err, ping) {
-    var date = ping.timestamp.valueOf();
-    var now = Date.now();
+    var date = Date.now() + 28 * 24 * 60 * 60 * 1000;
+    var oldestDate = ping.timestamp.valueOf();
     nbDates = 0;
     async.whilst(
-      function() { date += 28 * 24 * 60 * 60 * 1000; return date < now; },
+      function() { date -= 28 * 24 * 60 * 60 * 1000; return date > oldestDate; },
       function(cb) {
         var dateObject = new Date(date);
         QosAggregator.updateMonthlyQos(dateObject, cb);

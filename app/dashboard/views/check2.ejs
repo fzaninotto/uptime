@@ -84,28 +84,25 @@ ul.nav-tabs li span {
   </div>
 </div>
 <script>
-var dateNavigation;
+var dateInterval = new DateInterval('<%= req.query.type || 'month' %>', <%= req.query.date || Date.now() %>, <%= check.firstTested.valueOf() %>);
 jQuery(document).ready(function($) {
-  $('#dateNavigation .timeline').on('refresh', function(event) {
-    var timeline = $(this);
-    var data = timeline.data();
-    var date = moment(data.date);
-    var begin = date.clone().startOf(data.type);
-    var end = date.clone().endOf(data.type);
+  dateInterval.on('refresh-stat', function() {
+    var timeline = $('#dateNavigation .timeline');
     var statPane = $('.nav-tabs');
-    $.getJSON('/api/checks/<%= check._id %>/stat/' + data.type + '/' + data.date, function(stat) {
-      if (stat) {
-        timeline.html(uptimeBar(begin, end, stat.outages || []));
-        statPane.find('.availability').text(stat.availability);
-        statPane.find('.responsiveness').text(stat.responsiveness);
-        statPane.find('.avgRespTime').text(stat.responseTime);
-        statPane.find('.downtime').text(stat.downtime ? moment.duration(stat.downtime, 'seconds').humanize() : '-');
-      } else {
-        timeline.html(uptimeBar(begin, end, [[begin, end, -1]]));
-      }
-    });
+    var begin = this.begin.valueOf();
+    var end = this.end.valueOf();
+    var stat = this.stat;
+    if (stat && stat.availability) {
+      timeline.html(uptimeBar(begin, end, stat.outages || []));
+      statPane.find('.availability').text(stat.availability);
+      statPane.find('.responsiveness').text(stat.responsiveness);
+      statPane.find('.avgRespTime').text(stat.responseTime);
+      statPane.find('.downtime').text(stat.downtime ? moment.duration(stat.downtime, 'seconds').humanize() : '-');
+    } else {
+      timeline.html(uptimeBar(begin, end, [[begin, end, -1]]));
+    }
   });
-  dateNavigation = new DateNavigation('<%= req.query.type || 'month' %>', <%= req.query.date || Date.now() %>, <%= check.firstTested.valueOf() %>);
+  new DateNavigation(dateInterval, '/api/checks/<%= check._id %>/');
 });
 </script>
 <script>

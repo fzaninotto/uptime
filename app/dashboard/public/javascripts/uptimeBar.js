@@ -13,13 +13,8 @@ var uptimeBar = (function(){
   }
   var availabilityBar = function(begin, end, availability, origin, duration) {
     if (availability == 1) return '';
-    var availPow = Math.pow(availability, 5);
-    var color = {
-      red: parseInt(185 * (1 - availPow) + 191 * availPow),
-      green: parseInt(84 * (1 - availPow) + 210 * availPow),
-      blue: parseInt(72 * (1 - availPow) + 85 * availPow)
-    };
-    return '<div style="background-color:rgb(' + color.red + ',' + color.green + ',' + color.blue + ');left:' + (begin - origin) / duration * 100 + '%;width:' + (end - begin) / duration * 100 + '%" ' 
+    var intensity = 1 - Math.pow(availability, 10) * 0.8;
+    return '<div class="down" style="opacity: ' + intensity + ';left:' + (begin - origin) / duration * 100 + '%;width:' + (end - begin) / duration * 100 + '%" ' 
               + 'title="' + (availability * 100).toFixed(3) + '% availability from '+ moment(begin).format('LL') + ' to ' + moment(end).format('LL') + '">'
          + '</div>'
   }
