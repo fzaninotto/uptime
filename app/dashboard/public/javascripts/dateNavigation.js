@@ -1,17 +1,36 @@
 var DateNavigation = function(interval, maxZoom) {
   this.interval = interval;
+  this.initialType = interval.type;
+  this.initialDate = interval.date;
   this.maxZoom = maxZoom || 'hour';
   this.init();
 }
 DateNavigation.prototype.init = function() {
+  // redraw on date change
   this.redraw();
   var interval = this.interval;
   interval.on('change-date', this.redraw.bind(this));
+  
+  // change date on click
   $('#dateNavigation').on('click', 'button', function(event) {
     var data = $(this).data();
     interval.type = data.type;
     interval.setDate(parseInt(data.date));
   });
+  
+  // redraw uptime bar when the data arrives
+  interval.on('refresh-stat', function() {
+    var outages = this.stat ? this.stat.outages || [] : [];
+    $('#dateNavigation .timeline').html(
+      uptimeBar(this.begin.valueOf(), this.end.valueOf(), this.origin.valueOf(), outages)
+    );
+  });
+  
+  // pin when scrolling
+  $('#dateNavigation').affix({
+    offset: $('#dateNavigation').position()
+  });
+
   // manage back navigation
   var popped = (window.history.state);
   var initialURL = location.href
@@ -30,7 +49,7 @@ DateNavigation.prototype.init = function() {
     if (!params) {
       if (location.href == initialURL) {
         // reached back first page
-        params = { type: initialType, date: initialDate };
+        params = { type: self.initialType, date: self.initialDate };
       } else {
         // just changed hash - ignoring
         return;

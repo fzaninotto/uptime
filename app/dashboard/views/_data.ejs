@@ -22,7 +22,6 @@
     <tbody></tbody>
   </table>
 </div>
-<script src="<%= route %>/javascripts/uptimeBar.js"></script>
 <script id="stat_template" type="text/template">
 <tr class="{{= (stat.availability < 100) ? 'red' : (stat.responsiveness < 100) ? 'orange' : '' }}{{= ['0','6'].indexOf(moment(stat.timestamp).format('d')) !== -1 ? ' week-end' : '' }}">
   <td title="{{= new Date(stat.timestamp) }}"><a href="#" class="date" data-type="{{= subType }}" data-date="{{= stat.timestamp }}">{{= moment(stat.timestamp).format(dateFormat) }}</a></td>
@@ -44,23 +43,24 @@
 </tr>
 </script>
 <script>
-var dateFormats = {
-  'day': 'LLLL',
-  'month': 'dddd, LL',
-  'year': 'MMMM YYYY'
-}
 $(document).ready(function() {
   var stat_template = document.getElementById('stat_template').innerHTML;
   var ping_template = document.getElementById('ping_template').innerHTML;
   var updateStats = function() {
+    var dateFormats = {
+      'day': 'LLLL',
+      'month': 'dddd, LL',
+      'year': 'MMMM YYYY'
+    }
     var type = dateInterval.type;
     var subType = dateInterval.subType(type);
     var date = dateInterval.momentForDate;
     var begin = dateInterval.begin;
     var end = dateInterval.end;
     var stats = dateInterval.stats;
+    var lines = [];
     if (type == 'hour') {
-      var lines = [];
+      // display pings
       $.each(stats, function(key, stat) {
         lines.unshift(ejs.render(ping_template, { ping: stat }));
       });
@@ -68,9 +68,9 @@ $(document).ready(function() {
       $('#data .ping tbody').html(lines.join(''));
       $('#data .ping').show();
     } else {
-      var lines = [];
+      // display aggregated stats
       $.each(stats, function(key, stat) {
-        lines.unshift(ejs.render(stat_template, { stat: stat, dateFormat: dateFormats[type], subType: subType  }));
+        lines.unshift(ejs.render(stat_template, { stat: stat, dateFormat: dateFormats[type], subType: subType }));
       });
       $('#data .ping').hide();
       $('#data .stat tbody').html(lines.join(''));

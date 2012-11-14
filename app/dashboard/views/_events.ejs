@@ -71,11 +71,12 @@ $(document).ready(function() {
     socket.on('CheckEvent', updateEvents);
     if(typeof dateInterval != 'undefined') {
       dateInterval.on('refresh-stats', function() {
-        if (this.stat.downtime == 0) return emptyEvents();
+        if (!this.stat || this.stat.downtime == 0) return emptyEvents();
         updateEvents();
       });
+    } else {
+      updateEvents();
     }
-    updateEvents();
   };
   if ($('a[data-toggle="tab"]').length) {
     $('a[data-toggle="tab"][href="#events"]').one('shown', init);

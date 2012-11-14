@@ -39,10 +39,10 @@ module.exports = function(app) {
     res.json(req.tag);
   });
 
-  app.get('/tags/:name/months', loadTag, function(req, res, next) {
-    req.tag.getMonths(function(err, months) {
+  app.get('/tags/:name/checks/:period/:timestamp', loadTag, function(req, res, next) {
+    req.tag.getChecksForPeriod(req.params.period, new Date(parseInt(req.params.timestamp)), function(err, checks) {
       if (err) return next(err);
-      res.json(months);
+      res.json(checks);
     })
   });
 

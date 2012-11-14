@@ -10,17 +10,30 @@ jQuery(document).ready(function($) {
       availabilities.push([new Date(stat.timestamp), availability]);
       minAvailability = Math.min(minAvailability, availability);
     });
-    Flotr.draw($('#availabilityGraph').get(0), [{ data: availabilities, lines : { lineWidth: 4, fill : true } }], { 
-      yaxis : { min : 0, margin: false, min: minAvailability < 10 ? minAvailability : minAvailability < 90 ? minAvailability - 10 : (minAvailability - 1), max: 100 },
-      xaxis : { showLabels: false, noTicks: 0, mode: 'time', min: dateInterval.begin.valueOf() - dateInterval.getSubTypeDuration() / 2, max: dateInterval.end.valueOf() - dateInterval.getSubTypeDuration() / 2 },
-      mouse : { track: true, relative: true, sensibility: 4, radius: 4, position: 's' },
+    Flotr.draw($('#availabilityGraph').get(0), [{ data: availabilities, lines : { show: true, lineWidth: 4, fill : true }, points: { show: true } }], { 
+      yaxis : {
+        min : 0,
+        margin: false,
+        min: minAvailability < 10 ? minAvailability : minAvailability < 90 ? minAvailability - 10 : (minAvailability - 1),
+        max: 100 
+      },
+      xaxis : {
+        showLabels: false,
+        noTicks: 0,
+        mode: 'time',
+        min: dateInterval.begin.valueOf() - dateInterval.getSubTypeDuration() / 2,
+        max: dateInterval.end.valueOf() - dateInterval.getSubTypeDuration() / 2 
+      },
+      mouse : {
+        track: true,
+        relative: true,
+        sensibility: 4,
+        radius: 4,
+        position: 's'
+      },
       grid: { outline: '' }
     });
   }
-  dateInterval.on('refresh-stats', function() {
-    if ($('#availabilityGraph').parent().css('display') !== 'block') return;
-    refreshAvailabilityGraph();
-  });
-  $('a[data-toggle="tab"][href="#availability"]').on('shown', refreshAvailabilityGraph);
+  dateInterval.on('refresh-stats', refreshAvailabilityGraph);
 });
 </script>

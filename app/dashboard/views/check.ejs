@@ -3,6 +3,7 @@
 <script src="<%= route %>/javascripts/checkState.js"></script>
 <script src="<%= route %>/javascripts/dateInterval.js"></script>
 <script src="<%= route %>/javascripts/dateNavigation.js"></script>
+<script src="<%= route %>/javascripts/statNavigation.js"></script>
 <script src="<%= route %>/javascripts/uptimeBar.js"></script>
 <script src="<%= route %>/javascripts/flotr2.min.js"></script>
 <script>
@@ -64,45 +65,26 @@ ejs.close = '}}';
   </div>
 </div>
 <script>
-var initialType = '<%= req.query.type || 'month' %>';
-var initialDate = <%= req.query.date || Date.now() %>;
-var dateInterval = new DateInterval(initialType, initialDate, <%= check.firstTested.valueOf() %>, '/api/checks/<%= check._id %>/');
+var dateInterval = new DateInterval(
+  '<%= req.query.type || 'month' %>',
+  <%= req.query.date || Date.now() %>,
+  <%= check.firstTested ? check.firstTested.valueOf() : Date.now() %>,
+  '/api/checks/<%= check._id %>/'
+);
 jQuery(document).ready(function($) {
+  // highlight current section in main nav
+  $('.navbar-inner li').eq(1).addClass('active');
   
-  // manage uptime bar and secondary navigation values
-  dateInterval.on('refresh-stat', function() {
-    var timeline = $('#dateNavigation .timeline');
-    var statPane = $('.nav-tabs');
-    var begin = this.begin.valueOf();
-    var end = this.end.valueOf();
-    var stat = this.stat;
-    if (stat && stat.availability) {
-      timeline.html(uptimeBar(begin, end, this.origin.valueOf(), stat.outages || []));
-      statPane.find('.availability').text(stat.availability.replace('.000', ''));
-      statPane.find('.responsiveness').text(stat.responsiveness.replace('.000', ''));
-      statPane.find('.avgRespTime').text(stat.responseTime);
-      statPane.find('.downtime').text(stat.downtime ? moment.duration(stat.downtime, 'seconds').humanize() : '-');
-    } else {
-      timeline.html(uptimeBar(begin, end, [[begin, end, -1]]));
-    }
-  });
-  
-  // initialize date navigation
-  new DateNavigation(dateInterval);
-});
-</script>
-<script>
-$(document).ready(function() {
+  // update check state live
   updateCheckState(<%- JSON.stringify(check) %>);
   socket.on('CheckEvent', function() {
     $.getJSON('/api/checks/<%= check._id %>', updateCheckState);
   });
-  $('#dateNavigation').affix({
-    offset: $('#dateNavigation').position()
-  });
-  $('#secondaryNav').affix({
-    offset: $('#dateNavigation').position()
-  });
-  $('.navbar-inner li').eq(1).addClass('active');
+  
+  // initialize secondary navigation
+  new StatNavigation(dateInterval);
+  
+  // initialize date navigation
+  new DateNavigation(dateInterval, 'hour');
 });
 </script>

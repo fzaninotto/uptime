@@ -273,3 +273,10 @@ ul.nav-tabs li span {
   width:600px;
   height:200px;
 }
+#checkUptimeBars li {
+  padding: 0 0 1em 4px;
+  list-style-type: none;
+}
+#checkUptimeBars li .name {
+  margin-bottom: 2px;
+}

@@ -2,6 +2,7 @@
 <script src="<%= route %>/javascripts/bootstrap-affix.js"></script>
 <script src="<%= route %>/javascripts/dateInterval.js"></script>
 <script src="<%= route %>/javascripts/dateNavigation.js"></script>
+<script src="<%= route %>/javascripts/statNavigation.js"></script>
 <script src="<%= route %>/javascripts/uptimeBar.js"></script>
 <script src="<%= route %>/javascripts/flotr2.min.js"></script>
 <script>
@@ -39,6 +40,7 @@ var page = {};
       <li><a href="#events">Downtime<i class="icon-chevron-right"></i><br/><strong class="downtime"></strong></a></li>
       <li><a href="#responseTime">Response Time<i class="icon-chevron-right"></i><br/><strong class="avgRespTime"></strong>ms</a></li>
       <li><a href="#responsiveness">Responsiveness<i class="icon-chevron-right"></i><br/><strong class="responsiveness"></strong>%</a></li>
+      <li><a href="#checks">Checks<i class="icon-chevron-right"></i></a></li>
       <li><a href="#data">Data<i class="icon-chevron-right"></i></a></li>
     </ul>
   </div>
@@ -55,47 +57,29 @@ var page = {};
     <section id="responsiveness">
     <%- partial('_responsiveness') %>
     </section>
+    <section id="checks">
+    <%- partial('checks', { url: '/api/tags/' + tag.name + '/checks/', route: route } ) %>
+    </section>
     <section id="data">
     <%- partial('_data', { url: '/api/tags/' + tag.name + '/stats/', route: route } ) %>
     </section>
   </div>
 </div>
 <script>
-var initialType = '<%= req.query.type || 'month' %>';
-var initialDate = <%= req.query.date || Date.now() %>;
-var dateInterval = new DateInterval(initialType, initialDate, <%= tag.firstTested.valueOf() %>, '/api/tags/<%= tag.name %>/');
+var dateInterval = new DateInterval(
+  '<%= req.query.type || 'month' %>',
+  <%= req.query.date || Date.now() %>,
+  <%= tag.firstTested.valueOf() %>,
+  '/api/tags/<%= tag.name %>/'
+);
 jQuery(document).ready(function($) {
-  
-  // manage uptime bar and secondary navigation values
-  dateInterval.on('refresh-stat', function() {
-    var timeline = $('#dateNavigation .timeline');
-    var statPane = $('.nav-tabs');
-    var begin = this.begin.valueOf();
-    var end = this.end.valueOf();
-    var stat = this.stat;
-    if (stat && stat.availability) {
-      timeline.html(uptimeBar(begin, end, this.origin.valueOf(), stat.outages || []));
-      statPane.find('.availability').text(stat.availability.replace('.000', ''));
-      statPane.find('.responsiveness').text(stat.responsiveness.replace('.000', ''));
-      statPane.find('.avgRespTime').text(stat.responseTime);
-      statPane.find('.downtime').text(stat.downtime ? moment.duration(stat.downtime, 'seconds').humanize() : '-');
-    } else {
-      timeline.html(uptimeBar(begin, end, [[begin, end, -1]]));
-    }
-  });
+  // highlight current section in main nav
+  $('.navbar-inner li').eq(2).addClass('active');
+
+  // initialize secondary navigation
+  new StatNavigation(dateInterval);
   
   // initialize date navigation
   new DateNavigation(dateInterval, 'day');
-});
-</script>
-<script>
-$(document).ready(function() {
-  $('#dateNavigation').affix({
-    offset: $('#dateNavigation').position()
-  });
-  $('#secondaryNav').affix({
-    offset: $('#dateNavigation').position()
-  });
-  $('.navbar-inner li').eq(2).addClass('active');
 });
 </script>

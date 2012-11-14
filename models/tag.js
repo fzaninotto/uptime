@@ -9,7 +9,10 @@ var TagDailyStat     = require('../models/tagDailyStat');
 var TagMonthlyStat   = require('../models/tagMonthlyStat');
 var TagYearlyStat    = require('../models/tagYearlyStat');
 var Check            = require('../models/check');
+var CheckHourlyStat  = require('../models/checkHourlyStat');
+var CheckDailyStat   = require('../models/checkDailyStat');
 var CheckMonthlyStat = require('../models/checkMonthlyStat');
+var CheckYearlyStat  = require('../models/checkYearlyStat');
 
 // main model
 var Tag = new Schema({
@@ -56,20 +59,6 @@ Tag.methods.getFirstTested = function(callback) {
     callback(err, firstTested);
   });
 }
-
-var statProvider = {
-  '1h':  'TagHourlyStat',
-  '6h':  'TagHourlyStat',
-  '1d':  'TagHourlyStat',
-  '7d':  'TagHourlyStat',
-  'MTD': 'TagDailyStat',
-  '1m':  'TagDailyStat',
-  '3m':  'TagDailyStat',
-  '6m':  'TagMonthlyStat',
-  'YTD': 'TagMonthlyStat',
-  '1y':  'TagMonthlyStat',
-  '3y':  'TagMonthlyStat'
-};
 
 var statProvider = {
   'day':   { model: 'TagHourlyStat', beginMethod: 'resetDay', endMethod: 'completeDay', duration: 60 * 60 * 1000 },
@@ -126,53 +115,45 @@ Tag.methods.getSingleStatsForPeriod = function(period, date, callback) {
   });
 }
 
-Tag.methods.getMonths = function(callback) {
-  TagMonthlyStat
-  .find({ name: this.name })
-  .sort({ timestamp: 1 })
-  .select('timestamp')
-  .findOne(function(err, stat) {
-    if (err) return callback(err);
-    if (!stat) return callback(null, []);
-    var months = [];
-    var now = Date.now();
-    var date = new Date(stat.timestamp);
-    do {
-      months.push(date.getTime());
-      if (date.getMonth() == 11) {
-        date.setMonth(0);
-        date.setFullYear(date.getFullYear() +1);
-      } else {
-        date.setMonth(date.getMonth() + 1);
-      }
-    } while (date.getTime() < now);
-    callback(null, months);
-  });
-}
+var checkProvider = {
+  'hour': { model: 'CheckHourlyStat', beginMethod: 'resetHour', endMethod: 'completeHour' },
+  'day':  { model: 'CheckDailyStat', beginMethod: 'resetDay', endMethod: 'completeDay' },
+  'month': { model: 'CheckMonthlyStat', beginMethod: 'resetMonth', endMethod: 'completeMonth' },
+  'year': { model: 'CheckYearlyStat', beginMethod: 'resetYear', endMethod: 'completeYear' }
+};
 
-Tag.methods.getMonthlyReport = function(date, callback) {
-  var tag = this;
-  var begin = TimeCalculator.resetMonth(date);
-  var end = TimeCalculator.completeMonth(date);
-  async.parallel({
-    tagMonthlyStat: function(cb) {
-      TagMonthlyStat.findOne({ name: tag.name, timestamp: begin }, cb);
-    },
-    tagDailyStats: function(cb) {
-      TagDailyStat.find({ name: tag.name, timestamp: { $gte: begin, $lte: end }}).sort({ timestamp: 1 }).exec(cb);
-    },
-    checkStats: function(cb) {
-      Check.find({ tags: tag.name }).exec(function(getCheckErr, checks) {
-        CheckMonthlyStat.find({ check: { $in: checks }, timestamp: { $gte: begin, $lte: end }}).sort({ downtime: -1 }).populate('check', ['name']).exec(cb);
-      });
-    }
-  }, function(err, results) {
-    if (err) return callback(err);
-    results.begin = begin;
-    results.end = end;
-    results.tag = tag;
-    callback(null, results);
+Tag.methods.getChecksForPeriod = function(period, date, callback) {
+  var periodPrefs = checkProvider[period];
+  var stats = {};
+  var checkNames = [];
+  var begin = TimeCalculator[periodPrefs['beginMethod']](date);
+  var end = TimeCalculator[periodPrefs['endMethod']](date);
+  var query = { tags: this.name, timestamp: { $gte: begin, $lte: end } };
+  var stream = this.db.model(periodPrefs['model']).find(query).populate('check').stream();
+  stream
+  .on('error', callback)
+  .on('data', function(stat) {
+    stats[stat.check.name] = {
+      timestamp: Date.parse(stat.timestamp),
+      availability: (stat.availability * 100).toFixed(3),
+      responsiveness: (stat.responsiveness * 100).toFixed(3),
+      downtime: parseInt(stat.downtime / 1000),
+      responseTime: parseInt(stat.responseTime),
+      outages: stat.outages || [],
+      end: stat.end ? stat.end.valueOf() : (Date.parse(stat.timestamp) + periodPrefs['duration']),
+      check: stat.check
+    };
+    checkNames.push(stat.check.name);
+  })
+  .on('close', function() {
+    var orderedStats = [];
+    checkNames.sort();
+    checkNames.forEach(function(checkName) {
+      orderedStats.push(stats[checkName]);
+    })
+    callback(null, orderedStats);
   });
+
 }
 
 Tag.statics.ensureTagsHaveFirstTestedDate = function(tags, callback) {
