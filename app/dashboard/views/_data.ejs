@@ -1,4 +1,5 @@
-<div class="tab-pane" id="data">
+<div class="stat" style="display:none">
+  <h2>Data</h2>
   <table class="table stat" style="display:none">
     <thead>
       <tr>
@@ -11,18 +12,20 @@
     </thead>
     <tbody></tbody>
   </table>
+</div>
+<div class="ping" style="display:none">
+  <h2>Data - Pings</h2>
   <table class="table ping" style="display:none">
     <thead>
       <tr><th>Date</th><th>Status</th><th>Response time</th><th>Error</th></tr>
     </thead>
     <tbody></tbody>
   </table>
-  <div style="clear:left"></div>
 </div>
 <script src="<%= route %>/javascripts/uptimeBar.js"></script>
 <script id="stat_template" type="text/template">
 <tr class="{{= (stat.availability < 100) ? 'red' : (stat.responsiveness < 100) ? 'orange' : '' }}{{= ['0','6'].indexOf(moment(stat.timestamp).format('d')) !== -1 ? ' week-end' : '' }}">
-  <td title="{{= new Date(stat.timestamp) }}">{{= moment(stat.timestamp).format(dateFormat) }}</td>
+  <td title="{{= new Date(stat.timestamp) }}"><a href="#" class="date" data-type="{{= subType }}" data-date="{{= stat.timestamp }}">{{= moment(stat.timestamp).format(dateFormat) }}</a></td>
   <td>{{= stat.availability.replace('.000', '') }}%</td>
   <td title="{{= stat.downtime }}s">{{= stat.downtime == 0 ? '' : stat.downtime < 300 ? stat.downtime + 's' : moment.duration(stat.downtime, 'seconds').humanize() }}</td>
   <td>{{= stat.responsiveness.replace('.000', '') }}%</td>
@@ -47,35 +50,39 @@ var dateFormats = {
   'year': 'MMMM YYYY'
 }
 $(document).ready(function() {
-  $('a[data-toggle="tab"][href="#data"]').one('shown', function(e) {
-    var stat_template = document.getElementById('stat_template').innerHTML;
-    var ping_template = document.getElementById('ping_template').innerHTML;
-    var updateStats = function() {
-      var type = dateInterval.type;
-      var date = dateInterval.momentForDate;
-      var begin = dateInterval.begin;
-      var end = dateInterval.end;
-      var stats = dateInterval.stats;
-      if (type == 'hour') {
-        var lines = [];
-        $.each(stats, function(key, stat) {
-          lines.unshift(ejs.render(ping_template, { ping: stat }));
-        });
-        $('#data table.stat').hide();
-        $('#data table.ping tbody').html(lines.join(''));
-        $('#data table.ping').show();
-      } else {
-        var lines = [];
-        $.each(stats, function(key, stat) {
-          lines.unshift(ejs.render(stat_template, { stat: stat, dateFormat: dateFormats[type] }));
-        });
-        $('#data table.ping').hide();
-        $('#data table.stat tbody').html(lines.join(''));
-        $('#data table.stat').show();
-      }
+  var stat_template = document.getElementById('stat_template').innerHTML;
+  var ping_template = document.getElementById('ping_template').innerHTML;
+  var updateStats = function() {
+    var type = dateInterval.type;
+    var subType = dateInterval.subType(type);
+    var date = dateInterval.momentForDate;
+    var begin = dateInterval.begin;
+    var end = dateInterval.end;
+    var stats = dateInterval.stats;
+    if (type == 'hour') {
+      var lines = [];
+      $.each(stats, function(key, stat) {
+        lines.unshift(ejs.render(ping_template, { ping: stat }));
+      });
+      $('#data .stat').hide();
+      $('#data .ping tbody').html(lines.join(''));
+      $('#data .ping').show();
+    } else {
+      var lines = [];
+      $.each(stats, function(key, stat) {
+        lines.unshift(ejs.render(stat_template, { stat: stat, dateFormat: dateFormats[type], subType: subType  }));
+      });
+      $('#data .ping').hide();
+      $('#data .stat tbody').html(lines.join(''));
+      $('#data .stat').show();
     }
-    updateStats();
-    dateInterval.on('refresh-stats', updateStats);
+  }
+  dateInterval.on('refresh-stats', updateStats);
+  $('.stat table').on('click', 'a.date', function(event) {
+    var data = $(this).data();
+    dateInterval.type = data.type;
+    dateInterval.setDate(parseInt(data.date));
+    return false;
   });
 });
 </script>

@@ -251,6 +251,41 @@ Check.methods.getSingleStatForPeriod = function(period, date, callback) {
   });
 }
 
+Check.methods.getYearlySingleStat = function(date, callback) {
+  var mainStat = {
+    count: 0,
+    availability: 0,
+    responsiveness: 0,
+    downtime: 0,
+    responseTime: 0,
+    outages: []
+  };
+  var begin = TimeCalculator.resetYear(date);
+  var end = TimeCalculator.completeYear(date);
+  var query = { check: this, timestamp: { $gte: begin, $lte: end } };
+  var stream = CheckMonthlyStat.find(query).sort({ timestamp: -1 }).stream();
+  stream.on('error', function(err) {
+    callback(err);
+  }).on('data', function(stat) {
+    mainStat.count++;
+    mainStat.availability += stat.availability;
+    mainStat.responsiveness += stat.responsiveness;
+    mainStat.downtime += stat.downtime,
+    mainStat.responseTime += stat.responseTime,
+    mainStat.outages.push([stat.timestamp.valueOf(), stat.end.valueOf(), stat.availability]);
+  }).on('close', function() {
+    callback(null, {
+      timestamp: begin,
+      end: end, 
+      availability: (mainStat.availability / mainStat.count * 100).toFixed(3),
+      responsiveness: (mainStat.responsiveness / mainStat.count * 100).toFixed(3),
+      downtime: mainStat.downtime / 1000,
+      responseTime: parseInt(mainStat.responseTime / mainStat.count),
+      outages: mainStat.outages
+    });
+  });
+}
+
 Check.statics.findForTag = function(tag, callback) {
   return this.find().where('tags').equals(tag).exec(callback);
 }

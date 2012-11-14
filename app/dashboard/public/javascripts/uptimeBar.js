@@ -18,7 +18,7 @@ var uptimeBar = (function(){
               + 'title="' + (availability * 100).toFixed(3) + '% availability from '+ moment(begin).format('LL') + ' to ' + moment(end).format('LL') + '">'
          + '</div>'
   }
-  var uptimeBar = function(from, to, periods) {
+  var uptimeBar = function(from, to, origin, periods) {
     var ret = '<div class="uptimeBar">';
     var duration = to - from;
     var nbPeriods = periods.length;
@@ -30,6 +30,10 @@ var uptimeBar = (function(){
       } else {
         ret += availabilityBar(periods[i][0], periods[i][1], periods[i][2], from, duration);
       }
+    }
+    if (from < origin && origin < to) {
+      // hide not measured period
+      ret += '<div style="background-color:white;left:0;width:' + (origin - from) / duration * 100 + '%"></div>';
     }
     var now = Date.now();
     if (from < now && now < to) {

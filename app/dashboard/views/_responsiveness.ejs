@@ -1,0 +1,26 @@
+<h2>Responsiveness</h2>
+<div id="responsivenessGraph" class="graph"></div>
+<script>
+jQuery(document).ready(function($) {
+  var refreshResponsivenessGraph = function() {
+    var responsivenessData = [];
+    var minResponsiveness = Infinity;
+    $.each(dateInterval.stats, function(index, stat) {
+      var responsiveness = stat.responsiveness || (stat.isResponsive ? 100 : 0);
+      responsivenessData.push([new Date(stat.timestamp), responsiveness]);
+      minResponsiveness = Math.min(minResponsiveness, responsiveness);
+    });
+    Flotr.draw($('#responsivenessGraph').get(0), [{ data: responsivenessData, color: '#9440ED', lines: { show: true, lineWidth: 4 }, points: { show: true } }], { 
+      yaxis : { min : 0, margin: false, min: minResponsiveness < 10 ? minResponsiveness : minResponsiveness < 90 ? minResponsiveness - 10 : (minResponsiveness - 1), max: 100 },
+      xaxis : { showLabels: false, noTicks: 0, mode: 'time', min: dateInterval.begin.valueOf() - dateInterval.getSubTypeDuration() / 2, max: dateInterval.end.valueOf() - dateInterval.getSubTypeDuration() / 2 },
+      mouse : { track: true, relative: true, sensibility: 4, radius: 4, position: 's' },
+      grid: { outline: '' }
+    });
+  }
+  dateInterval.on('refresh-stats', function() {
+    if ($('#responsivenessGraph').parent().css('display') !== 'block') return;
+    refreshResponsivenessGraph();
+  });
+  $('a[data-toggle="tab"][href="#responsiveness"]').on('shown', refreshResponsivenessGraph);
+});
+</script>

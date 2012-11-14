@@ -1,6 +1,6 @@
 <script id="event_template" type="text/template">
-<li class="{{= highlightFrom && new Date(event.timestamp).getTime() > highlightFrom ? 'new' : ''}}">
-  <span class="label" title="{{= new Date(event.timestamp) }}">{{= moment(event.timestamp).format('LT') }}</span>
+<li class="{{= highlightFrom && date.valueOf() > highlightFrom ? 'new' : ''}}">
+  <span class="label" title="{{= date }}">{{= date.format('LT') }}</span>
   {{ var label = (event.message == 'paused' || event.message == 'restarted') ? 'info' : (event.message == 'up') ? 'success' : 'important' }}
   <span class="label label-{{= label }}">{{= event.message }}</span>
   <a href="{{=  route + '/checks/' + event.check._id }}">{{= event.check.name }}</a>
@@ -33,25 +33,48 @@ $(document).ready(function() {
     var ejs = require('ejs');
     ejs.open = '{{';
     ejs.close = '}}';
+    var adjustHash = function() {
+     var hash = window.location.hash;
+      if (hash) {
+        $(hash).get(0).scrollIntoView();
+      }
+    };
+    var emptyEvents = function() {
+      $('#events').html('<p>Nothing happened lately. All Green!</p>');
+      adjustHash();
+    }
     var updateEvents = function() {
-      $.getJSON('<%= url %>', function(events) {
+      var queryString = typeof dateInterval == 'undefined' ? '' : dateInterval.getIntervalQueryString();
+      $.getJSON('<%= url %>' + queryString, function(events) {
         if ($.isEmptyObject(events)) {
-          $('#events').html('<p>Nothing happened lately. All Green!</p>');
+          emptyEvents();
           return;
         }
         var lines = [];
+        var nbEvents = 0;
         $.each(events, function(key, eventGroup) {
           lines.push('<ul><li class="day"><h3>' + moment(key).format('dddd, MMMM Do') + '</h3><ul>');
           $.each(eventGroup, function(key, event) {
             if (!event.message) return;
-            lines.push(ejs.render(event_template, { event: event, highlightFrom: highlightFrom, route: '<%= route %>' }));
+            lines.push(ejs.render(event_template, { event: event, date: moment(event.timestamp), highlightFrom: highlightFrom, route: '<%= route %>' }));
+            nbEvents++;
           });
           lines.push('</ul></li></ul>');
         });
+        if (nbEvents == 100) {
+          lines.push('<p>List limited to first 100 events - dig down to see all events</p>')
+        }
         $('#events').html(lines.join(''));
+        adjustHash();
       });
     }
     socket.on('CheckEvent', updateEvents);
+    if(typeof dateInterval != 'undefined') {
+      dateInterval.on('refresh-stats', function() {
+        if (this.stat.downtime == 0) return emptyEvents();
+        updateEvents();
+      });
+    }
     updateEvents();
   };
   if ($('a[data-toggle="tab"]').length) {

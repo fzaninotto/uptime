@@ -69,10 +69,15 @@ module.exports = function(app) {
   });
 
   app.get('/checks/:id/stat/:period/:timestamp', loadCheck, function(req, res, next) {
-    req.check.getSingleStatForPeriod(req.params.period, new Date(parseInt(req.params.timestamp)), function(err, stat) {
-      if(err) return next(err);
+    var returnFunc = function(err, stat) {
+      if (err) return next(err);
       res.json(stat);
-    });
+    }
+    if (req.params.period == 'year') {
+      req.check.getYearlySingleStat(new Date(parseInt(req.params.timestamp)), returnFunc);
+    } else {
+      req.check.getSingleStatForPeriod(req.params.period, new Date(parseInt(req.params.timestamp)), returnFunc);
+    }
   });
   
   app.get('/checks/:id/stats/:type', loadCheck, function(req, res, next) {
@@ -83,13 +88,18 @@ module.exports = function(app) {
   });
   
   app.get('/checks/:id/events', function(req, res, next) {
-    CheckEvent
-    .find({
+    var query = {
       check: req.params.id,
-      timestamp: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
-    })
+      timestamp: { $gte: req.query.begin || new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
+    };
+    if (req.query.end) {
+      query.timestamp.$lte = req.query.end;
+    }
+    CheckEvent
+    .find(query)
     .sort({ timestamp: -1 })
     .select({tags: 0})
+    .limit(100)
     .exec(function(err, events) {
       if (err) return next(err);
       CheckEvent.aggregateEventsByDay(events, function(err, aggregatedEvents) {

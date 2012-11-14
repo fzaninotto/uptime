@@ -1,24 +1,46 @@
-<script src="<%= route %>/javascripts/bootstrap-tab.js"></script>
 <script src="<%= route %>/javascripts/ejs.min.js"></script>
+<script src="<%= route %>/javascripts/bootstrap-affix.js"></script>
 <script src="<%= route %>/javascripts/checkState.js"></script>
+<script src="<%= route %>/javascripts/dateInterval.js"></script>
 <script src="<%= route %>/javascripts/dateNavigation.js"></script>
 <script src="<%= route %>/javascripts/uptimeBar.js"></script>
+<script src="<%= route %>/javascripts/flotr2.min.js"></script>
 <script>
 var ejs = require('ejs');
 ejs.open = '{{';
 ejs.close = '}}';
 </script>
 <style>
-#dateNavigation {
-  margin-left: 100px;
+#sectionList section {
+  padding-top: 88px;
+}
+#sectionList .span10 {
+  margin-top: -88px;
+}
+#sectionList strong {
+  font-size: 1.5em;
+}
+#dateNavigationContainer {
+  min-height: 88px;
+}
+#dateNavigation.affix {
+  top: 0;
+  background-color: white;
+  z-index: 50;
+}
+#secondaryNav.affix {
+  top: 91px;
+  width: 140px;
+}
+i.icon-chevron-right {
+  float: right;
+  margin-top: 2px;
+  margin-right: -6px;
+  opacity: .25;
 }
 #dateNavigation .title {
   text-align: center;
-  width: 120px;
-  position: relative;
-  left: -100px;
-  margin-bottom: -20px;
-  z-index:3;
+  margin: 5px;
 }
 #dateNavigation .title .btn-link {
   padding: 0;
@@ -34,28 +56,33 @@ ejs.close = '}}';
   padding-left: 0;
 }
 .btn.btn-small.month {
-  width: 66px;
+  width: 61px;
 }
 .btn.btn-small.day.nb31 {
-  width: 26px;
+  width: 24px;
 }
 .btn.btn-small.day.nb30 {
-  width: 27px;
+  width: 25px;
 }
 .btn.btn-small.day.nb29 {
-  width: 28px;
+  width: 26px;
 }
 .btn.btn-small.day.nb28 {
-  width: 29px;
+  width: 27px;
 }
 .btn.btn-small.hour {
-  width: 33px;
+  width: 31px;
 }
-.btn.btn-small.quarter {
-  width: 196px;
+.btn.btn-small.tenminutes {
+  width: 120px;
 }
 ul.nav-tabs li span {
   font-weight: bold;
+}
+.graph {
+  margin: 20px 0 0 25px;
+  width:600px;
+  height:200px;
 }
 </style>
 <div style="float: right;" id="check_24h"></div>
@@ -63,29 +90,61 @@ ul.nav-tabs li span {
   Check "<%= check.name %>"
   <a href="<%= check.url %>" target="_blank"><img src="<%= route %>/images/external-link-ltr-icon.png"></a>
 </h1>
-<div id="dateNavigation">
-  <div class="title"></div>
-  <div class="timeline"></div>
-  <div class="periods"></div>
-</div>
-<div class="tabbable tabs-left">
-  <ul class="nav nav-tabs">
-    <li class="active"><a href="#responsiveness" data-toggle="tab">Resp. Time<br/><span class="avgRespTime"></span>ms</a></li>
-    <li><a href="#availability" data-toggle="tab">Availability<br/><span class="availability"></span>%</a></li>
-    <li><a href="#events" data-toggle="tab">Downtime<br/><span class="downtime"></span></a></li>
-    <li><a href="#data" data-toggle="tab">Data</a></li>
-    <li><a href="#admin" data-toggle="tab">Admin</a></li>
-  </ul>
-  <div class="tab-content">
-    <div class="tab-pane" id="events">
-    <%- partial('_events', { url: '/api/checks/' + check._id + '/events', route: route }) %>
+<div id="dateNavigationContainer">
+  <div id="dateNavigation">
+    <div class="row">
+      <div class="span2"></div>
+      <div class="span10">
+        <div class="title"></div>
+        <div class="timeline"></div>
+      </div>
     </div>
+    <div class="row">
+      <div class="span2">
+        <ul class="btn-group zoom"></ul>
+      </div>
+      <div class="span10">
+        <div class="periods"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="sectionList" class="row">
+  <div class="span2">
+    <ul id="secondaryNav" class="nav nav-tabs nav-stacked">
+      <li><a href="#availability">Availability<i class="icon-chevron-right"></i><br/><strong class="availability"></strong>%</a></li>
+      <li><a href="#events">Downtime<i class="icon-chevron-right"></i><br/><strong class="downtime"></strong></a></li>
+      <li><a href="#responseTime">Response Time<i class="icon-chevron-right"></i><br/><strong class="avgRespTime"></strong>ms</a></li>
+      <li><a href="#responsiveness">Responsiveness<i class="icon-chevron-right"></i><br/><strong class="responsiveness"></strong>%</a></li>
+      <li><a href="#data">Data<i class="icon-chevron-right"></i></a></li>
+      <li><a href="#admin">Admin<i class="icon-chevron-right"></i></a></li>
+    </ul>
+  </div>
+  <div class="span10">
+    <section id="availability">
+    <%- partial('_availability') %>
+    </section>
+    <section id="events">
+    <%- partial('_events', { url: '/api/checks/' + check._id + '/events', route: route }) %>
+    </section>
+    <section id="responseTime">
+    <%- partial('_responseTime') %>
+    </section>
+    <section id="responsiveness">
+    <%- partial('_responsiveness') %>
+    </section>
+    <section id="data">
     <%- partial('_data', { url: '/api/checks/' + check._id + '/stats/', route: route } ) %>
+    </section>
   </div>
 </div>
 <script>
-var dateInterval = new DateInterval('<%= req.query.type || 'month' %>', <%= req.query.date || Date.now() %>, <%= check.firstTested.valueOf() %>);
+var initialType = '<%= req.query.type || 'month' %>';
+var initialDate = <%= req.query.date || Date.now() %>;
+var dateInterval = new DateInterval(initialType, initialDate, <%= check.firstTested.valueOf() %>, '/api/checks/<%= check._id %>/');
 jQuery(document).ready(function($) {
+  
+  // manage uptime bar and secondary navigation values
   dateInterval.on('refresh-stat', function() {
     var timeline = $('#dateNavigation .timeline');
     var statPane = $('.nav-tabs');
@@ -93,16 +152,48 @@ jQuery(document).ready(function($) {
     var end = this.end.valueOf();
     var stat = this.stat;
     if (stat && stat.availability) {
-      timeline.html(uptimeBar(begin, end, stat.outages || []));
-      statPane.find('.availability').text(stat.availability);
-      statPane.find('.responsiveness').text(stat.responsiveness);
+      timeline.html(uptimeBar(begin, end, <%= check.firstTested.valueOf() %>, stat.outages || []));
+      statPane.find('.availability').text(stat.availability.replace('.000', ''));
+      statPane.find('.responsiveness').text(stat.responsiveness.replace('.000', ''));
       statPane.find('.avgRespTime').text(stat.responseTime);
       statPane.find('.downtime').text(stat.downtime ? moment.duration(stat.downtime, 'seconds').humanize() : '-');
     } else {
       timeline.html(uptimeBar(begin, end, [[begin, end, -1]]));
     }
   });
-  new DateNavigation(dateInterval, '/api/checks/<%= check._id %>/');
+  
+  // manage back navigation
+  var popped = (window.history.state);
+  var initialURL = location.href
+  var pushStateEnabled = false;
+  dateInterval.on('change-date', function() {
+    if (!pushStateEnabled) return;
+    history.pushState({ type: this.type, date: this.date, stat: this.stat, stats: this.stats }, null, '?type=' + this.type + '&date=' + this.date + location.hash);
+  });
+  window.addEventListener('popstate', function(e) {
+    // Chrome fires popstate on load, we must ignore that
+    var initialPop = !popped && location.href == initialURL;
+    popped = true;
+    if (initialPop || !pushStateEnabled) return;
+    var params = e.state;
+    if (!params) {
+      if (location.href == initialURL) {
+        // reached back first page
+        params = { type: initialType, date: initialDate };
+      } else {
+        // just changed hash - ignoring
+        return;
+      }
+    }
+    pushStateEnabled = false;
+    dateInterval.type = params.type;
+    dateInterval.setDate(parseInt(params.date));
+    pushStateEnabled = true;
+  });
+  var pushStateEnabled = true;
+  
+  // initialize date navigation
+  new DateNavigation(dateInterval);
 });
 </script>
 <script>
@@ -110,6 +201,12 @@ $(document).ready(function() {
   updateCheckState(<%- JSON.stringify(check) %>);
   socket.on('CheckEvent', function() {
     $.getJSON('/api/checks/<%= check._id %>', updateCheckState);
+  });
+  $('#dateNavigation').affix({
+    offset: $('#dateNavigation').position()
+  });
+  $('#secondaryNav').affix({
+    offset: $('#dateNavigation').position()
   });
 });
 </script>
