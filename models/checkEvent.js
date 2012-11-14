@@ -34,6 +34,11 @@ CheckEvent.statics.aggregateEventsByDay = function(events, callback) {
     events.forEach(function(event, index) {
       event = event.toJSON(); // bypass mongoose's magic setters
       event.check = indexedChecks[event.check];
+      delete event.__v;
+      delete event._id;
+      if (event.message == 'up') {
+        delete event.details;
+      }
       events[index] = event;
     });
 

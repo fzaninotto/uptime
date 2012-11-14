@@ -77,7 +77,7 @@ app.post('/checks', function(req, res) {
   check.save(function(err) {
     if (err) return next(err);
     req.flash('info', 'New check has been created');
-    res.redirect(app.route + (req.body.saveandadd ? '/checks/new' : ('/checks/' + check._id + '#admintab')));
+    res.redirect(app.route + (req.body.saveandadd ? '/checks/new' : ('/checks/' + check._id + '?type=hour&date=' + Date.now())));
   });
 });
 
@@ -85,9 +85,18 @@ app.get('/checks/:id', function(req, res, next) {
   Check.findOne({ _id: req.params.id }, function(err, check) {
     if (err) return next(err);
     if (!check) return res.send(404, 'failed to load check ' + req.params.id);
-    res.render('check', { check: check, info: req.flash('info') });
+    res.render('check', { check: check, info: req.flash('info'), req: req });
   });
 });
+
+app.get('/checks/:id/edit', function(req, res, next) {
+  Check.findOne({ _id: req.params.id }, function(err, check) {
+    if (err) return next(err);
+    if (!check) return res.send(404, 'failed to load check ' + req.params.id);
+    res.render('check_edit', { check: check, info: req.flash('info'), req: req });
+  });
+});
+
 
 app.put('/checks/:id', function(req, res, next) {
   var check = req.body.check;
@@ -97,7 +106,7 @@ app.put('/checks/:id', function(req, res, next) {
   Check.update({ _id: req.params.id }, { $set: check }, { upsert: true }, function(err) {
     if (err) return next(err);
     req.flash('info', 'Changes have been saved');
-    res.redirect(app.route + '/checks/' + req.params.id + '#admintab');
+    res.redirect(app.route + '/checks/' + req.params.id);
   });
 });
 
@@ -121,18 +130,7 @@ app.get('/tags/:name', function(req, res, next) {
   Tag.findOne({ name: req.params.name }, function(err, tag) {
     if (err) return next(err);
     if (!tag) return next(new Error('failed to load tag ' + req.params.name));
-    res.render('tag', { tag: tag });
-  });
-});
-
-app.get('/tags/:name/report/:date', function(req, res, next) {
-  Tag.findOne({ name: req.params.name }, function(err, tag) {
-    if (err) return next(err);
-    if (!tag) return next(new Error('failed to load tag ' + req.params.name));
-    tag.getMonthlyReport(parseInt(req.params.date), function (err2, report) {
-      if (err2) return next(err2);
-      res.render('tagReport', report);
-    })
+    res.render('tag', { tag: tag, req: req });
   });
 });
 

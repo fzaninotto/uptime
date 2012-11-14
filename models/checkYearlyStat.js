@@ -2,10 +2,10 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 // main model
-var CheckMonthlyStat = new Schema({
+var CheckYearlyStat = new Schema({
   check          : { type: Schema.ObjectId, ref: 'Check' },
   timestamp      : Date,
-  end            : Date, // end is stored because months have an uneven duration
+  end            : Date,
   count          : Number,
   availability   : Number,
   responsiveness : Number,
@@ -14,7 +14,7 @@ var CheckMonthlyStat = new Schema({
   outages        : Array,
   tags           : Array
 });
-CheckMonthlyStat.index({ check: 1, timestamp: -1 }, { unique: true });
-CheckMonthlyStat.plugin(require('mongoose-lifecycle'));
+CheckYearlyStat.index({ check: 1, timestamp: -1 }, { unique: true });
+CheckYearlyStat.plugin(require('mongoose-lifecycle'));
 
-module.exports = mongoose.model('CheckMonthlyStat', CheckMonthlyStat);
+module.exports = mongoose.model('CheckYearlyStat', CheckYearlyStat);

@@ -2,9 +2,10 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 // main model
-var TagDailyStat = new Schema({
+var TagYearlyStat = new Schema({
   name           : String,
   timestamp      : Date,
+  end            : Date,
   count          : Number,
   availability   : Number,
   responsiveness : Number,
@@ -12,7 +13,7 @@ var TagDailyStat = new Schema({
   downtime       : Number,
   outages        : Array,
 });
-TagDailyStat.index({ name: 1, timestamp: -1 }, { unique: true });
-TagDailyStat.plugin(require('mongoose-lifecycle'));
+TagYearlyStat.index({ name: 1, timestamp: -1 }, { unique: true });
+TagYearlyStat.plugin(require('mongoose-lifecycle'));
 
-module.exports = mongoose.model('TagDailyStat', TagDailyStat);
+module.exports = mongoose.model('TagYearlyStat', TagYearlyStat);

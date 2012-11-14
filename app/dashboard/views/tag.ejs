@@ -1,8 +1,10 @@
-<script src="<%= route %>/javascripts/bootstrap-tab.js"></script>
-<script src="<%= route %>/javascripts/bootstrap-button.js"></script>
 <script src="<%= route %>/javascripts/ejs.min.js"></script>
-<script src="<%= route %>/javascripts/highcharts.js"></script>
-<script src="<%= route %>/javascripts/pagination.js"></script>
+<script src="<%= route %>/javascripts/bootstrap-affix.js"></script>
+<script src="<%= route %>/javascripts/dateInterval.js"></script>
+<script src="<%= route %>/javascripts/dateNavigation.js"></script>
+<script src="<%= route %>/javascripts/statNavigation.js"></script>
+<script src="<%= route %>/javascripts/uptimeBar.js"></script>
+<script src="<%= route %>/javascripts/flotr2.min.js"></script>
 <script>
 var ejs = require('ejs');
 ejs.open = '{{';
@@ -12,37 +14,73 @@ var page = {};
 <h1>
   Tag "<%= tag.name %>"
 </h1>
-<ul class="nav nav-tabs">
-  <li><a href="#stats" data-toggle="tab">History</a></li>
-  <li><a href="#events" data-toggle="tab">Events</a></li>
-  <li><a href="#tagchecks" data-toggle="tab">Checks</a></li>
-  <li><a href="#tagreports" data-toggle="tab">Reports</a></li>
-</ul>
-<div class="tab-content">
-  <%- partial('_stats', { url: '/api/tags/' + tag.name + '/stats/' } ) %>
-  <div class="tab-pane" id="events">
-  <%- partial('_events', { url: '/api/tags/' + tag.name + '/events', route: route }) %>
+<div id="dateNavigationContainer">
+  <div id="dateNavigation">
+    <div class="row">
+      <div class="span2"></div>
+      <div class="span10">
+        <div class="title"></div>
+        <div class="timeline"></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="span2">
+        <ul class="btn-group zoom"></ul>
+      </div>
+      <div class="span10">
+        <div class="periods"></div>
+      </div>
+    </div>
   </div>
-  <div class="tab-pane" id="tagchecks">
-  <%- partial('_checks', { url: '/api/checks?tag=' + tag.name, route: route }) %>
+</div>
+<div id="sectionList" class="row">
+  <div class="span2">
+    <ul id="secondaryNav" class="nav nav-tabs nav-stacked">
+      <li><a href="#availability">Availability<i class="icon-chevron-right"></i><br/><strong class="availability"></strong>%</a></li>
+      <li><a href="#events">Downtime<i class="icon-chevron-right"></i><br/><strong class="downtime"></strong></a></li>
+      <li><a href="#responseTime">Response Time<i class="icon-chevron-right"></i><br/><strong class="avgRespTime"></strong>ms</a></li>
+      <li><a href="#responsiveness">Responsiveness<i class="icon-chevron-right"></i><br/><strong class="responsiveness"></strong>%</a></li>
+      <li><a href="#checks">Checks<i class="icon-chevron-right"></i></a></li>
+      <li><a href="#data">Data<i class="icon-chevron-right"></i></a></li>
+    </ul>
   </div>
-  <div class="tab-pane" id="tagreports">
-  <%- partial('_tagReports', { url: '/api/tags/' + tag.name + '/months', tag: tag, route: route }) %>
+  <div class="span10">
+    <section id="availability">
+    <%- partial('_availability') %>
+    </section>
+    <section id="events">
+    <h2>Downtime</h2>
+    <%- partial('_events', { url: '/api/tags/' + tag.name + '/events', route: route }) %>
+    </section>
+    <section id="responseTime">
+    <%- partial('_responseTime') %>
+    </section>
+    <section id="responsiveness">
+    <%- partial('_responsiveness') %>
+    </section>
+    <section id="checks">
+    <%- partial('checks', { url: '/api/tags/' + tag.name + '/checks/', route: route } ) %>
+    </section>
+    <section id="data">
+    <%- partial('_data', { url: '/api/tags/' + tag.name + '/stats/', route: route } ) %>
+    </section>
   </div>
 </div>
 <script>
-$(document).ready(function() {
+var dateInterval = new DateInterval(
+  '<%= req.query.type || 'month' %>',
+  <%= req.query.date || Date.now() %>,
+  <%= tag.firstTested.valueOf() %>,
+  '/api/tags/<%= tag.name %>/'
+);
+jQuery(document).ready(function($) {
+  // highlight current section in main nav
   $('.navbar-inner li').eq(2).addClass('active');
-  $('a[data-toggle="tab"]').on('click', function(e) {
-    history.pushState(null, null, $(this).attr('href') + 'tab');
-  });
-  window.addEventListener("popstate", function(e) {
-    var activeTab = $('[href=' + location.hash.substr(0, location.hash.length - 3) + ']');
-    if (activeTab.length) {
-      activeTab.tab('show');
-    } else {
-      $('.nav-tabs a:first').tab('show');
-    }
-  });
+
+  // initialize secondary navigation
+  new StatNavigation(dateInterval);
+  
+  // initialize date navigation
+  new DateNavigation(dateInterval, 'day');
 });
 </script>
