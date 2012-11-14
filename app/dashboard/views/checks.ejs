@@ -80,5 +80,11 @@ jQuery(document).ready(function($) {
   updateChecks();
   socket.on('CheckEvent', updateChecks);
   window.setInterval(updateChecks, 5 * 60 * 1000); // refresh every 5 minutes to update the qos scores
+
+  // hide alert after 5s
+  window.setTimeout(function() {
+    $('h1 + div.alert').slideUp();
+  }, 5000);
+
 });
 </script>
