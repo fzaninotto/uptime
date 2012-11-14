@@ -49,6 +49,7 @@ var page = {};
     <%- partial('_availability') %>
     </section>
     <section id="events">
+    <h2>Downtime</h2>
     <%- partial('_events', { url: '/api/tags/' + tag.name + '/events', route: route }) %>
     </section>
     <section id="responseTime">

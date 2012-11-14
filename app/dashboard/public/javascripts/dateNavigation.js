@@ -165,5 +165,5 @@ DateNavigation.prototype.redrawZoom = function() {
 DateNavigation.prototype.adjustWidth = function() {
   var navigationWidth = $('#dateNavigation .periods .btn-group').width() - 58;
   $('#dateNavigation .timeline').width(navigationWidth);
-  $('.graph').width(navigationWidth);
+  $('.adjustedOnDateNavigation').width(navigationWidth);
 }

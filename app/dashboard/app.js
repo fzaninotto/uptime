@@ -77,7 +77,7 @@ app.post('/checks', function(req, res) {
   check.save(function(err) {
     if (err) return next(err);
     req.flash('info', 'New check has been created');
-    res.redirect(app.route + (req.body.saveandadd ? '/checks/new' : ('/checks/' + check._id + '#admintab')));
+    res.redirect(app.route + (req.body.saveandadd ? '/checks/new' : ('/checks/' + check._id + '?type=hour&date=' + Date.now())));
   });
 });
 
@@ -89,6 +89,15 @@ app.get('/checks/:id', function(req, res, next) {
   });
 });
 
+app.get('/checks/:id/edit', function(req, res, next) {
+  Check.findOne({ _id: req.params.id }, function(err, check) {
+    if (err) return next(err);
+    if (!check) return res.send(404, 'failed to load check ' + req.params.id);
+    res.render('check_edit', { check: check, info: req.flash('info'), req: req });
+  });
+});
+
+
 app.put('/checks/:id', function(req, res, next) {
   var check = req.body.check;
   check.tags = Check.convertTags(check.tags);
@@ -97,7 +106,7 @@ app.put('/checks/:id', function(req, res, next) {
   Check.update({ _id: req.params.id }, { $set: check }, { upsert: true }, function(err) {
     if (err) return next(err);
     req.flash('info', 'Changes have been saved');
-    res.redirect(app.route + '/checks/' + req.params.id + '#admintab');
+    res.redirect(app.route + '/checks/' + req.params.id);
   });
 });
 

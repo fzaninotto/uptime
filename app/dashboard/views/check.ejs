@@ -11,11 +11,17 @@ var ejs = require('ejs');
 ejs.open = '{{';
 ejs.close = '}}';
 </script>
-<div style="float: right;" id="check_24h"></div>
+<div style="float: right;">
+  <span id="check_24h"></span>
+  <a href="<%= route %>/checks/<%= check._id %>/edit" class="btn btn-primary">Edit</a>
+</div>
 <h1>
   Check "<%= check.name %>"
   <a href="<%= check.url %>" target="_blank"><img src="<%= route %>/images/external-link-ltr-icon.png"></a>
 </h1>
+<% if (info.length) { %>
+<div class="alert alert-success"><%= info %></div>
+<% } %>
 <div id="dateNavigationContainer">
   <div id="dateNavigation">
     <div class="row">
@@ -43,7 +49,6 @@ ejs.close = '}}';
       <li><a href="#responseTime">Response Time<i class="icon-chevron-right"></i><br/><strong class="avgRespTime"></strong>ms</a></li>
       <li><a href="#responsiveness">Responsiveness<i class="icon-chevron-right"></i><br/><strong class="responsiveness"></strong>%</a></li>
       <li><a href="#data">Data<i class="icon-chevron-right"></i></a></li>
-      <li><a href="#admin">Admin<i class="icon-chevron-right"></i></a></li>
     </ul>
   </div>
   <div class="span10">
@@ -51,6 +56,7 @@ ejs.close = '}}';
     <%- partial('_availability') %>
     </section>
     <section id="events">
+    <h2>Downtime</h2>
     <%- partial('_events', { url: '/api/checks/' + check._id + '/events', route: route }) %>
     </section>
     <section id="responseTime">
@@ -86,5 +92,18 @@ jQuery(document).ready(function($) {
   
   // initialize date navigation
   new DateNavigation(dateInterval, 'hour');
+  
+  // hide alert after 5s
+  window.setTimeout(function() {
+    $('h1 + div.alert').slideUp(400, function() {
+      var offset = $('#dateNavigation').position();
+      $('#dateNavigation').data('affix', false).affix({
+        offset: offset
+      });
+      $('#secondaryNav').data('affix', false).affix({
+        offset: offset
+      });
+    });
+  }, 5000);
 });
 </script>

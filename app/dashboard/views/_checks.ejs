@@ -1,5 +1,5 @@
 <h2>Checks</h2>
-<ul id="checkUptimeBars" class="graph">
+<ul id="checkUptimeBars" class="adjustedOnDateNavigation">
 </ul>
 <script id="check_template" type="text/template">
 <li>
@@ -7,7 +7,7 @@
     <a href="{{=  route + '/checks/' + stat.check._id +'?type=' + type + '&date=' + date }}">{{= stat.check.name }}</a>
     <a href="{{= stat.check.url }}" target="_blank"><img src="{{= route }}/images/external-link-ltr-icon.png"></a>
 </div>
-{{- uptimeBar(begin, end, stat.check.firstTested, stat.outages || []) }}
+{{- uptimeBar(begin, end, new Date(stat.check.firstTested).valueOf(), stat.outages || []) }}
 </li>
 </script>
 <script>

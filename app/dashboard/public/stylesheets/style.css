@@ -280,3 +280,6 @@ ul.nav-tabs li span {
 #checkUptimeBars li .name {
   margin-bottom: 2px;
 }
+#check_24h + a.btn {
+  margin-left: 10px;
+}
