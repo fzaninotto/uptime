@@ -9,6 +9,7 @@ var CheckEvent       = require('../models/checkEvent');
 var CheckHourlyStat  = require('../models/checkHourlyStat');
 var CheckDailyStat   = require('../models/checkDailyStat');
 var CheckMonthlyStat = require('../models/checkMonthlyStat');
+var CheckYearlyStat  = require('../models/checkYearlyStat');
 
 // main model
 var Check = new Schema({
@@ -49,7 +50,8 @@ Check.methods.removeStats = function(callback) {
   async.parallel([
     function(cb) { CheckHourlyStat.remove({ check: self._id }, cb); },
     function(cb) { CheckDailyStat.remove({ check: self._id }, cb); },
-    function(cb) { CheckMonthlyStat.remove({ check: self._id }, cb); }
+    function(cb) { CheckMonthlyStat.remove({ check: self._id }, cb); },
+    function(cb) { CheckYearlyStat.remove({ check: self._id }, cb); }
   ], callback);
 };
 
@@ -228,7 +230,8 @@ Check.methods.getStatsForPeriod = function(period, begin, end, callback) {
 var singleStatsProvider = {
   'hour': { model: 'CheckHourlyStat', beginMethod: 'resetHour', endMethod: 'completeHour' },
   'day':  { model: 'CheckDailyStat', beginMethod: 'resetDay', endMethod: 'completeDay' },
-  'month': { model: 'CheckMonthlyStat', beginMethod: 'resetMonth', endMethod: 'completeMonth' }
+  'month': { model: 'CheckMonthlyStat', beginMethod: 'resetMonth', endMethod: 'completeMonth' },
+  'year': { model: 'CheckYearlyStat', beginMethod: 'resetYear', endMethod: 'completeYear' }
 };
 
 Check.methods.getSingleStatForPeriod = function(period, date, callback) {

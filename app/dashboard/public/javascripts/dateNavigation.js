@@ -1,16 +1,53 @@
-var DateNavigation = function(interval, url) {
+var DateNavigation = function(interval, maxZoom) {
   this.interval = interval;
-  this.url = url;
-  this.interval.on('change-date', this.redraw.bind(this));
+  this.maxZoom = maxZoom || 'hour';
   this.init();
+}
+DateNavigation.prototype.init = function() {
+  this.redraw();
+  var interval = this.interval;
+  interval.on('change-date', this.redraw.bind(this));
+  $('#dateNavigation').on('click', 'button', function(event) {
+    var data = $(this).data();
+    interval.type = data.type;
+    interval.setDate(parseInt(data.date));
+  });
+  // manage back navigation
+  var popped = (window.history.state);
+  var initialURL = location.href
+  this.pushStateEnabled = false;
+  var self = this;
+  interval.on('change-date', function() {
+    if (!self.pushStateEnabled) return;
+    history.pushState({ type: this.type, date: this.date, stat: this.stat, stats: this.stats }, null, '?type=' + this.type + '&date=' + this.date + location.hash);
+  });
+  window.addEventListener('popstate', function(e) {
+    // Chrome fires popstate on load, we must ignore that
+    var initialPop = !popped && location.href == initialURL;
+    popped = true;
+    if (initialPop || !self.pushStateEnabled) return;
+    var params = e.state;
+    if (!params) {
+      if (location.href == initialURL) {
+        // reached back first page
+        params = { type: initialType, date: initialDate };
+      } else {
+        // just changed hash - ignoring
+        return;
+      }
+    }
+    self.pushStateEnabled = false;
+    interval.type = params.type;
+    interval.setDate(parseInt(params.date));
+    self.pushStateEnabled = true;
+  });
+  this.pushStateEnabled = true;
 }
 DateNavigation.prototype.redraw = function() {
   this.redrawTitle()
   this.redrawPeriods();
   this.redrawZoom();
-  var navigationWidth = $('#dateNavigation .periods .btn-group').width() - 58;
-  $('#dateNavigation .timeline').width(navigationWidth);
-  $('.graph').width(navigationWidth);
+  this.adjustWidth();
 }
 DateNavigation.prototype.titleForPeriod = function(date, type) {
   switch (type) {
@@ -43,7 +80,7 @@ DateNavigation.prototype.redrawPeriods = function() {
   var subtype = this.interval.subType(type);
   var d = begin.clone();
   while (d.valueOf() < end.valueOf()) {
-    if (d.valueOf() < Date.now() && d.clone().endOf(subtype).valueOf() > this.interval.origin && subtype != 'tenminutes') {
+    if (d.valueOf() < Date.now() && d.clone().endOf(subtype).valueOf() > this.interval.origin && type != this.maxZoom) {
       periods += '<button class="btn btn-small ' + subtype + ' nb' + end.date() + '" data-type="' + subtype + '" data-date="' + d.valueOf() + '" title="' + this.tooltipForPeriod(d, subtype) + '">' + this.titleForPeriod(d, subtype) + '</button>';
     } else {
       periods += '<button class="btn btn-small ' + subtype + ' nb' + end.date() + '" disabled="disabled">' + this.titleForPeriod(d, subtype) + '</button>';
@@ -93,7 +130,7 @@ DateNavigation.prototype.redrawTitle = function() {
 DateNavigation.prototype.redrawZoom = function() {
   var zoom = '';
   var subType = this.interval.subType(this.interval.type);
-  if (subType !== false && subType != 'tenminutes') {
+  if (subType !== false && this.interval.type != this.maxZoom) {
     zoom += '<button class="btn btn-small" data-type="' + subType + '" data-date="' + this.interval.date + '"><li class="icon-zoom-in"></li></button>';
   } else {
     zoom += '<button class="btn btn-small" disabled="disabled"><li class="icon-zoom-in"></li></button>'
@@ -106,12 +143,8 @@ DateNavigation.prototype.redrawZoom = function() {
   }
   $('#dateNavigation .zoom').html(zoom);
 }
-DateNavigation.prototype.init = function() {
-  this.redraw();
-  var self = this;
-  $('#dateNavigation').on('click', 'button', function(event) {
-    var data = $(this).data();
-    self.interval.type = data.type;
-    self.interval.setDate(parseInt(data.date));
-  });
+DateNavigation.prototype.adjustWidth = function() {
+  var navigationWidth = $('#dateNavigation .periods .btn-group').width() - 58;
+  $('#dateNavigation .timeline').width(navigationWidth);
+  $('.graph').width(navigationWidth);
 }

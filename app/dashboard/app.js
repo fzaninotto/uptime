@@ -85,7 +85,7 @@ app.get('/checks/:id', function(req, res, next) {
   Check.findOne({ _id: req.params.id }, function(err, check) {
     if (err) return next(err);
     if (!check) return res.send(404, 'failed to load check ' + req.params.id);
-    res.render('check2', { check: check, info: req.flash('info'), req: req });
+    res.render('check', { check: check, info: req.flash('info'), req: req });
   });
 });
 
@@ -121,18 +121,7 @@ app.get('/tags/:name', function(req, res, next) {
   Tag.findOne({ name: req.params.name }, function(err, tag) {
     if (err) return next(err);
     if (!tag) return next(new Error('failed to load tag ' + req.params.name));
-    res.render('tag', { tag: tag });
-  });
-});
-
-app.get('/tags/:name/report/:date', function(req, res, next) {
-  Tag.findOne({ name: req.params.name }, function(err, tag) {
-    if (err) return next(err);
-    if (!tag) return next(new Error('failed to load tag ' + req.params.name));
-    tag.getMonthlyReport(parseInt(req.params.date), function (err2, report) {
-      if (err2) return next(err2);
-      res.render('tagReport', report);
-    })
+    res.render('tag', { tag: tag, req: req });
   });
 });
 

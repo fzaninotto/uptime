@@ -1,89 +1,108 @@
-<script src="<%= route %>/javascripts/bootstrap-tab.js"></script>
-<script src="<%= route %>/javascripts/bootstrap-button.js"></script>
 <script src="<%= route %>/javascripts/ejs.min.js"></script>
-<script src="<%= route %>/javascripts/highcharts.js"></script>
-<script src="<%= route %>/javascripts/pagination.js"></script>
+<script src="<%= route %>/javascripts/bootstrap-affix.js"></script>
+<script src="<%= route %>/javascripts/checkState.js"></script>
+<script src="<%= route %>/javascripts/dateInterval.js"></script>
+<script src="<%= route %>/javascripts/dateNavigation.js"></script>
+<script src="<%= route %>/javascripts/uptimeBar.js"></script>
+<script src="<%= route %>/javascripts/flotr2.min.js"></script>
 <script>
 var ejs = require('ejs');
 ejs.open = '{{';
 ejs.close = '}}';
-var page = {};
 </script>
 <div style="float: right;" id="check_24h"></div>
 <h1>
   Check "<%= check.name %>"
   <a href="<%= check.url %>" target="_blank"><img src="<%= route %>/images/external-link-ltr-icon.png"></a>
 </h1>
-<% if (info.length) { %>
-<div class="alert alert-success"><%= info %></div>
-<% } %>
-<ul class="nav nav-tabs">
-  <li><a href="#stats" data-toggle="tab">History</a></li>
-  <li><a href="#events" data-toggle="tab">Events</a></li>
-  <li><a href="#pings" data-toggle="tab">Pings</a></li>
-  <li><a href="#admin" data-toggle="tab">Admin</a></li>
-</ul>
-<div class="tab-content">
-  <%- partial('_stats', { url: '/api/checks/' + check._id + '/stats/', route: route } ) %>
-  <div class="tab-pane" id="events">
-  <%- partial('_events', { url: '/api/checks/' + check._id + '/events', route: route }) %>
+<div id="dateNavigationContainer">
+  <div id="dateNavigation">
+    <div class="row">
+      <div class="span2"></div>
+      <div class="span10">
+        <div class="title"></div>
+        <div class="timeline"></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="span2">
+        <ul class="btn-group zoom"></ul>
+      </div>
+      <div class="span10">
+        <div class="periods"></div>
+      </div>
+    </div>
   </div>
-  <%- partial('_pings', { check: check, route: route }) %>
-  <%- partial('_checkDetails', { check: check, route: route }) %>
+</div>
+<div id="sectionList" class="row">
+  <div class="span2">
+    <ul id="secondaryNav" class="nav nav-tabs nav-stacked">
+      <li><a href="#availability">Availability<i class="icon-chevron-right"></i><br/><strong class="availability"></strong>%</a></li>
+      <li><a href="#events">Downtime<i class="icon-chevron-right"></i><br/><strong class="downtime"></strong></a></li>
+      <li><a href="#responseTime">Response Time<i class="icon-chevron-right"></i><br/><strong class="avgRespTime"></strong>ms</a></li>
+      <li><a href="#responsiveness">Responsiveness<i class="icon-chevron-right"></i><br/><strong class="responsiveness"></strong>%</a></li>
+      <li><a href="#data">Data<i class="icon-chevron-right"></i></a></li>
+      <li><a href="#admin">Admin<i class="icon-chevron-right"></i></a></li>
+    </ul>
+  </div>
+  <div class="span10">
+    <section id="availability">
+    <%- partial('_availability') %>
+    </section>
+    <section id="events">
+    <%- partial('_events', { url: '/api/checks/' + check._id + '/events', route: route }) %>
+    </section>
+    <section id="responseTime">
+    <%- partial('_responseTime') %>
+    </section>
+    <section id="responsiveness">
+    <%- partial('_responsiveness') %>
+    </section>
+    <section id="data">
+    <%- partial('_data', { url: '/api/checks/' + check._id + '/stats/', route: route } ) %>
+    </section>
+  </div>
 </div>
 <script>
-$(document).ready(function() {
-  $('.navbar-inner li').eq(1).addClass('active');
-  $('a[data-toggle="tab"]').on('click', function(e) {
-    history.pushState(null, null, $(this).attr('href') + 'tab');
-  });
-  window.addEventListener("popstate", function(e) {
-    var activeTab = $('[href=' + location.hash.substr(0, location.hash.length - 3) + ']');
-    if (activeTab.length) {
-      activeTab.tab('show');
+var initialType = '<%= req.query.type || 'month' %>';
+var initialDate = <%= req.query.date || Date.now() %>;
+var dateInterval = new DateInterval(initialType, initialDate, <%= check.firstTested.valueOf() %>, '/api/checks/<%= check._id %>/');
+jQuery(document).ready(function($) {
+  
+  // manage uptime bar and secondary navigation values
+  dateInterval.on('refresh-stat', function() {
+    var timeline = $('#dateNavigation .timeline');
+    var statPane = $('.nav-tabs');
+    var begin = this.begin.valueOf();
+    var end = this.end.valueOf();
+    var stat = this.stat;
+    if (stat && stat.availability) {
+      timeline.html(uptimeBar(begin, end, this.origin.valueOf(), stat.outages || []));
+      statPane.find('.availability').text(stat.availability.replace('.000', ''));
+      statPane.find('.responsiveness').text(stat.responsiveness.replace('.000', ''));
+      statPane.find('.avgRespTime').text(stat.responseTime);
+      statPane.find('.downtime').text(stat.downtime ? moment.duration(stat.downtime, 'seconds').humanize() : '-');
     } else {
-      $('.nav-tabs a:first').tab('show');
+      timeline.html(uptimeBar(begin, end, [[begin, end, -1]]));
     }
   });
-  var updateLast24h = function() {
-    $.getJSON('/api/checks/<%= check._id %>', function(check) {
-      var html = '';
-      if (typeof check.isUp == 'undefined') {
-        if (check.lastTested) {
-          // recover from pause
-          html += '<span class="label label-info">unknown</span>';
-        } else {
-          // never tested
-          html += '<span class="label label-important">down</span> <span class="label label-warning">new</span>';
-        }
-      } else {
-        var status = {};
-        if (check.isPaused) {
-          // paused
-          status.label = 'info';
-          status.color = 'blue';
-          status.text = 'paused';
-          status.date = check.lastTested;
-        } else if (check.isUp) {
-          // up
-          status.label = 'success';
-          status.color = 'green';
-          status.text = 'up';
-          status.date = check.lastChanged;
-        } else {
-          // down
-          status.label = 'important';
-          status.color = 'red';
-          status.text = 'down';
-          status.date = check.lastChanged;
-        }
-        html += '<span class="label label-' + status.label + '">' +  status.text +'</span>'
-        html += '<span class="' + status.color + '"> for <span title="' + new Date(status.date) + '">' + moment(status.date).fromNow(true) + '</span></span>';
-      }
-      $('#check_24h').html(html);
-    });
-  };
-  socket.on('CheckEvent', updateLast24h);
-  updateLast24h();
+  
+  // initialize date navigation
+  new DateNavigation(dateInterval);
+});
+</script>
+<script>
+$(document).ready(function() {
+  updateCheckState(<%- JSON.stringify(check) %>);
+  socket.on('CheckEvent', function() {
+    $.getJSON('/api/checks/<%= check._id %>', updateCheckState);
+  });
+  $('#dateNavigation').affix({
+    offset: $('#dateNavigation').position()
+  });
+  $('#secondaryNav').affix({
+    offset: $('#dateNavigation').position()
+  });
+  $('.navbar-inner li').eq(1).addClass('active');
 });
 </script>

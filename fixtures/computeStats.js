@@ -84,12 +84,33 @@ var updateMonthlyQosSinceTheFirstPing = function(callback) {
   });
 }
 
+var updateYearlyQosSinceTheFirstPing = function(callback) {
+  Ping
+  .find()
+  .sort({ 'timestamp': 1 })
+  .findOne(function(err, ping) {
+    var date = Date.now() + 365 * 24 * 60 * 60 * 1000;
+    var oldestDate = ping.timestamp.valueOf();
+    nbDates = 0;
+    async.whilst(
+      function() { date -= 365 * 24 * 60 * 60 * 1000; return date > oldestDate; },
+      function(cb) {
+        var dateObject = new Date(date);
+        QosAggregator.updateYearlyQos(dateObject, cb);
+        nbDates++;
+        console.log('Computing yearly stats for ' + dateObject.getFullYear());
+      },
+      callback
+    );
+  });
+}
+
 var updateLastDayQos = function(callback) {
   console.log('Updating last day Qos for all checks');
   QosAggregator.updateLast24HoursQos(callback);
 }
 
-async.series([emptyStats, updateUptime, updateHourlyQosSinceTheFirstPing, updateDailyQosSinceTheFirstPing, updateMonthlyQosSinceTheFirstPing, updateLastDayQos], function(err) {
+async.series([emptyStats, updateUptime, updateHourlyQosSinceTheFirstPing, updateDailyQosSinceTheFirstPing, updateMonthlyQosSinceTheFirstPing, updateYearlyQosSinceTheFirstPing, updateLastDayQos], function(err) {
   if (err) {
     throw err;
   } else {

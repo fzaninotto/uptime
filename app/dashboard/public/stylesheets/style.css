@@ -199,3 +199,77 @@ table.chart th.date {
 table.chart th.uptimeCol {
   width: 22%;
 }
+
+#sectionList section {
+  padding-top: 88px;
+}
+#sectionList .span10 {
+  margin-top: -88px;
+}
+#sectionList strong {
+  font-size: 1.5em;
+}
+#dateNavigationContainer {
+  min-height: 88px;
+}
+#dateNavigation.affix {
+  top: 0;
+  background-color: white;
+  z-index: 50;
+}
+#secondaryNav.affix {
+  top: 91px;
+  width: 140px;
+}
+i.icon-chevron-right {
+  float: right;
+  margin-top: 2px;
+  margin-right: -6px;
+  opacity: .25;
+}
+#dateNavigation .title {
+  text-align: center;
+  margin: 5px;
+}
+#dateNavigation .title .btn-link {
+  padding: 0;
+  border: none;
+  vertical-align: inherit;
+}
+#dateNavigation .timeline {
+  margin-left: 29px;
+  height: 22px;
+}
+.btn-small.month, .btn-small.day, .btn-small.hour, .btn-small.quarter {
+  padding-right: 0;
+  padding-left: 0;
+}
+.btn.btn-small.month {
+  width: 61px;
+}
+.btn.btn-small.day.nb31 {
+  width: 24px;
+}
+.btn.btn-small.day.nb30 {
+  width: 25px;
+}
+.btn.btn-small.day.nb29 {
+  width: 26px;
+}
+.btn.btn-small.day.nb28 {
+  width: 27px;
+}
+.btn.btn-small.hour {
+  width: 31px;
+}
+.btn.btn-small.tenminutes {
+  width: 120px;
+}
+ul.nav-tabs li span {
+  font-weight: bold;
+}
+.graph {
+  margin: 20px 0 0 25px;
+  width:600px;
+  height:200px;
+}

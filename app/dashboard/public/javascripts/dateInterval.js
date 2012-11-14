@@ -3,7 +3,6 @@ var DateInterval = function(type, date, origin, url) {
   this.origin = origin;
   this.url = url;
   this.listeners = {};
-  this.on('change-date', this.refreshData.bind(this));
   this.stat = {};
   this.stats = [];
   this.setDate(date);
@@ -14,18 +13,19 @@ DateInterval.prototype.setDate = function(date) {
   this.begin = this.momentForDate.clone().startOf(this.type);
   this.end = this.momentForDate.clone().endOf(this.type);
   this.trigger('change-date');
+  this.refreshData();
 }
-DateInterval.prototype.beginsAfterOrigin = function () {
+DateInterval.prototype.beginsAfterOrigin = function() {
   return this.begin.valueOf() > this.origin.valueOf();
 }
-DateInterval.prototype.endsBeforeNow = function () {
+DateInterval.prototype.endsBeforeNow = function() {
   return this.end.valueOf() < Date.now();
 }
-DateInterval.prototype.getNextDate = function (type) {
+DateInterval.prototype.getNextDate = function(type) {
   type = type || this.type;
   return this.momentForDate.clone().add(type + 's', 1);
 }
-DateInterval.prototype.getPreviousDate = function (type) {
+DateInterval.prototype.getPreviousDate = function(type) {
   type = type || this.type;
   return this.momentForDate.clone().subtract(type + 's', 1);
 }
@@ -35,7 +35,7 @@ DateInterval.prototype.refreshData = function() {
     self.stats = stats;
     self.trigger('refresh-stats');
   });
-  $.getJSON(this.url + 'stat/' +this.type + '/' + this.date, function(stat) {
+  $.getJSON(this.url + 'stat/' + this.type + '/' + this.date, function(stat) {
     self.stat = stat;
     self.trigger('refresh-stat');
   });
@@ -58,7 +58,7 @@ DateInterval.prototype.superType = function(type) {
 }
 DateInterval.prototype.getSubTypeDuration = function() {
   var date = new moment();
-  return date.endOf(this.subType(this.type)).valueOf() - date.startOf(this.subType(this.type)).valueOf()
+  return date.endOf(this.subType(this.type)).valueOf() - date.startOf(this.subType(this.type)).valueOf();
 }
 DateInterval.prototype.on = function(eventName, callback) {
   if (!this.listeners[eventName]) {
@@ -70,8 +70,7 @@ DateInterval.prototype.trigger = function(eventName, params) {
   if (!this.listeners[eventName]) {
     return;
   }
-  var i;
-  for (i in this.listeners[eventName]) {
+  for (var i in this.listeners[eventName]) {
     this.listeners[eventName][i].apply(this, params || []);
   }
 }

@@ -69,15 +69,10 @@ module.exports = function(app) {
   });
 
   app.get('/checks/:id/stat/:period/:timestamp', loadCheck, function(req, res, next) {
-    var returnFunc = function(err, stat) {
+    req.check.getSingleStatForPeriod(req.params.period, new Date(parseInt(req.params.timestamp)), function(err, stat) {
       if (err) return next(err);
       res.json(stat);
-    }
-    if (req.params.period == 'year') {
-      req.check.getYearlySingleStat(new Date(parseInt(req.params.timestamp)), returnFunc);
-    } else {
-      req.check.getSingleStatForPeriod(req.params.period, new Date(parseInt(req.params.timestamp)), returnFunc);
-    }
+    });
   });
   
   app.get('/checks/:id/stats/:type', loadCheck, function(req, res, next) {
