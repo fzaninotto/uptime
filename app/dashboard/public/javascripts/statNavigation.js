@@ -10,7 +10,14 @@ StatNavigation.prototype.init = function() {
       statPane.find('.availability').text(stat.availability.replace('.000', ''));
       statPane.find('.responsiveness').text(stat.responsiveness.replace('.000', ''));
       statPane.find('.avgRespTime').text(stat.responseTime);
-      statPane.find('.downtime').text(stat.downtime ? moment.duration(stat.downtime, 'seconds').humanize() : '-');
+      if (stat.downtime) {
+        statPane.find('.downtime').text(moment.duration(stat.downtime, 'seconds').humanize());
+        statPane.find('.downtime').parentsUntil('li').show();
+        $('#events').show();
+      } else {
+        statPane.find('.downtime').parentsUntil('li').hide();
+        $('#events').hide();
+      }
     }
   });
   $('#secondaryNav').affix({

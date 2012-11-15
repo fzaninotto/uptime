@@ -71,7 +71,12 @@ $(document).ready(function() {
   socket.on('CheckEvent', updateEvents);
   if(typeof dateInterval != 'undefined') {
     dateInterval.on('refresh-stats', function() {
-      if (!this.stat || this.stat.downtime == 0) return emptyEvents();
+      if (!this.stat) return emptyEvents();
+      var downtime = 0;
+      $.each(this.stats, function(stat) {
+        downtime += stat.downtime;
+      });
+      if (downtime == 0) return emptyEvents();
       updateEvents();
     });
   } else {
