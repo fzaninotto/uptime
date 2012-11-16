@@ -61,7 +61,10 @@ app.get('/events', function(req, res) {
 });
 
 app.get('/checks', function(req, res) {
-  res.render('checks', { info: req.flash('info') });
+  Check.find({}).sort({ isUp: 1, lastChanged: -1 }).exec(function(err, checks) {
+    if (err) return next(err);
+    res.render('checks', { info: req.flash('info'), checks: checks });
+  });
 });
 
 app.get('/checks/new', function(req, res) {

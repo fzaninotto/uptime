@@ -63,8 +63,8 @@ jQuery(document).ready(function($) {
   var ejs = require('ejs');
   ejs.open = '{{';
   ejs.close = '}}';
-  var updateChecks = function() {
-    $.getJSON('/api/checks', function(checks) {
+  var updateChecks = function(checks) {
+    var updateChecksSection = function(checks) {
       var lines = [];
       var lastTest = 0;
       $.each(checks, function(key, check) {
@@ -75,9 +75,14 @@ jQuery(document).ready(function($) {
       });
       $('#checks tbody').html(lines.join(''));
       $('#checks').trigger('update');
-    });
+    }
+    if (checks) {
+      updateChecksSection(checks);
+    } else {
+      $.getJSON('/api/checks', updateChecksSection);
+    }
   }
-  updateChecks();
+  updateChecks(<%- JSON.stringify(checks) %>);
   socket.on('CheckEvent', updateChecks);
   window.setInterval(updateChecks, 5 * 60 * 1000); // refresh every 5 minutes to update the qos scores
 
