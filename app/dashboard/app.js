@@ -61,7 +61,7 @@ app.get('/events', function(req, res) {
 });
 
 app.get('/checks', function(req, res) {
-  Check.find({}).sort({ isUp: 1, lastChanged: -1 }).exec(function(err, checks) {
+  Check.find().sort({ isUp: 1, lastChanged: -1 }).exec(function(err, checks) {
     if (err) return next(err);
     res.render('checks', { info: req.flash('info'), checks: checks });
   });
@@ -126,7 +126,10 @@ app.delete('/checks/:id', function(req, res, next) {
 });
 
 app.get('/tags', function(req, res) {
-  res.render('tags');
+  Tag.find().sort({ name: 1 }).exec(function(err, tags) {
+    if (err) return next(err);
+    res.render('tags', { tags: tags });
+  });
 });
 
 app.get('/tags/:name', function(req, res, next) {

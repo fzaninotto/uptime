@@ -34,8 +34,8 @@ jQuery(document).ready(function($) {
   var ejs = require('ejs');
   ejs.open = '{{';
   ejs.close = '}}';
-  var updateTags = function() {
-    $.getJSON('/api/tags', function(tags) {
+  var updateTags = function(tags) {
+    var updateTagsSection = function(tags) {
       var lines = [];
       var lastUpdated;
       $.each(tags, function(key, tag) {
@@ -44,9 +44,14 @@ jQuery(document).ready(function($) {
       });
       $('#tags tbody').html(lines.join(''));
       $('#tags').trigger('update');
-    });
+    }
+    if (tags) {
+      updateTagsSection(tags);
+    } else {
+      $.getJSON('/api/tags', updateTagsSection);
+    }
   }
-  updateTags();
+  updateTags(<%- JSON.stringify(tags) %>);
   window.setInterval(updateTags, 5 * 60 * 1000); // refresh every 5 minutes to update the qos scores
 });
 </script>
