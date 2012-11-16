@@ -37,7 +37,7 @@ DateNavigation.prototype.init = function() {
   this.pushStateEnabled = false;
   var self = this;
   interval.on('change-date', function() {
-    if (!self.pushStateEnabled) return;
+    if (!self.pushStateEnabled || !history.pushState) return;
     history.pushState({ type: this.type, date: this.date, stat: this.stat, stats: this.stats }, null, '?type=' + this.type + '&date=' + this.date + location.hash);
   });
   window.addEventListener('popstate', function(e) {

@@ -70,7 +70,7 @@ DateInterval.prototype.trigger = function(eventName, params) {
   if (!this.listeners[eventName]) {
     return;
   }
-  for (var i in this.listeners[eventName]) {
+  for (var i=0; i< this.listeners[eventName].length; i++) {
     this.listeners[eventName][i].apply(this, params || []);
   }
 }
