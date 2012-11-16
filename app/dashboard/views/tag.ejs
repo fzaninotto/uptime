@@ -82,5 +82,13 @@ jQuery(document).ready(function($) {
   
   // initialize date navigation
   new DateNavigation(dateInterval, 'day');
+
+  // update stats every 15 minutes if looking at the current moment
+  window.setInterval(function() {
+    var now = Date.now();
+    if (now > dateInterval.begin.valueOf() && now < dateInterval.end.valueOf()) {
+      dateInterval.refreshData();
+    }
+  }, 15 * 60 * 1000);
 });
 </script>
