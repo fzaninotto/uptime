@@ -39,7 +39,8 @@ div.btn-toolbar {
 
 #welcome {
   text-align: center;
-  margin-top: 180px;
+  font-size: 1.5em;
+  margin: 180px 0;
 }
 
 #events ul {
