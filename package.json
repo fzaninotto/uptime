@@ -12,7 +12,8 @@
     "ejs":       "0.8.0",
     "config":    "0.4.15",
     "async":     "0.1.22",
-    "socket.io": "0.9.10"
+    "socket.io": "0.9.10",
+    "semver":    "1.1.0"
   },
   "devDependencies": {
     "should": "1.1.0"
