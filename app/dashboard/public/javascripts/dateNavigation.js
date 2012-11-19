@@ -18,6 +18,9 @@ DateNavigation.prototype.init = function() {
     interval.setDate(parseInt(data.date));
   });
   
+  // redraw date range when time passes to enable new intrerval buttons
+  setInterval(this.redrawPeriods.bind(this), 5 * 60 * 1000);
+  
   // redraw uptime bar when the data arrives
   interval.on('refresh-stat', function() {
     var outages = this.stat ? this.stat.outages || [] : [];
