@@ -83,7 +83,7 @@ jQuery(document).ready(function($) {
     }
   }
   updateChecks(<%- JSON.stringify(checks) %>);
-  socket.on('CheckEvent', updateChecks);
+  socket.on('CheckEvent', function(data) { updateChecks() });
   window.setInterval(updateChecks, 5 * 60 * 1000); // refresh every 5 minutes to update the qos scores
 
   // hide alert after 5s
