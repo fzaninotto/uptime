@@ -165,10 +165,8 @@ Tag.statics.ensureTagsHaveFirstTestedDate = function(tags, callback) {
   async.forEach(
     tagsWithoutFirstTestedDate,
     function(tag, next) {
-      tag.getFirstTested(function(err, firstTested) {
-        tag.firstTested = firstTested;
-        tag.save(next);
-      });
+      tag.firstTested = tag.lastUpdated;
+      tag.save(next);
     },
     callback
   );
