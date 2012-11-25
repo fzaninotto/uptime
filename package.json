@@ -12,7 +12,9 @@
     "ejs":       "0.8.0",
     "config":    "0.4.15",
     "async":     "0.1.22",
-    "socket.io": "0.9.10"
+    "socket.io": "0.9.10",
+    "less-middleware": "0.1.8",
+    "twitter-bootstrap": "2.1.1"
   },
   "keywords": ["uptime", "monitoring", "api", "check"],
   "repository": "https://github.com/fzaninotto/uptime",
