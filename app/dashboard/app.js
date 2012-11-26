@@ -136,10 +136,7 @@ app.get('/tags/:name', function(req, res, next) {
   Tag.findOne({ name: req.params.name }, function(err, tag) {
     if (err) return next(err);
     if (!tag) return next(new Error('failed to load tag ' + req.params.name));
-    Tag.ensureTagsHaveFirstTestedDate([tag], function(err2) {
-      if (err2) return next(err2);
-      res.render('tag', { tag: tag, req: req });
-    });
+    res.render('tag', { tag: tag, req: req });
   });
 });
 

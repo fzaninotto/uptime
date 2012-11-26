@@ -18,10 +18,7 @@ module.exports = function(app) {
     .sort({ name: 1 })
     .exec(function(err, tags) {
       if (err) return next(err);
-      Tag.ensureTagsHaveFirstTestedDate(tags, function(err2) {
-        if (err2) return next(err2);
-        res.json(tags);
-      });
+      res.json(tags);
     });
   });
 

@@ -3,6 +3,7 @@ var mongoose        = require('../bootstrap');
 var Ping            = require('../models/ping');
 var Check           = require('../models/check');
 var CheckHourlyStat = require('../models/checkHourlyStat');
+var Tag             = require('../models/tag');
 var TagHourlyStat   = require('../models/tagHourlyStat');
 var QosAggregator   = require('../lib/qosAggregator');
 
@@ -110,7 +111,12 @@ var updateLastDayQos = function(callback) {
   QosAggregator.updateLast24HoursQos(callback);
 }
 
-async.series([emptyStats, updateUptime, updateHourlyQosSinceTheFirstPing, updateDailyQosSinceTheFirstPing, updateMonthlyQosSinceTheFirstPing, updateYearlyQosSinceTheFirstPing, updateLastDayQos], function(err) {
+var ensureTagsHaveFirstTestedDate = function(callback) {
+  console.log('Updating tags for firstTested date');
+  Tag.ensureTagsHaveFirstTestedDate(callback);
+}
+
+async.series([emptyStats, updateUptime, updateHourlyQosSinceTheFirstPing, updateDailyQosSinceTheFirstPing, updateMonthlyQosSinceTheFirstPing, updateYearlyQosSinceTheFirstPing, updateLastDayQos, ensureTagsHaveFirstTestedDate], function(err) {
   if (err) {
     throw err;
   } else {

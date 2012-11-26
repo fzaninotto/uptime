@@ -4,15 +4,15 @@ var TimeCalculator = require('../lib/timeCalculator');
 var async    = require('async');
 
 // model dependencies
-var TagHourlyStat    = require('../models/tagHourlyStat');
-var TagDailyStat     = require('../models/tagDailyStat');
-var TagMonthlyStat   = require('../models/tagMonthlyStat');
-var TagYearlyStat    = require('../models/tagYearlyStat');
-var Check            = require('../models/check');
-var CheckHourlyStat  = require('../models/checkHourlyStat');
-var CheckDailyStat   = require('../models/checkDailyStat');
-var CheckMonthlyStat = require('../models/checkMonthlyStat');
-var CheckYearlyStat  = require('../models/checkYearlyStat');
+var TagHourlyStat    = require('./tagHourlyStat');
+var TagDailyStat     = require('./tagDailyStat');
+var TagMonthlyStat   = require('./tagMonthlyStat');
+var TagYearlyStat    = require('./tagYearlyStat');
+var Check            = require('./check');
+var CheckHourlyStat  = require('./checkHourlyStat');
+var CheckDailyStat   = require('./checkDailyStat');
+var CheckMonthlyStat = require('./checkMonthlyStat');
+var CheckYearlyStat  = require('./checkYearlyStat');
 
 // main model
 var Tag = new Schema({
@@ -45,7 +45,7 @@ Tag.methods.removeStats = function(callback) {
 };
 
 Tag.methods.getChecks = function(callback) {
-  var Check   = require('./check')
+  var Check   = require('./check');
   Check.find({ tags: this.name }, callback);
 }
 
@@ -156,20 +156,31 @@ Tag.methods.getChecksForPeriod = function(period, date, callback) {
 
 }
 
-Tag.statics.ensureTagsHaveFirstTestedDate = function(tags, callback) {
-  var tagsWithoutFirstTestedDate = [];
-  tags.forEach(function(tag) {
-    if (!tag.firstTested) tagsWithoutFirstTestedDate.push(tag);
+Tag.statics.ensureTagsHaveFirstTestedDate = function(callback) {
+  this.find({ firstTested: { $exists: false }}, function(err, tags) {
+    if (err || !tags) return callback(err);
+    async.forEach(tags, function(tag, next) {
+      tag.getFirstTested(function(err2, firstTested) {
+        if (err2 || firstTested == Infinity) return callback(err2);
+        tag.firstTested = firstTested;
+        tag.save(next);
+      });
+    }, callback);
   });
-  if (tagsWithoutFirstTestedDate.length == 0) return callback();
-  async.forEach(
-    tagsWithoutFirstTestedDate,
-    function(tag, next) {
-      tag.firstTested = tag.lastUpdated;
-      tag.save(next);
-    },
-    callback
-  );
+}
+
+Tag.statics.removeOrphanTags = function(callback) {
+  var Check = require('./check');
+  this.find(function(err1, tags1) {
+    if (err1) return callback(err1);
+    Check.getAllTags(function(err2, tags2) {
+      if (err2) return callback(err2);
+      async.forEach(tags1, function(tag, next) {
+        if (tags2.indexOf(tag.name) !== -1) return next();
+        tag.remove(next);
+      }, callback);
+    });
+  });
 }
 
 module.exports = mongoose.model('Tag', Tag);

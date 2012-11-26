@@ -10,6 +10,7 @@ var CheckHourlyStat  = require('../models/checkHourlyStat');
 var CheckDailyStat   = require('../models/checkDailyStat');
 var CheckMonthlyStat = require('../models/checkMonthlyStat');
 var CheckYearlyStat  = require('../models/checkYearlyStat');
+var Tag              = require('../models/tag');
 
 // main model
 var Check = new Schema({
@@ -73,7 +74,9 @@ Check.methods.togglePause = function() {
 
 Check.methods.setLastTest = function(status, time, error) {
   var now = time ? new Date(time) : new Date();
-  if (!this.firstTested) this.firstTested = now;
+  if (!this.firstTested) {
+    this.firstTested = now;
+  }
   this.lastTested = now;
   if (this.isUp != status) {
     var event = new CheckEvent({
@@ -286,6 +289,18 @@ Check.methods.getYearlySingleStat = function(date, callback) {
       responseTime: parseInt(mainStat.responseTime / mainStat.count),
       outages: mainStat.outages
     });
+  });
+}
+
+Check.statics.getAllTags = function(callback) {
+  this.aggregate(
+    { $unwind: "$tags" },
+    { $group: {
+    _id: null,
+    tags: { $addToSet: "$tags" }
+  } }, function(err, res) {
+    if (err || !res.length) return callback(err, []);
+    return callback(null, res[0].tags);
   });
 }
 
