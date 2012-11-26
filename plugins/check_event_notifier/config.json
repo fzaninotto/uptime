@@ -1,0 +1,14 @@
+{
+  "method": "SMTP",
+  "transportOptions": {
+    "service" : "Gmail",
+    "auth" : {
+      "user" : "email@sample.com",
+      "pass" : "password"
+    }
+  },
+  "mailOptions": {
+    "from": "ChechStatusNotifier<email@sample.com>",
+    "subject" : "<%=check.name%> is <%=checkEvent.message%>"
+  }
+}

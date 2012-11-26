@@ -1,0 +1,15 @@
+{
+  "name": "check_event_notifier",
+  "version": "0.0.0",
+  "description": "Check Event Notifier",
+  "dependencies": {
+    "nodemailer":  ">= 0",
+    "underscore":  ">= 0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "",
+  "author": "",
+  "license": "BSD"
+}
