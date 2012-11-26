@@ -15,6 +15,7 @@ var Check = new Schema({
   name        : String,
   type        : String,
   url         : String,
+  email       : String,
   interval    : { type: Number, default: 60000 }, // interval between two pings
   maxTime     : { type: Number, default: 1500 },  // time under which a ping is considered responsive
   tags        : [String],
