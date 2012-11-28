@@ -11,8 +11,7 @@ var CheckMonthlyStat = new Schema({
   responsiveness : Number,
   responseTime   : Number,
   downtime       : Number,
-  outages        : Array,
-  tags           : Array
+  outages        : Array
 });
 CheckMonthlyStat.index({ check: 1, timestamp: -1 }, { unique: true });
 CheckMonthlyStat.plugin(require('mongoose-lifecycle'));

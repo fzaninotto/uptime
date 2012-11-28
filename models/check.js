@@ -24,11 +24,10 @@ var Check = new Schema({
   firstTested : Date,
   lastTested  : Date,
   isUp        : Boolean,
-  isPaused    : { type:Boolean, default: false },
+  isPaused    : { type: Boolean, default: false },
   uptime      : { type: Number, default: 0 },
   downtime    : { type: Number, default: 0 },
-  qos         : {},
-  qosPerHour  : {}
+  qos         : {}
 });
 Check.plugin(require('mongoose-lifecycle'));
 
