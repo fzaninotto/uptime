@@ -4,10 +4,12 @@ var Ping            = require('../models/ping');
 var Check           = require('../models/check');
 var CheckHourlyStat = require('../models/checkHourlyStat');
 var TagHourlyStat   = require('../models/tagHourlyStat');
+var QosAggregator   = require('../lib/qosAggregator');
 
 var emptyStats = function(callback) {
   console.log('Emptying stat collections');
   Check.find({}, function(err, checks) {
+    if (!checks.length) return callback(new Error('No check in database, please use the populate script first'));
     async.forEach(checks, function(check, cb) { check.removeStats(cb); }, callback);
   });
 }
@@ -19,31 +21,23 @@ var updateUptime = function(callback) {
   });
 }
 
-var updateLastHourQos = function(callback) {
-  console.log('Updating last hour Qos for all checks');
-  async.series([
-    function(cb) { Ping.updateLast24HoursQos(cb); },
-    function(cb) { Ping.updateLastHourQos(cb); }
-  ], callback);
-}
-
 var updateHourlyQosSinceTheFirstPing = function(callback) {
   Ping
   .find()
   .sort({ 'timestamp': 1 })
   .findOne(function(err, ping) {
-    var date = ping.timestamp.valueOf();
-    var now = Date.now();
+    var date = Date.now() + 60 * 60 * 1000;
+    var oldestDate = ping.timestamp.valueOf();
     nbDates = 0;
     async.whilst(
-      function() { date += 60 * 60 * 1000; return date < now; },
+      function() { date -= 60 * 60 * 1000; return date > oldestDate; },
       function(cb) {
         var dateObject = new Date(date);
-        Ping.updateHourlyQos(dateObject, cb);
-        nbDates++;
+        QosAggregator.updateHourlyQos(dateObject, cb);
         if (nbDates % 24 == 0) {
           console.log('Computing hourly stats for ' + dateObject.toUTCString());
         }
+        nbDates++;
       },
       callback
     );
@@ -55,18 +49,13 @@ var updateDailyQosSinceTheFirstPing = function(callback) {
   .find()
   .sort({ 'timestamp': 1 })
   .findOne(function(err, ping) {
-    var date = ping.timestamp.valueOf();
-    var now = Date.now();
-    nbDates = 0;
+    var date = Date.now() + 24 * 60 * 60 * 1000;
+    var oldestDate = ping.timestamp.valueOf();
     async.whilst(
-      function() { date += 24 * 60 * 60 * 1000; return date < now; },
+      function() { date -= 24 * 60 * 60 * 1000; return date > oldestDate; },
       function(cb) {
         var dateObject = new Date(date);
-        async.parallel([
-          function(callme) { CheckHourlyStat.updateDailyQos(dateObject, callme); },
-          function(callme) { TagHourlyStat.updateDailyQos(dateObject, callme); },
-        ], cb);
-        nbDates++;
+        QosAggregator.updateDailyQos(dateObject, cb);
         console.log('Computing daily stats for ' + dateObject.toUTCString());
       },
       callback
@@ -79,17 +68,14 @@ var updateMonthlyQosSinceTheFirstPing = function(callback) {
   .find()
   .sort({ 'timestamp': 1 })
   .findOne(function(err, ping) {
-    var date = ping.timestamp.valueOf();
-    var now = Date.now();
+    var date = Date.now() + 28 * 24 * 60 * 60 * 1000;
+    var oldestDate = ping.timestamp.valueOf();
     nbDates = 0;
     async.whilst(
-      function() { date += 28 * 24 * 60 * 60 * 1000; return date < now; },
+      function() { date -= 28 * 24 * 60 * 60 * 1000; return date > oldestDate; },
       function(cb) {
         var dateObject = new Date(date);
-        async.parallel([
-          function(callme) { CheckHourlyStat.updateMonthlyQos(dateObject, callme); },
-          function(callme) { TagHourlyStat.updateMonthlyQos(dateObject, callme); },
-        ], cb);
+        QosAggregator.updateMonthlyQos(dateObject, cb);
         nbDates++;
         console.log('Computing monthly stats for ' + dateObject.toUTCString());
       },
@@ -98,9 +84,35 @@ var updateMonthlyQosSinceTheFirstPing = function(callback) {
   });
 }
 
-async.series([emptyStats, updateUptime, updateLastHourQos, updateHourlyQosSinceTheFirstPing, updateDailyQosSinceTheFirstPing, updateMonthlyQosSinceTheFirstPing], function(err) {
+var updateYearlyQosSinceTheFirstPing = function(callback) {
+  Ping
+  .find()
+  .sort({ 'timestamp': 1 })
+  .findOne(function(err, ping) {
+    var date = Date.now() + 365 * 24 * 60 * 60 * 1000;
+    var oldestDate = ping.timestamp.valueOf();
+    nbDates = 0;
+    async.whilst(
+      function() { date -= 365 * 24 * 60 * 60 * 1000; return date > oldestDate; },
+      function(cb) {
+        var dateObject = new Date(date);
+        QosAggregator.updateYearlyQos(dateObject, cb);
+        nbDates++;
+        console.log('Computing yearly stats for ' + dateObject.getFullYear());
+      },
+      callback
+    );
+  });
+}
+
+var updateLastDayQos = function(callback) {
+  console.log('Updating last day Qos for all checks');
+  QosAggregator.updateLast24HoursQos(callback);
+}
+
+async.series([emptyStats, updateUptime, updateHourlyQosSinceTheFirstPing, updateDailyQosSinceTheFirstPing, updateMonthlyQosSinceTheFirstPing, updateYearlyQosSinceTheFirstPing, updateLastDayQos], function(err) {
   if (err) {
-    console.dir(err);
+    throw err;
   } else {
     console.log('Computing complete');
   }

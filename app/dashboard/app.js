@@ -5,6 +5,7 @@ var express = require('express');
 var async = require('async');
 var partials = require('express-partials');
 var flash = require('connect-flash');
+var lessMiddleware = require('less-middleware');
 
 var Check = require('../../models/check');
 var Tag = require('../../models/tag');
@@ -44,10 +45,12 @@ app.configure(function(){
 
 app.configure('development', function(){
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+  app.use(lessMiddleware({src: __dirname + '/public/less', dest: __dirname + '/public/stylesheets', prefix:"/stylesheets", compress: false, force: true, debug: true}));
 });
 
 app.configure('production', function(){
   app.use(express.errorHandler());
+  app.use(lessMiddleware({src: __dirname + '/public/less', dest: __dirname + '/public/stylesheets', prefix:"/stylesheets", compress: true, once: true, debug: false}));
 });
 
 app.locals({
@@ -61,7 +64,10 @@ app.get('/events', function(req, res) {
 });
 
 app.get('/checks', function(req, res) {
-  res.render('checks', { info: req.flash('info') });
+  Check.find().sort({ isUp: 1, lastChanged: -1 }).exec(function(err, checks) {
+    if (err) return next(err);
+    res.render('checks', { info: req.flash('info'), checks: checks });
+  });
 });
 
 app.get('/checks/new', function(req, res) {
@@ -77,7 +83,7 @@ app.post('/checks', function(req, res) {
   check.save(function(err) {
     if (err) return next(err);
     req.flash('info', 'New check has been created');
-    res.redirect(app.route + (req.body.saveandadd ? '/checks/new' : ('/checks/' + check._id + '#admintab')));
+    res.redirect(app.route + (req.body.saveandadd ? '/checks/new' : ('/checks/' + check._id + '?type=hour&date=' + Date.now())));
   });
 });
 
@@ -85,9 +91,18 @@ app.get('/checks/:id', function(req, res, next) {
   Check.findOne({ _id: req.params.id }, function(err, check) {
     if (err) return next(err);
     if (!check) return res.send(404, 'failed to load check ' + req.params.id);
-    res.render('check', { check: check, info: req.flash('info') });
+    res.render('check', { check: check, info: req.flash('info'), req: req });
   });
 });
+
+app.get('/checks/:id/edit', function(req, res, next) {
+  Check.findOne({ _id: req.params.id }, function(err, check) {
+    if (err) return next(err);
+    if (!check) return res.send(404, 'failed to load check ' + req.params.id);
+    res.render('check_edit', { check: check, info: req.flash('info'), req: req });
+  });
+});
+
 
 app.put('/checks/:id', function(req, res, next) {
   var check = req.body.check;
@@ -97,7 +112,7 @@ app.put('/checks/:id', function(req, res, next) {
   Check.update({ _id: req.params.id }, { $set: check }, { upsert: true }, function(err) {
     if (err) return next(err);
     req.flash('info', 'Changes have been saved');
-    res.redirect(app.route + '/checks/' + req.params.id + '#admintab');
+    res.redirect(app.route + '/checks/' + req.params.id);
   });
 });
 
@@ -114,25 +129,20 @@ app.delete('/checks/:id', function(req, res, next) {
 });
 
 app.get('/tags', function(req, res) {
-  res.render('tags');
+  Tag.find().sort({ name: 1 }).exec(function(err, tags) {
+    if (err) return next(err);
+    res.render('tags', { tags: tags });
+  });
 });
 
 app.get('/tags/:name', function(req, res, next) {
   Tag.findOne({ name: req.params.name }, function(err, tag) {
     if (err) return next(err);
     if (!tag) return next(new Error('failed to load tag ' + req.params.name));
-    res.render('tag', { tag: tag });
-  });
-});
-
-app.get('/tags/:name/report/:date', function(req, res, next) {
-  Tag.findOne({ name: req.params.name }, function(err, tag) {
-    if (err) return next(err);
-    if (!tag) return next(new Error('failed to load tag ' + req.params.name));
-    tag.getMonthlyReport(parseInt(req.params.date), function (err2, report) {
+    Tag.ensureTagsHaveFirstTestedDate([tag], function(err2) {
       if (err2) return next(err2);
-      res.render('tagReport', report);
-    })
+      res.render('tag', { tag: tag, req: req });
+    });
   });
 });
 

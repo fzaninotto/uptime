@@ -1,7 +1,7 @@
 uptime
 ======
 
-A simple remote monitoring utility using Node.js and MongoDB.
+A remote monitoring application using Node.js, MongoDB, and Twitter Bootstrap.
 
 <img src="https://github.com/downloads/fzaninotto/uptime/uptime.png" title="Uptime screenshot" />
 
@@ -11,21 +11,21 @@ Features
 --------
 
 * Monitor thousands of websites (powered by [Node.js asynchronous programming](http://dotheweb.posterous.com/nodejs-for-php-programmers-1-event-driven-pro))
-* Tweak frequency of monitoring on a per-check basis, up to the millisecond
+* Tweak frequency of monitoring on a per-check basis, up to the second
 * Receive instant web alerts on every page when a check goes down (thanks [socket.io](http://socket.io/))
 * Record availability statistics for further reporting (powered by [MongoDB](http://www.mongodb.org/))
-* Detailed uptime reports with animated charts (powered by [Highcharts](http://www.highcharts.com/))
+* Detailed uptime reports with animated charts (powered by [Flotr2](http://www.humblesoftware.com/flotr2/))
 * Monitor availability, responsiveness, average response time , and total uptime/downtime
 * Get details about failed checks (HTTP error code, etc.)
 * Group checks by tags and get reports by tag
 * Familiar web interface (powered by [Twitter Bootstrap 2.0](http://twitter.github.com/bootstrap/index.html))
-* complete API for integration with third-party monitoring services
+* Complete API for integration with third-party monitoring services
 * Easy installation and zero administration
 
 Installing Uptime
 -----------------
 
-Uptime 2.0 requires Node.js 0.8 (if you're stuck with Node 0.6, try Uptime v1.4, available as a tag and on npm).
+Uptime 3.0 requires Node.js 0.8 (if you're stuck with Node 0.6, try Uptime v1.4, available as a tag and on npm).
 
 One line install:
 
@@ -85,8 +85,8 @@ To modify this configuration, create a `development.yaml` or a `production.yaml`
 
 Node that Uptime works great behind a proxy - it uses the http_proxy environment variable transparently.
 
-Running The Monitor In a Separate Process
------------------------------------------
+Monitoring From Various Locations
+---------------------------------
 
 Heavily browsing the web dashboard may slow down the server - including the polling monitor. In other terms, using the application can influence the uptime measurements. To avoid this effect, it is recommended to run the polling monitor in a separate process.
 
@@ -141,8 +141,9 @@ Uptime uses third-party libraries:
 * [MongooseJS](http://mongoosejs.com/), licensed under the [MIT License](https://github.com/LearnBoost/mongoose/blob/master/README.md),
 * [jQuery](http://jquery.com/), licensed under the [MIT License](http://jquery.org/license),
 * [TwitterBootstrap](http://twitter.github.com/bootstrap/), licensed under the [Apache License v2.0](http://www.apache.org/licenses/LICENSE-2.0),
-* [Highcharts.js](http://shop.highsoft.com/highcharts.html), free for non-commercial use under the [Creative Commons Attribution-NonCommercial 3.0 License](http://creativecommons.org/licenses/by-nc/3.0/).
-* [Favicon] (http://www.alexpeattie.com/projects/justvector_icons/), distributed under the Free Art License, and as such can be copied, distributed, transformed and used as you please. If you enjoy the icons, a link back to [Alex Peattie](http://www.alexpeattie.com/projects/justvector_icons/) and [iconify](http://iconify.it) would certainly be appreciated. 
+* [Flotr2](http://www.humblesoftware.com/flotr2/), licensed under the [MIT License](https://github.com/HumbleSoftware/Flotr2/blob/master/LICENSE).
+* [Favicon](http://www.alexpeattie.com/projects/justvector_icons/), distributed under the [Free Art License](http://artlibre.org/licence/lal/en).
+
 If you like the software, please help improving it by contributing PRs on the [GitHub project](https://github.com/fzaninotto/uptime)!
 
 TODO

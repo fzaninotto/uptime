@@ -1,13 +1,95 @@
-<h1>Checks <small id="last_update"></small></h1>
+<script src="<%= route %>/javascripts/jquery.tablesorter.min.js"></script>
+<script src="<%= route %>/javascripts/uptimeBar.js"></script>
+<script src="<%= route %>/javascripts/ejs.min.js"></script>
+<h1>Checks <small class="pull-right">last 24 hours</small></h1>
 <% if (info.length) { %>
 <div class="alert alert-success"><%= info %></div>
 <% } %>
 <div style="text-align:right">
   <a class="btn btn-primary" href="<%= route %>/checks/new">Create check</a>
 </div>
-<%- partial('_checks', { url: '/api/checks', route: route }) %>
+<table class="table" id="checks">
+  <thead>
+    <tr>
+      <th style="width:30%">Name</th>
+      <th style="width:20%">Status</th>
+      <th style="width:35%" title="Outage periods in the last 24h">Uptime</th>
+      <th style="width:15%" title="Average response time in the last 24h">Response Time</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+<script id="check_template" type="text/template">
+<tr>
+  <td data-sort="{{= check.name }}">
+    <a href="{{=  route + '/checks/' + check._id }}">{{= check.name }}</a>
+    <a href="{{= check.url }}" target="_blank"><img src="{{= route }}/images/external-link-ltr-icon.png"></a>
+  </td>
+  {{ if (check.lastTested) { }}
+    {{ if (check.isPaused) { }}
+  <td data-sort="{{= check.isUp ? check.uptime : -check.downtime }}"><span class="label label-info">paused</span> <span class="blue"> for <span title="{{= new Date(check.lastChanged) }}">{{= moment(check.lastChanged).fromNow(true) }}</span></span></td>
+    {{ } else if (check.isUp) { }}
+  <td data-sort="{{= check.uptime }}"><span class="label label-success">Up</span> <span class="green"> for <span title="{{= new Date(check.lastChanged) }}">{{= moment(check.lastChanged).fromNow(true) }}</span></span></td>
+    {{ } else { }}
+  <td data-sort="{{= -check.downtime }}"><span class="label label-important">Down</span> <span class="red"> for <span title="{{= new Date(check.lastChanged) }}">{{= moment(check.lastChanged).fromNow(true) }}</span></span></td>
+    {{ } }}
+  {{ } else { }}
+  <td data-sort="0"><span class="label label-important">down</span> <span class="label label-warning">new</span></td>
+  {{ } }}
+  {{ if (check.qos) { }}
+  <td data-sort="{{= check.qos.availability }}">{{- uptimeBar(Date.now() - 24 * 60 * 60 * 1000, Date.now(), new Date(check.firstTested).valueOf(), check.qos.outages || []) }}</td>
+  <td data-sort="{{= check.qos.responseTime }}">{{= Math.round(check.qos.responseTime) }}ms</td>
+  {{ } else { }}
+  <td data-sort="0">-</td>
+  <td data-sort="0">-</td>
+  {{ } }}
+</tr>
+</script>
 <script>
 jQuery(document).ready(function($) {
+  // highlight current section in main nav
   $('.navbar-inner li').eq(1).addClass('active');
+  
+  // make the chesk table sortable
+  $('#checks').tablesorter({
+    textExtraction: function(node) {
+      return $(node).data('sort');
+    },
+    sortList: [[1,0]]
+  });
+  
+  // Fill in the table
+  var check_template = document.getElementById('check_template').innerHTML;
+  var ejs = require('ejs');
+  ejs.open = '{{';
+  ejs.close = '}}';
+  var updateChecks = function(checks) {
+    var updateChecksSection = function(checks) {
+      var lines = [];
+      var lastTest = 0;
+      $.each(checks, function(key, check) {
+        if (new Date(check.lastTested) > lastTest) {
+          lastTest = new Date(check.lastTested);
+        }
+        lines.push(ejs.render(check_template, { check: check, route: '<%= route %>' }));
+      });
+      $('#checks tbody').html(lines.join(''));
+      $('#checks').trigger('update');
+    }
+    if (checks) {
+      updateChecksSection(checks);
+    } else {
+      $.getJSON('/api/checks', updateChecksSection);
+    }
+  }
+  updateChecks(<%- JSON.stringify(checks) %>);
+  socket.on('CheckEvent', function(data) { updateChecks() });
+  window.setInterval(updateChecks, 5 * 60 * 1000); // refresh every 5 minutes to update the qos scores
+
+  // hide alert after 5s
+  window.setTimeout(function() {
+    $('h1 + div.alert').slideUp();
+  }, 5000);
+
 });
 </script>

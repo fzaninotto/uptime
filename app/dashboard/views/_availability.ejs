@@ -1,0 +1,39 @@
+<h2>Availability</h2>
+<div id="availabilityGraph" class="graph adjustedOnDateNavigation"></div>
+<script>
+jQuery(document).ready(function($) {
+  var refreshAvailabilityGraph = function() {
+    var availabilities = [];
+    var minAvailability = Infinity;
+    $.each(dateInterval.stats, function(index, stat) {
+      var availability = stat.availability || (stat.isUp ? 100 : 0);
+      availabilities.push([new Date(stat.timestamp), availability]);
+      minAvailability = Math.min(minAvailability, availability);
+    });
+    Flotr.draw($('#availabilityGraph').get(0), [{ data: availabilities, lines : { show: true, lineWidth: 4, fill : true }, points: { show: true } }], { 
+      yaxis : {
+        min : 0,
+        margin: false,
+        min: minAvailability < 10 ? minAvailability : minAvailability < 90 ? minAvailability - 10 : (minAvailability - 1),
+        max: 100 
+      },
+      xaxis : {
+        showLabels: false,
+        noTicks: 0,
+        mode: 'time',
+        min: dateInterval.begin.valueOf() - dateInterval.getSubTypeDuration() / 2,
+        max: dateInterval.end.valueOf() - dateInterval.getSubTypeDuration() / 2 
+      },
+      mouse : {
+        track: true,
+        relative: true,
+        sensibility: 4,
+        radius: 4,
+        position: 's'
+      },
+      grid: { outline: '' }
+    });
+  }
+  dateInterval.on('refresh-stats', refreshAvailabilityGraph);
+});
+</script>
