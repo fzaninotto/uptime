@@ -5,6 +5,7 @@ var express = require('express');
 var async = require('async');
 var partials = require('express-partials');
 var flash = require('connect-flash');
+var lessMiddleware = require('less-middleware');
 
 var Check = require('../../models/check');
 var Tag = require('../../models/tag');
@@ -44,10 +45,12 @@ app.configure(function(){
 
 app.configure('development', function(){
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+  app.use(lessMiddleware({src: __dirname + '/public/less', dest: __dirname + '/public/stylesheets', prefix:"/stylesheets", compress: false, force: true, debug: true}));
 });
 
 app.configure('production', function(){
   app.use(express.errorHandler());
+  app.use(lessMiddleware({src: __dirname + '/public/less', dest: __dirname + '/public/stylesheets', prefix:"/stylesheets", compress: true, once: true, debug: false}));
 });
 
 app.locals({
