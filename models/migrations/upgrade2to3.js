@@ -1,16 +1,15 @@
 var async    = require('async');
 var mongoose = require('../../bootstrap');
+var db = mongoose.connection.db;
+var CheckHourlyStat = require('../../models/checkHourlyStat');
+var Tag = require('../../models/tag');
 var QosAggregator = require('../../lib/qosAggregator');
 var moment = require('../../app/dashboard/public/javascripts/moment.min.js');
 
-var migrateQos = function(callback) {
-  QosAggregator.updateLast24HoursQos(callback);
-}
-
-var migrateCheckStats = function(name, db, callback) {
+var migrateCheckStats = function(name, callback) {
   var nbMigratedDocuments = 0;
   var collection = db.collection(name);
-  var statStream = collection.find().streamRecords();
+  var statStream = collection.find().stream();
   var unset = {
     ups: 1,
     responsives: 1,
@@ -46,10 +45,10 @@ var migrateCheckStats = function(name, db, callback) {
   });
 }
 
-var addEndToMonthlyStat = function(name, db, callback) {
+var addEndToMonthlyStat = function(name, callback) {
   var nbMigratedDocuments = 0;
   var collection = db.collection(name);
-  var statStream = collection.find().streamRecords();
+  var statStream = collection.find().stream();
   statStream.on('data', function(stat) {
     if (stat.end) {
       // already merged
@@ -75,16 +74,73 @@ var addEndToMonthlyStat = function(name, db, callback) {
   });
 }
 
-mongoose.connection.on('open', function (err) {
-  var db = mongoose.connection.db;
-  ['checkhourlystats', 'checkdailystats', 'checkmonthlystats', 'taghourlystats', 'tagdailystats', 'tagmonthlystats'].forEach(function(collection) {
-    migrateCheckStats(collection, db, function(err) {
-      console.log('finished!');
-    });
+var getOldestDate = function(callback) {
+  CheckHourlyStat
+  .find()
+  .sort({ 'timestamp': 1 })
+  .findOne(function(err, stat) {
+    return callback(err, stat ? stat.timestamp.valueOf() : null);
   });
-  ['checkmonthlystats', 'tagmonthlystats'].forEach(function(collection) {
-    addEndToMonthlyStat(collection, db, function(err) {
-      console.log('finished!');
+}
+
+var updateMonthlyQos = function(start, callback) {
+  var date = Date.now() + 28 * 24 * 60 * 60 * 1000;
+  nbDates = 0;
+  async.whilst(
+    function() { date -= 28 * 24 * 60 * 60 * 1000; return date > start; },
+    function(cb) {
+      var dateObject = new Date(date);
+      QosAggregator.updateMonthlyQos(dateObject, cb);
+      nbDates++;
+      console.log('Computing monthly stats for ' + dateObject.toUTCString());
+    },
+    callback
+  );
+}
+
+var updateYearlyQos = function(start, callback) {
+  var date = Date.now() + 365 * 24 * 60 * 60 * 1000;
+  nbDates = 0;
+  async.whilst(
+    function() { date -= 365 * 24 * 60 * 60 * 1000; return date > start; },
+    function(cb) {
+      var dateObject = new Date(date);
+      QosAggregator.updateYearlyQos(dateObject, cb);
+      nbDates++;
+      console.log('Computing yearly stats for ' + dateObject.getFullYear());
+    },
+    callback
+  );
+}
+
+var ensureTagsHaveFirstTestedDate = function(callback) {
+  console.log('Updating tags for firstTested date');
+  Tag.ensureTagsHaveFirstTestedDate(callback);
+}
+
+mongoose.connection.on('open', function(err) {
+  if (err) return console.error(err);
+  getOldestDate(function (err, oldestDate) {
+    if (err) return console.error(err);
+    async.series([
+      function(next) {
+        async.forEach(['checkhourlystats', 'checkdailystats', 'taghourlystats', 'tagdailystats'], migrateCheckStats, next);
+      },
+      function(next) {
+        async.forEach(['checkmonthlystats', 'tagmonthlystats'], addEndToMonthlyStat, next);
+      },
+      function(next) {
+        updateMonthlyQos(oldestDate, next);
+      },
+      function(next) {
+        updateYearlyQos(oldestDate, next);
+      },
+      ensureTagsHaveFirstTestedDate,
+      QosAggregator.updateLast24HoursQos.bind(QosAggregator)
+    ], function(err2) {
+      if (err2) return console.error(err2);
+      console.log('Successfully migrated ' + db.databaseName + ' database');
+      setTimeout(function() { mongoose.connection.close(); }, 1000);
     });
   });
 });
