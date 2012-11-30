@@ -128,32 +128,39 @@ Tag.methods.getChecksForPeriod = function(period, date, callback) {
   var checkNames = [];
   var begin = TimeCalculator[periodPrefs['beginMethod']](date);
   var end = TimeCalculator[periodPrefs['endMethod']](date);
-  var query = { tags: this.name, timestamp: { $gte: begin, $lte: end } };
-  var stream = this.db.model(periodPrefs['model']).find(query).populate('check').stream();
-  stream
-  .on('error', callback)
-  .on('data', function(stat) {
-    stats[stat.check.name] = {
-      timestamp: Date.parse(stat.timestamp),
-      availability: (stat.availability * 100).toFixed(3),
-      responsiveness: (stat.responsiveness * 100).toFixed(3),
-      downtime: parseInt(stat.downtime / 1000),
-      responseTime: parseInt(stat.responseTime),
-      outages: stat.outages || [],
-      end: stat.end ? stat.end.valueOf() : (Date.parse(stat.timestamp) + periodPrefs['duration']),
-      check: stat.check
-    };
-    checkNames.push(stat.check.name);
-  })
-  .on('close', function() {
-    var orderedStats = [];
-    checkNames.sort();
-    checkNames.forEach(function(checkName) {
-      orderedStats.push(stats[checkName]);
+  var self = this;
+  this.db.model('Check').find({ tags: this.name }).select('_id').exec(function(err, res) {
+    if (err) return callback(err);
+    var ids = [];
+    res.forEach(function(doc) {
+      ids.push(doc._id);
     })
-    callback(null, orderedStats);
+    var query = { check: { $in: ids }, timestamp: { $gte: begin, $lte: end } };
+    var stream = self.db.model(periodPrefs['model']).find(query).populate('check').stream();
+    stream
+    .on('error', callback)
+    .on('data', function(stat) {
+      stats[stat.check.name] = {
+        timestamp: Date.parse(stat.timestamp),
+        availability: (stat.availability * 100).toFixed(3),
+        responsiveness: (stat.responsiveness * 100).toFixed(3),
+        downtime: parseInt(stat.downtime / 1000),
+        responseTime: parseInt(stat.responseTime),
+        outages: stat.outages || [],
+        end: stat.end ? stat.end.valueOf() : (Date.parse(stat.timestamp) + periodPrefs['duration']),
+        check: stat.check
+      };
+      checkNames.push(stat.check.name);
+    })
+    .on('close', function() {
+      var orderedStats = [];
+      checkNames.sort();
+      checkNames.forEach(function(checkName) {
+        orderedStats.push(stats[checkName]);
+      })
+      callback(null, orderedStats);
+    });
   });
-
 }
 
 Tag.statics.ensureTagsHaveFirstTestedDate = function(callback) {
