@@ -13,7 +13,8 @@
     "config":    "0.4.15",
     "async":     "0.1.22",
     "socket.io": "0.9.10",
-    "semver":    "1.1.0"
+    "semver":    "1.1.0",
+    "moment":    "1.7.2"
   },
   "devDependencies": {
     "should": "1.1.0"

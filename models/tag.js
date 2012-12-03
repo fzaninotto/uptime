@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
-var TimeCalculator = require('../lib/timeCalculator');
+var Schema   = mongoose.Schema;
+var moment   = require('moment');
 var async    = require('async');
 
 // model dependencies
@@ -61,9 +61,9 @@ Tag.methods.getFirstTested = function(callback) {
 }
 
 var statProvider = {
-  'day':   { model: 'TagHourlyStat', beginMethod: 'resetDay', endMethod: 'completeDay', duration: 60 * 60 * 1000 },
-  'month': { model: 'TagDailyStat', beginMethod: 'resetMonth', endMethod: 'completeMonth', duration: 24 * 60 * 60 * 1000 },
-  'year':  { model: 'TagMonthlyStat', beginMethod: 'resetYear', endMethod: 'completeYear' }
+  'day':   { model: 'TagHourlyStat', duration: 60 * 60 * 1000 },
+  'month': { model: 'TagDailyStat', duration: 24 * 60 * 60 * 1000 },
+  'year':  { model: 'TagMonthlyStat' }
 };
 
 Tag.methods.getStatsForPeriod = function(period, begin, end, callback) {
@@ -89,18 +89,18 @@ Tag.methods.getStatsForPeriod = function(period, begin, end, callback) {
 }
 
 var singleStatsProvider = {
-  'hour': { model: 'TagHourlyStat', beginMethod: 'resetHour', endMethod: 'completeHour' },
-  'day':  { model: 'TagDailyStat', beginMethod: 'resetDay', endMethod: 'completeDay' },
-  'month': { model: 'TagMonthlyStat', beginMethod: 'resetMonth', endMethod: 'completeMonth' },
-  'year': { model: 'TagYearlyStat', beginMethod: 'resetYear', endMethod: 'completeYear' }
+  'hour':  'TagHourlyStat',
+  'day':   'TagDailyStat',
+  'month': 'TagMonthlyStat',
+  'year':  'TagYearlyStat'
 };
 
 Tag.methods.getSingleStatsForPeriod = function(period, date, callback) {
-  var periodPrefs = singleStatsProvider[period];
-  var begin = TimeCalculator[periodPrefs['beginMethod']](date);
-  var end = TimeCalculator[periodPrefs['endMethod']](date);
+  var model = singleStatsProvider[period];
+  var begin = moment(date).clone().startOf(period).toDate();
+  var end   = moment(date).clone().startOf(period).toDate();
   var query = { name: this.name, timestamp: { $gte: begin, $lte: end } };
-  this.db.model(periodPrefs['model']).findOne(query, function(err, stat) {
+  this.db.model(model).findOne(query, function(err, stat) {
     if (err || !stat) return callback(err);
     return callback(null, {
       timestamp: Date.parse(stat.timestamp),
@@ -116,18 +116,18 @@ Tag.methods.getSingleStatsForPeriod = function(period, date, callback) {
 }
 
 var checkProvider = {
-  'hour': { model: 'CheckHourlyStat', beginMethod: 'resetHour', endMethod: 'completeHour' },
-  'day':  { model: 'CheckDailyStat', beginMethod: 'resetDay', endMethod: 'completeDay' },
-  'month': { model: 'CheckMonthlyStat', beginMethod: 'resetMonth', endMethod: 'completeMonth' },
-  'year': { model: 'CheckYearlyStat', beginMethod: 'resetYear', endMethod: 'completeYear' }
+  'hour':  { model: 'CheckHourlyStat', duration: 60 * 60 * 1000 },
+  'day':   { model: 'CheckDailyStat', duration: 24 * 60 * 60 * 1000 },
+  'month': { model: 'CheckMonthlyStat' },
+  'year':  { model: 'CheckYearlyStat'}
 };
 
 Tag.methods.getChecksForPeriod = function(period, date, callback) {
   var periodPrefs = checkProvider[period];
   var stats = {};
   var checkNames = [];
-  var begin = TimeCalculator[periodPrefs['beginMethod']](date);
-  var end = TimeCalculator[periodPrefs['endMethod']](date);
+  var begin = moment(date).clone().startOf(period).toDate();
+  var end   = moment(date).clone().endOf(period).toDate();
   var self = this;
   this.db.model('Check').find({ tags: this.name }).select('_id').exec(function(err, res) {
     if (err) return callback(err);

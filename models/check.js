@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 var Schema   = mongoose.Schema;
-var TimeCalculator = require('../lib/timeCalculator');
+var moment   = require('moment');
 var async    = require('async');
 
 // models dependencies
@@ -230,18 +230,18 @@ Check.methods.getStatsForPeriod = function(period, begin, end, callback) {
 }
 
 var singleStatsProvider = {
-  'hour': { model: 'CheckHourlyStat', beginMethod: 'resetHour', endMethod: 'completeHour' },
-  'day':  { model: 'CheckDailyStat', beginMethod: 'resetDay', endMethod: 'completeDay' },
-  'month': { model: 'CheckMonthlyStat', beginMethod: 'resetMonth', endMethod: 'completeMonth' },
-  'year': { model: 'CheckYearlyStat', beginMethod: 'resetYear', endMethod: 'completeYear' }
+  'hour':  'CheckHourlyStat',
+  'day':   'CheckDailyStat',
+  'month': 'CheckMonthlyStat',
+  'year':  'CheckYearlyStat'
 };
 
 Check.methods.getSingleStatForPeriod = function(period, date, callback) {
-  var periodPrefs = singleStatsProvider[period];
-  var begin = TimeCalculator[periodPrefs['beginMethod']](date);
-  var end = TimeCalculator[periodPrefs['endMethod']](date);
+  var model = singleStatsProvider[period];
+  var begin = moment(date).clone().startOf(period).toDate();
+  var end   = moment(date).clone().endOf(period).toDate();
   var query = { check: this, timestamp: { $gte: begin, $lte: end } };
-  this.db.model(periodPrefs['model']).findOne(query, function(err, stat) {
+  this.db.model(model).findOne(query, function(err, stat) {
     if (err || !stat) return callback(err);
     return callback(null, {
       timestamp: Date.parse(stat.timestamp),
@@ -253,41 +253,6 @@ Check.methods.getSingleStatForPeriod = function(period, date, callback) {
       begin: begin.valueOf(),
       end: end.valueOf()
     })
-  });
-}
-
-Check.methods.getYearlySingleStat = function(date, callback) {
-  var mainStat = {
-    count: 0,
-    availability: 0,
-    responsiveness: 0,
-    downtime: 0,
-    responseTime: 0,
-    outages: []
-  };
-  var begin = TimeCalculator.resetYear(date);
-  var end = TimeCalculator.completeYear(date);
-  var query = { check: this, timestamp: { $gte: begin, $lte: end } };
-  var stream = CheckMonthlyStat.find(query).sort({ timestamp: -1 }).stream();
-  stream.on('error', function(err) {
-    callback(err);
-  }).on('data', function(stat) {
-    mainStat.count++;
-    mainStat.availability += stat.availability;
-    mainStat.responsiveness += stat.responsiveness;
-    mainStat.downtime += stat.downtime,
-    mainStat.responseTime += stat.responseTime,
-    mainStat.outages.push([stat.timestamp.valueOf(), stat.end.valueOf(), stat.availability]);
-  }).on('close', function() {
-    callback(null, {
-      timestamp: begin,
-      end: end, 
-      availability: (mainStat.availability / mainStat.count * 100).toFixed(3),
-      responsiveness: (mainStat.responsiveness / mainStat.count * 100).toFixed(3),
-      downtime: mainStat.downtime / 1000,
-      responseTime: parseInt(mainStat.responseTime / mainStat.count),
-      outages: mainStat.outages
-    });
   });
 }
 

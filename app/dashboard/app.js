@@ -5,13 +5,13 @@ var express = require('express');
 var async = require('async');
 var partials = require('express-partials');
 var flash = require('connect-flash');
+var moment = require('moment');
 
 var Check = require('../../models/check');
 var Tag = require('../../models/tag');
 var TagDailyStat = require('../../models/tagDailyStat');
 var TagMonthlyStat = require('../../models/tagMonthlyStat');
 var CheckMonthlyStat = require('../../models/checkMonthlyStat');
-var TimeCalculator = require('../../lib/timeCalculator');
 
 var app = module.exports = express();
 
@@ -33,7 +33,7 @@ app.configure(function(){
         return '';
       }
     }
-    res.locals.moment = require('./public/javascripts/moment.min.js');
+    res.locals.moment = moment;
     next();
   });
   app.use(app.router);

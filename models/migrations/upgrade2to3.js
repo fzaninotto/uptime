@@ -1,10 +1,10 @@
 var async    = require('async');
+var moment   = require('moment');
 var mongoose = require('../../bootstrap');
-var db = mongoose.connection.db;
+var db       = mongoose.connection.db;
 var CheckHourlyStat = require('../../models/checkHourlyStat');
-var Tag = require('../../models/tag');
+var Tag      = require('../../models/tag');
 var QosAggregator = require('../../lib/qosAggregator');
-var moment = require('../../app/dashboard/public/javascripts/moment.min.js');
 
 var migrateCheckStats = function(name, callback) {
   var nbMigratedDocuments = 0;
