@@ -3,7 +3,7 @@ uptime
 
 A remote monitoring application using Node.js, MongoDB, and Twitter Bootstrap.
 
-<img src="https://github.com/downloads/fzaninotto/uptime/uptime.png" title="Uptime screenshot" />
+<img src="https://github.com/downloads/fzaninotto/uptime/check_details.png" title="Uptime screenshot" />
 
 You can watch a [demo screencast on Vimeo](https://vimeo.com/39302164).
 
@@ -39,6 +39,13 @@ Alternatively, clone the repository from GitHub and install dependencies using n
 Lastly, start the application with:
 
     > node app.js
+
+Upgrading From a 2.0 Install
+----------------------------
+
+If you have been using uptime 1.0 or 2.0, you have to execute the migration script before using the new release.
+
+    > node models/migrations/upgrade2to3
 
 Adding Checks
 -------------
