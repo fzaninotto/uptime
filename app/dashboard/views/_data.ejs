@@ -80,8 +80,7 @@ $(document).ready(function() {
   dateInterval.on('refresh-stats', updateStats);
   $('.stat table').on('click', 'a.date', function(event) {
     var data = $(this).data();
-    dateInterval.type = data.type;
-    dateInterval.setDate(parseInt(data.date));
+    dateInterval.update(data.type, parseInt(data.date));
     return false;
   });
 });
