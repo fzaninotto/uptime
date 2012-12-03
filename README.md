@@ -61,34 +61,38 @@ Configuring
 
 Uptime uses [node-config](https://github.com/lorenwest/node-config) to allow YAML configuration and environment support. Here is the default configuration, taken from `config/default.yaml`:
 
-    mongodb:
-      server:   localhost
-      database: uptime
-      user:     root 
-      password:
-      connectionString:       # alternative to setting server, database, user and password separately
-    
-    monitor:
-      name:                   origin
-      apiUrl:                 'http://localhost:8082/api'
-      pollingInterval:        10000      # ten seconds
-      timeout:                5000       # five seconds
-      userAgent:              NodeUptime/1.3 (https://github.com/fzaninotto/uptime)
-    
-    analyzer:
-      updateInterval:         60000      # one minute
-      qosAggregationInterval: 600000     # ten minutes
-      pingHistory:            8035200000 # three months
-    
-    autoStartMonitor: true
-    
-    server:
-      port:     8082
+```yaml
+mongodb:
+  server:   localhost
+  database: uptime
+  user:     root 
+  password:
+  connectionString:       # alternative to setting server, database, user and password separately
+
+monitor:
+  name:                   origin
+  apiUrl:                 'http://localhost:8082/api'
+  pollingInterval:        10000      # ten seconds
+  timeout:                5000       # five seconds
+  userAgent:              NodeUptime/1.3 (https://github.com/fzaninotto/uptime)
+
+analyzer:
+  updateInterval:         60000      # one minute
+  qosAggregationInterval: 600000     # ten minutes
+  pingHistory:            8035200000 # three months
+
+autoStartMonitor: true
+
+server:
+  port:     8082
+```
 
 To modify this configuration, create a `development.yaml` or a `production.yaml` file in the same directory, and override just the settings you need. For instance, to run Uptime on port 80 in production, create a `production.yaml` file as follows:
 
-    server:
-      port:     80
+```yaml
+server:
+  port:     80
+```
 
 Node that Uptime works great behind a proxy - it uses the http_proxy environment variable transparently.
 
@@ -113,10 +117,12 @@ Uptime provides plugins that you can enable to add more functionality.
 
 To enable plugins, create a `plugins/index.js` module. This module must offer a public `init()` method, where you will require and initialize plugin modules. For instance, to enable only the `console` plugin:
 
-    // in plugins/index.js
-    exports.init = function() {
-      require('./console').init();
-    }
+```js
+// in plugins/index.js
+exports.init = function() {
+  require('./console').init();
+}
+```
 
 Currently supported plugins:
 
@@ -124,15 +130,17 @@ Currently supported plugins:
 
 You can add your own plugins under the `plugins` directory. A plugin is simply a module with a public `init()` method. For instance, if you had to recreate a simple version of the `console` plugin, you could write it as follows:
 
-    // in plugins/console/index.js
-    var CheckEvent = require('../../models/checkEvent');
-    exports.init = function() {
-      CheckEvent.on('afterInsert', function(checkEvent) {
-        checkEvent.findCheck(function(err, check) {
-          console.log(new Date() + check.name + checkEvent.isGoDown ? ' goes down' : ' goes back up');
-        });
-      });
-    }
+```js
+// in plugins/console/index.js
+var CheckEvent = require('../../models/checkEvent');
+exports.init = function() {
+  CheckEvent.on('afterInsert', function(checkEvent) {
+    checkEvent.findCheck(function(err, check) {
+      console.log(new Date() + check.name + checkEvent.isGoDown ? ' goes down' : ' goes back up');
+    });
+  });
+}
+```
 
 All Uptime entities emit lifecycle events that you can listen to on the Model class. These events are `beforeInsert`, `afterInsert`, `beforeUpdate`, `afterUpdate`, `beforeSave` (called for both inserts and updates), `afterSave` (called for both inserts and updates), `beforeRemove`, and `afterRemove`. For more information about these events, check the [mongoose-lifecycle](https://github.com/fzaninotto/mongoose-lifecycle) plugin.
 
