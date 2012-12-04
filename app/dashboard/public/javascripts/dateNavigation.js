@@ -1,8 +1,7 @@
-var DateNavigation = function(interval, maxZoom) {
+var DateNavigation = function(interval) {
   this.interval = interval;
   this.initialType = interval.type;
   this.initialDate = interval.date;
-  this.maxZoom = maxZoom || 'hour';
   this.init();
 }
 DateNavigation.prototype.init = function() {
@@ -100,7 +99,7 @@ DateNavigation.prototype.redrawPeriods = function() {
   var subtype = this.interval.subType(type);
   var d = begin.clone();
   while (d.valueOf() < end.valueOf()) {
-    if (d.valueOf() < Date.now() && d.clone().endOf(subtype).valueOf() > this.interval.origin && type != this.maxZoom) {
+    if (d.valueOf() < Date.now() && d.clone().endOf(subtype).valueOf() > this.interval.origin && !this.interval.isMaxZoom()) {
       periods += '<button class="btn btn-small ' + subtype + ' nb' + end.date() + '" data-type="' + subtype + '" data-date="' + d.valueOf() + '" title="' + this.tooltipForPeriod(d, subtype) + '">' + this.titleForPeriod(d, subtype) + '</button>';
     } else {
       periods += '<button class="btn btn-small ' + subtype + ' nb' + end.date() + '" disabled="disabled">' + this.titleForPeriod(d, subtype) + '</button>';
@@ -150,7 +149,7 @@ DateNavigation.prototype.redrawTitle = function() {
 DateNavigation.prototype.redrawZoom = function() {
   var zoom = '';
   var subType = this.interval.subType(this.interval.type);
-  if (subType !== false && this.interval.type != this.maxZoom) {
+  if (subType !== false && !this.interval.isMaxZoom()) {
     zoom += '<button class="btn btn-small" data-type="' + subType + '" data-date="' + this.interval.date + '"><li class="icon-zoom-in"></li></button>';
   } else {
     zoom += '<button class="btn btn-small" disabled="disabled"><li class="icon-zoom-in"></li></button>'

@@ -75,7 +75,8 @@ var dateInterval = new DateInterval(
   '<%= req.query.type || 'month' %>',
   <%= req.query.date || Date.now() %>,
   <%= check.firstTested ? check.firstTested.valueOf() : Date.now() %>,
-  '/api/checks/<%= check._id %>/'
+  '/api/checks/<%= check._id %>/',
+  'hour'
 );
 jQuery(document).ready(function($) {
   // highlight current section in main nav
@@ -91,7 +92,7 @@ jQuery(document).ready(function($) {
   new StatNavigation(dateInterval);
   
   // initialize date navigation
-  new DateNavigation(dateInterval, 'hour');
+  new DateNavigation(dateInterval);
   
   // hide alert after 5s
   window.setTimeout(function() {

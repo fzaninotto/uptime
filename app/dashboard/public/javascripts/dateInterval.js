@@ -1,7 +1,8 @@
-var DateInterval = function(type, date, origin, url) {
+var DateInterval = function(type, date, origin, url, maxZoom) {
   this.type = type;
   this.origin = origin;
   this.url = url;
+  this.maxZoom = maxZoom || 'hour';
   this.listeners = {};
   this.stat = {};
   this.stats = [];
@@ -48,11 +49,13 @@ DateInterval.prototype.getIntervalQueryString = function() {
   return '?begin=' + this.begin.valueOf() + '&end=' + this.end.valueOf();
 }
 DateInterval.prototype.types = ['year', 'month', 'day', 'hour', 'tenminutes'];
-
+DateInterval.prototype.isMaxZoom = function() {
+  return (this.type === this.maxZoom);
+}
 DateInterval.prototype.subType = function(type) {
   type = type || this.type;
   var index = this.types.indexOf(type);
-  if (index === -1 || index == 4) return false;
+  if (index === -1 || index === 4) return false;
   return this.types[index + 1];
 }
 DateInterval.prototype.superType = function(type) {

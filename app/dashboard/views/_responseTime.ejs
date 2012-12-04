@@ -7,7 +7,8 @@ jQuery(document).ready(function($) {
     $.each(dateInterval.stats, function(index, stat) {
       responseTimes.push([new Date(stat.timestamp), stat.responseTime || stat.time]);
     });
-    Flotr.draw($('#responseTimeGraph').get(0), [{ data: responseTimes, color: '#4DA74D', lines: { show: true, lineWidth: 4 }, points: { show: true } }], { 
+    var container = $('#responseTimeGraph').get(0);
+    Flotr.draw(container, [{ data: responseTimes, color: '#4DA74D', lines: { show: true, lineWidth: 4 }, points: { show: true } }], { 
       yaxis : {
         min : 0,
         margin: false,
@@ -22,6 +23,9 @@ jQuery(document).ready(function($) {
       },
       mouse : {
         track: true,
+        trackFormatter: function(obj) {
+          return moment(obj.x).format('LLLL') + '<br/><strong>' + obj.y + 'ms</strong>';
+        },
         relative: true,
         sensibility: 4,
         radius: 4,
@@ -29,6 +33,11 @@ jQuery(document).ready(function($) {
       },
       grid: { outline: '' }
     });
+    Flotr.EventAdapter.observe(container, 'flotr:click', function (hit) {
+      if (!hit.series || dateInterval.isMaxZoom()) return;
+      dateInterval.update(dateInterval.subType(), hit.x);
+    });
+
   }
   dateInterval.on('refresh-stats', refreshResponseTimeGraph);
 });

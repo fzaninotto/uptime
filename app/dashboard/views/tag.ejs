@@ -71,7 +71,8 @@ var dateInterval = new DateInterval(
   '<%= req.query.type || 'month' %>',
   <%= req.query.date || Date.now() %>,
   <%= tag.firstTested.valueOf() %>,
-  '/api/tags/<%= tag.name %>/'
+  '/api/tags/<%= tag.name %>/',
+  'day'
 );
 jQuery(document).ready(function($) {
   // highlight current section in main nav
@@ -81,7 +82,7 @@ jQuery(document).ready(function($) {
   new StatNavigation(dateInterval);
   
   // initialize date navigation
-  new DateNavigation(dateInterval, 'day');
+  new DateNavigation(dateInterval);
 
   // update stats every 15 minutes if looking at the current moment
   window.setInterval(function() {
