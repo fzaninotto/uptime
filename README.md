@@ -1,9 +1,9 @@
 uptime
 ======
 
-A simple remote monitoring utility using Node.js and MongoDB.
+A remote monitoring application using Node.js, MongoDB, and Twitter Bootstrap.
 
-<img src="https://github.com/downloads/fzaninotto/uptime/uptime.png" title="Uptime screenshot" />
+<img src="https://github.com/downloads/fzaninotto/uptime/check_details.png" title="Uptime screenshot" />
 
 You can watch a [demo screencast on Vimeo](https://vimeo.com/39302164).
 
@@ -11,21 +11,21 @@ Features
 --------
 
 * Monitor thousands of websites (powered by [Node.js asynchronous programming](http://dotheweb.posterous.com/nodejs-for-php-programmers-1-event-driven-pro))
-* Tweak frequency of monitoring on a per-check basis, up to the millisecond
+* Tweak frequency of monitoring on a per-check basis, up to the second
 * Receive instant web alerts on every page when a check goes down (thanks [socket.io](http://socket.io/))
 * Record availability statistics for further reporting (powered by [MongoDB](http://www.mongodb.org/))
-* Detailed uptime reports with animated charts (powered by [Highcharts](http://www.highcharts.com/))
+* Detailed uptime reports with animated charts (powered by [Flotr2](http://www.humblesoftware.com/flotr2/))
 * Monitor availability, responsiveness, average response time , and total uptime/downtime
 * Get details about failed checks (HTTP error code, etc.)
 * Group checks by tags and get reports by tag
 * Familiar web interface (powered by [Twitter Bootstrap 2.0](http://twitter.github.com/bootstrap/index.html))
-* complete API for integration with third-party monitoring services
+* Complete API for integration with third-party monitoring services
 * Easy installation and zero administration
 
 Installing Uptime
 -----------------
 
-Uptime 2.0 requires Node.js 0.8 (if you're stuck with Node 0.6, try Uptime v1.4, available as a tag and on npm).
+Uptime 3.0 requires Node.js 0.8 (if you're stuck with Node 0.6, try Uptime v1.4, available as a tag and on npm).
 
 One line install:
 
@@ -39,6 +39,13 @@ Alternatively, clone the repository from GitHub and install dependencies using n
 Lastly, start the application with:
 
     > node app.js
+
+Upgrading From a 2.0 Install
+----------------------------
+
+If you have been using uptime 1.0 or 2.0, you have to execute the migration script before using the new release.
+
+    > node models/migrations/upgrade2to3
 
 Adding Checks
 -------------
@@ -54,39 +61,43 @@ Configuring
 
 Uptime uses [node-config](https://github.com/lorenwest/node-config) to allow YAML configuration and environment support. Here is the default configuration, taken from `config/default.yaml`:
 
-    mongodb:
-      server:   localhost
-      database: uptime
-      user:     root 
-      password:
-      connectionString:       # alternative to setting server, database, user and password separately
-    
-    monitor:
-      name:                   origin
-      apiUrl:                 'http://localhost:8082/api'
-      pollingInterval:        10000      # ten seconds
-      timeout:                5000       # five seconds
-      userAgent:              NodeUptime/1.3 (https://github.com/fzaninotto/uptime)
-    
-    analyzer:
-      updateInterval:         60000      # one minute
-      qosAggregationInterval: 600000     # ten minutes
-      pingHistory:            8035200000 # three months
-    
-    autoStartMonitor: true
-    
-    server:
-      port:     8082
+```yaml
+mongodb:
+  server:   localhost
+  database: uptime
+  user:     root 
+  password:
+  connectionString:       # alternative to setting server, database, user and password separately
+
+monitor:
+  name:                   origin
+  apiUrl:                 'http://localhost:8082/api'
+  pollingInterval:        10000      # ten seconds
+  timeout:                5000       # five seconds
+  userAgent:              NodeUptime/1.3 (https://github.com/fzaninotto/uptime)
+
+analyzer:
+  updateInterval:         60000      # one minute
+  qosAggregationInterval: 600000     # ten minutes
+  pingHistory:            8035200000 # three months
+
+autoStartMonitor: true
+
+server:
+  port:     8082
+```
 
 To modify this configuration, create a `development.yaml` or a `production.yaml` file in the same directory, and override just the settings you need. For instance, to run Uptime on port 80 in production, create a `production.yaml` file as follows:
 
-    server:
-      port:     80
+```yaml
+server:
+  port:     80
+```
 
 Node that Uptime works great behind a proxy - it uses the http_proxy environment variable transparently.
 
-Running The Monitor In a Separate Process
------------------------------------------
+Monitoring From Various Locations
+---------------------------------
 
 Heavily browsing the web dashboard may slow down the server - including the polling monitor. In other terms, using the application can influence the uptime measurements. To avoid this effect, it is recommended to run the polling monitor in a separate process.
 
@@ -106,10 +117,12 @@ Uptime provides plugins that you can enable to add more functionality.
 
 To enable plugins, create a `plugins/index.js` module. This module must offer a public `init()` method, where you will require and initialize plugin modules. For instance, to enable only the `console` plugin:
 
-    // in plugins/index.js
-    exports.init = function() {
-      require('./console').init();
-    }
+```js
+// in plugins/index.js
+exports.init = function() {
+  require('./console').init();
+}
+```
 
 Currently supported plugins:
 
@@ -117,15 +130,17 @@ Currently supported plugins:
 
 You can add your own plugins under the `plugins` directory. A plugin is simply a module with a public `init()` method. For instance, if you had to recreate a simple version of the `console` plugin, you could write it as follows:
 
-    // in plugins/console/index.js
-    var CheckEvent = require('../../models/checkEvent');
-    exports.init = function() {
-      CheckEvent.on('afterInsert', function(checkEvent) {
-        checkEvent.findCheck(function(err, check) {
-          console.log(new Date() + check.name + checkEvent.isGoDown ? ' goes down' : ' goes back up');
-        });
-      });
-    }
+```js
+// in plugins/console/index.js
+var CheckEvent = require('../../models/checkEvent');
+exports.init = function() {
+  CheckEvent.on('afterInsert', function(checkEvent) {
+    checkEvent.findCheck(function(err, check) {
+      console.log(new Date() + check.name + checkEvent.isGoDown ? ' goes down' : ' goes back up');
+    });
+  });
+}
+```
 
 All Uptime entities emit lifecycle events that you can listen to on the Model class. These events are `beforeInsert`, `afterInsert`, `beforeUpdate`, `afterUpdate`, `beforeSave` (called for both inserts and updates), `afterSave` (called for both inserts and updates), `beforeRemove`, and `afterRemove`. For more information about these events, check the [mongoose-lifecycle](https://github.com/fzaninotto/mongoose-lifecycle) plugin.
 
@@ -141,8 +156,9 @@ Uptime uses third-party libraries:
 * [MongooseJS](http://mongoosejs.com/), licensed under the [MIT License](https://github.com/LearnBoost/mongoose/blob/master/README.md),
 * [jQuery](http://jquery.com/), licensed under the [MIT License](http://jquery.org/license),
 * [TwitterBootstrap](http://twitter.github.com/bootstrap/), licensed under the [Apache License v2.0](http://www.apache.org/licenses/LICENSE-2.0),
-* [Highcharts.js](http://shop.highsoft.com/highcharts.html), free for non-commercial use under the [Creative Commons Attribution-NonCommercial 3.0 License](http://creativecommons.org/licenses/by-nc/3.0/).
-* [Favicon] (http://www.alexpeattie.com/projects/justvector_icons/), distributed under the Free Art License, and as such can be copied, distributed, transformed and used as you please. If you enjoy the icons, a link back to [Alex Peattie](http://www.alexpeattie.com/projects/justvector_icons/) and [iconify](http://iconify.it) would certainly be appreciated. 
+* [Flotr2](http://www.humblesoftware.com/flotr2/), licensed under the [MIT License](https://github.com/HumbleSoftware/Flotr2/blob/master/LICENSE).
+* [Favicon](http://www.alexpeattie.com/projects/justvector_icons/), distributed under the [Free Art License](http://artlibre.org/licence/lal/en).
+
 If you like the software, please help improving it by contributing PRs on the [GitHub project](https://github.com/fzaninotto/uptime)!
 
 TODO

@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 var Schema   = mongoose.Schema;
-var TimeCalculator = require('../lib/timeCalculator');
+var moment   = require('moment');
 var async    = require('async');
 
 // models dependencies
@@ -9,6 +9,8 @@ var CheckEvent       = require('../models/checkEvent');
 var CheckHourlyStat  = require('../models/checkHourlyStat');
 var CheckDailyStat   = require('../models/checkDailyStat');
 var CheckMonthlyStat = require('../models/checkMonthlyStat');
+var CheckYearlyStat  = require('../models/checkYearlyStat');
+var Tag              = require('../models/tag');
 
 // main model
 var Check = new Schema({
@@ -22,11 +24,10 @@ var Check = new Schema({
   firstTested : Date,
   lastTested  : Date,
   isUp        : Boolean,
-  isPaused    : { type:Boolean, default: false },
+  isPaused    : { type: Boolean, default: false },
   uptime      : { type: Number, default: 0 },
   downtime    : { type: Number, default: 0 },
-  qos         : {},
-  qosPerHour  : {}
+  qos         : {}
 });
 Check.plugin(require('mongoose-lifecycle'));
 
@@ -49,7 +50,8 @@ Check.methods.removeStats = function(callback) {
   async.parallel([
     function(cb) { CheckHourlyStat.remove({ check: self._id }, cb); },
     function(cb) { CheckDailyStat.remove({ check: self._id }, cb); },
-    function(cb) { CheckMonthlyStat.remove({ check: self._id }, cb); }
+    function(cb) { CheckMonthlyStat.remove({ check: self._id }, cb); },
+    function(cb) { CheckYearlyStat.remove({ check: self._id }, cb); }
   ], callback);
 };
 
@@ -62,11 +64,18 @@ Check.methods.needsPoll = function() {
 
 Check.methods.togglePause = function() {
   this.isPaused = !this.isPaused;
+  if (!this.isPaused) {
+    // restarted
+    this.isUp = undefined;
+  }
+  this.lastChanged = new Date();
 }
 
 Check.methods.setLastTest = function(status, time, error) {
   var now = time ? new Date(time) : new Date();
-  if (!this.firstTested) this.firstTested = now;
+  if (!this.firstTested) {
+    this.firstTested = now;
+  }
   this.lastTested = now;
   if (this.isUp != status) {
     var event = new CheckEvent({
@@ -76,7 +85,8 @@ Check.methods.setLastTest = function(status, time, error) {
       message: status ? 'up' : 'down',
       details: error
     });
-    if (status && this.lastChanged) {
+    if (status && this.lastChanged && this.isUp != undefined) {
+      // Check comes back up
       event.downtime = now.getTime() - this.lastChanged.getTime();
     }
     event.save();
@@ -185,47 +195,33 @@ Check.methods.updateQos = function(callback) {
 }
 
 var statProvider = {
-  '1h':  'Ping',
-  '6h':  'Ping',
-  '1d':  'CheckHourlyStat',
-  '7d':  'CheckHourlyStat',
-  'MTD': 'CheckDailyStat',
-  '1m':  'CheckDailyStat',
-  '3m':  'CheckDailyStat',
-  '6m':  'CheckMonthlyStat',
-  'YTD': 'CheckMonthlyStat',
-  '1y':  'CheckMonthlyStat',
-  '3y':  'CheckMonthlyStat'
+  'hour':  { model: 'Ping', beginMethod: 'resetHour', endMethod: 'completeHour' },
+  'day':   { model: 'CheckHourlyStat', beginMethod: 'resetDay', endMethod: 'completeDay', duration: 60 * 60 * 1000 },
+  'month': { model: 'CheckDailyStat', beginMethod: 'resetMonth', endMethod: 'completeMonth', duration: 24 * 60 * 60 * 1000 },
+  'year':  { model: 'CheckMonthlyStat', beginMethod: 'resetYear', endMethod: 'completeYear' }
 };
 
-Check.methods.getStatsForPeriod = function(period, page, callback) {
-  var boundary = TimeCalculator.boundaryFunction[period];
-  if (typeof boundary == 'undefined') {
-    return callback(new Error('unknown period type ' + period));
-  }
+Check.methods.getStatsForPeriod = function(period, begin, end, callback) {
+  var periodPrefs = statProvider[period];
   var stats = [];
-  var query = { check: this, timestamp: { $gte: boundary(page), $lte: boundary(page - 1) } };
-  var stream = this.db.model(statProvider[period]).find(query).sort({ timestamp: 1 }).stream();
+  var query = { check: this, timestamp: { $gte: begin, $lte: end } };
+  var stream = this.db.model(periodPrefs['model']).find(query).sort({ timestamp: -1 }).stream();
   stream.on('error', function(err) {
     callback(err);
   }).on('data', function(stat) {
     if (typeof stat.isUp != 'undefined') {
       // stat is a Ping
-      stats.push({
-        timestamp: Date.parse(stat.timestamp),
-        uptime: stat.isUp ? '100' : '0',
-        responsiveness: stat.isResponsive ? '100' : '0',
-        downtime: stat.downtime ? stat.downtime / 1000 : 0,
-        responseTime: Math.round(stat.time)
-      });
+      stats.push(stat);
     } else {
       // stat is an aggregation
       stats.push({
         timestamp: Date.parse(stat.timestamp),
-        uptime: (stat.ups / stat.count * 100).toFixed(3),
-        responsiveness: (stat.responsives / stat.count * 100).toFixed(3),
-        downtime: stat.downtime / 1000,
-        responseTime: Math.round(stat.time / stat.count)
+        availability: (stat.availability * 100).toFixed(3),
+        responsiveness: (stat.responsiveness * 100).toFixed(3),
+        downtime: parseInt(stat.downtime / 1000),
+        responseTime: parseInt(stat.responseTime),
+        outages: stat.outages || [],
+        end: stat.end ? stat.end.valueOf() : (Date.parse(stat.timestamp) + periodPrefs['duration'])
       });
     };
   }).on('close', function() {
@@ -234,28 +230,46 @@ Check.methods.getStatsForPeriod = function(period, page, callback) {
 }
 
 var singleStatsProvider = {
-  'hour': { model: 'CheckHourlyStat', beginMethod: 'resetHour', endMethod: 'completeHour' },
-  'day':  { model: 'CheckDailyStat', beginMethod: 'resetDay', endMethod: 'completeDay' },
-  'month': { model: 'CheckMonthlyStat', beginMethod: 'resetMonth', endMethod: 'completeMonth' }
+  'hour':  'CheckHourlyStat',
+  'day':   'CheckDailyStat',
+  'month': 'CheckMonthlyStat',
+  'year':  'CheckYearlyStat'
 };
 
-Check.methods.getSingleStatsForPeriod = function(period, date, callback) {
-  var periodPrefs = singleStatsProvider[period];
-  var begin = TimeCalculator[periodPrefs['beginMethod']](date);
-  var end = TimeCalculator[periodPrefs['endMethod']](date);
+Check.methods.getSingleStatForPeriod = function(period, date, callback) {
+  var model = singleStatsProvider[period];
+  var begin = moment(date).clone().startOf(period).toDate();
+  var end   = moment(date).clone().endOf(period).toDate();
   var query = { check: this, timestamp: { $gte: begin, $lte: end } };
-  this.db.model(periodPrefs['model']).findOne(query, function(err, stat) {
+  this.db.model(model).findOne(query, function(err, stat) {
     if (err || !stat) return callback(err);
     return callback(null, {
       timestamp: Date.parse(stat.timestamp),
-      availability: (stat.ups / stat.count * 100).toFixed(3),
-      responsiveness: (stat.responsives / stat.count * 100).toFixed(3),
-      downtime: stat.downtime / 1000,
-      responseTime: Math.round(stat.time / stat.count),
+      availability: (stat.availability * 100).toFixed(3),
+      responsiveness: (stat.responsiveness * 100).toFixed(3),
+      downtime: parseInt(stat.downtime / 1000),
+      responseTime: parseInt(stat.responseTime),
+      outages: stat.outages || [],
       begin: begin.valueOf(),
       end: end.valueOf()
     })
   });
+}
+
+Check.statics.getAllTags = function(callback) {
+  this.aggregate(
+    { $unwind: "$tags" },
+    { $group: {
+    _id: null,
+    tags: { $addToSet: "$tags" }
+  } }, function(err, res) {
+    if (err || !res.length) return callback(err, []);
+    return callback(null, res[0].tags);
+  });
+}
+
+Check.statics.findForTag = function(tag, callback) {
+  return this.find().where('tags').equals(tag).exec(callback);
 }
 
 Check.statics.convertTags = function(tags) {
