@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>Uptime by fzaninotto</title>
-    
+
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
@@ -17,19 +17,22 @@
       <header>
         <h1>Uptime</h1>
         <p>A simple HTTP remote monitoring utility using Node.js and MongoDB.</p>
+
         <p class="view"><a href="https://github.com/fzaninotto/uptime">View the Project on GitHub <small>fzaninotto/uptime</small></a></p>
+
+
         <ul>
           <li><a href="https://github.com/fzaninotto/uptime/zipball/master">Download <strong>ZIP File</strong></a></li>
           <li><a href="https://github.com/fzaninotto/uptime/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/fzaninotto/uptime">Fork On <strong>GitHub</strong></a></li>
+          <li><a href="https://github.com/fzaninotto/uptime">View On <strong>GitHub</strong></a></li>
         </ul>
       </header>
       <section>
         <h1>uptime</h1>
 
-<p>A simple remote monitoring utility using Node.js and MongoDB.</p>
+<p>A remote monitoring application using Node.js, MongoDB, and Twitter Bootstrap.</p>
 
-<p><img src="https://github.com/downloads/fzaninotto/uptime/uptime.png" title="Uptime screenshot"></p>
+<p><img src="https://github.com/downloads/fzaninotto/uptime/check_details.png" title="Uptime screenshot"></p>
 
 <p>You can watch a <a href="https://vimeo.com/39302164">demo screencast on Vimeo</a>.</p>
 
@@ -37,23 +40,41 @@
 
 <ul>
 <li>Monitor thousands of websites (powered by <a href="http://dotheweb.posterous.com/nodejs-for-php-programmers-1-event-driven-pro">Node.js asynchronous programming</a>)</li>
-<li>Tweak frequency of monitoring on a per-check basis, up to the millisecond</li>
+<li>Tweak frequency of monitoring on a per-check basis, up to the second</li>
 <li>Receive instant web alerts on every page when a check goes down (thanks <a href="http://socket.io/">socket.io</a>)</li>
 <li>Record availability statistics for further reporting (powered by <a href="http://www.mongodb.org/">MongoDB</a>)</li>
-<li>Detailed uptime reports with animated charts (powered by <a href="http://www.highcharts.com/">Highcharts</a>)</li>
+<li>Detailed uptime reports with animated charts (powered by <a href="http://www.humblesoftware.com/flotr2/">Flotr2</a>)</li>
 <li>Monitor availability, responsiveness, average response time , and total uptime/downtime</li>
 <li>Get details about failed checks (HTTP error code, etc.)</li>
 <li>Group checks by tags and get reports by tag</li>
 <li>Familiar web interface (powered by <a href="http://twitter.github.com/bootstrap/index.html">Twitter Bootstrap 2.0</a>)</li>
-<li>complete API for integration with third-party monitoring services</li>
+<li>Complete API for integration with third-party monitoring services</li>
 <li>Easy installation and zero administration</li>
 </ul><h2>Installing Uptime</h2>
 
-<p>As for every Node.js application, the installation is straightforward:</p>
+<p>Uptime 3.0 requires Node.js 0.8 (if you're stuck with Node 0.6, try Uptime v1.4, available as a tag and on npm).</p>
+
+<p>One line install:</p>
+
+<pre><code>&gt; npm install node-uptime
+</code></pre>
+
+<p>Alternatively, clone the repository from GitHub and install dependencies using npm:</p>
 
 <pre><code>&gt; git clone git://github.com/fzaninotto/uptime.git
 &gt; npm install
-&gt; node app.js
+</code></pre>
+
+<p>Lastly, start the application with:</p>
+
+<pre><code>&gt; node app.js
+</code></pre>
+
+<h2>Upgrading From a 2.0 Install</h2>
+
+<p>If you have been using uptime 1.0 or 2.0, you have to execute the migration script before using the new release.</p>
+
+<pre><code>&gt; node models/migrations/upgrade2to3
 </code></pre>
 
 <h2>Adding Checks</h2>
@@ -69,38 +90,40 @@
 
 <p>Uptime uses <a href="https://github.com/lorenwest/node-config">node-config</a> to allow YAML configuration and environment support. Here is the default configuration, taken from <code>config/default.yaml</code>:</p>
 
-<pre><code>mongodb:
-  server:   localhost
-  database: uptime
-  user:     root 
-  password:
+<div class="highlight"><pre><span class="l-Scalar-Plain">mongodb</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">server</span><span class="p-Indicator">:</span>   <span class="l-Scalar-Plain">localhost</span>
+  <span class="l-Scalar-Plain">database</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">uptime</span>
+  <span class="l-Scalar-Plain">user</span><span class="p-Indicator">:</span>     <span class="l-Scalar-Plain">root</span> 
+  <span class="l-Scalar-Plain">password</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">connectionString</span><span class="p-Indicator">:</span>       <span class="c1"># alternative to setting server, database, user and password separately</span>
 
-monitor:
-  name:                   origin
-  apiUrl:                 'http://localhost:8082/api'
-  pollingInterval:        10000      # ten seconds
-  timeout:                5000       # five seconds
+<span class="l-Scalar-Plain">monitor</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span>                   <span class="l-Scalar-Plain">origin</span>
+  <span class="l-Scalar-Plain">apiUrl</span><span class="p-Indicator">:</span>                 <span class="s">'http://localhost:8082/api'</span>
+  <span class="l-Scalar-Plain">pollingInterval</span><span class="p-Indicator">:</span>        <span class="l-Scalar-Plain">10000</span>      <span class="c1"># ten seconds</span>
+  <span class="l-Scalar-Plain">timeout</span><span class="p-Indicator">:</span>                <span class="l-Scalar-Plain">5000</span>       <span class="c1"># five seconds</span>
+  <span class="l-Scalar-Plain">userAgent</span><span class="p-Indicator">:</span>              <span class="l-Scalar-Plain">NodeUptime/1.3 (https://github.com/fzaninotto/uptime)</span>
 
-analyzer:
-  updateInterval:         60000      # one minute
-  qosAggregationInterval: 600000     # ten minutes
-  pingHistory:            8035200000 # three months
+<span class="l-Scalar-Plain">analyzer</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">updateInterval</span><span class="p-Indicator">:</span>         <span class="l-Scalar-Plain">60000</span>      <span class="c1"># one minute</span>
+  <span class="l-Scalar-Plain">qosAggregationInterval</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">600000</span>     <span class="c1"># ten minutes</span>
+  <span class="l-Scalar-Plain">pingHistory</span><span class="p-Indicator">:</span>            <span class="l-Scalar-Plain">8035200000</span> <span class="c1"># three months</span>
 
-autoStartMonitor: true
+<span class="l-Scalar-Plain">autoStartMonitor</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">true</span>
 
-server:
-  port:     8082
-</code></pre>
+<span class="l-Scalar-Plain">server</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">port</span><span class="p-Indicator">:</span>     <span class="l-Scalar-Plain">8082</span>
+</pre></div>
 
 <p>To modify this configuration, create a <code>development.yaml</code> or a <code>production.yaml</code> file in the same directory, and override just the settings you need. For instance, to run Uptime on port 80 in production, create a <code>production.yaml</code> file as follows:</p>
 
-<pre><code>server:
-  port:     80
-</code></pre>
+<div class="highlight"><pre><span class="l-Scalar-Plain">server</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">port</span><span class="p-Indicator">:</span>     <span class="l-Scalar-Plain">80</span>
+</pre></div>
 
 <p>Node that Uptime works great behind a proxy - it uses the http_proxy environment variable transparently.</p>
 
-<h2>Running The Monitor In a Separate Process</h2>
+<h2>Monitoring From Various Locations</h2>
 
 <p>Heavily browsing the web dashboard may slow down the server - including the polling monitor. In other terms, using the application can influence the uptime measurements. To avoid this effect, it is recommended to run the polling monitor in a separate process.</p>
 
@@ -120,11 +143,11 @@ server:
 
 <p>To enable plugins, create a <code>plugins/index.js</code> module. This module must offer a public <code>init()</code> method, where you will require and initialize plugin modules. For instance, to enable only the <code>console</code> plugin:</p>
 
-<pre><code>// in plugins/index.js
-exports.init = function() {
-  require('./console').init();
-}
-</code></pre>
+<div class="highlight"><pre><span class="c1">// in plugins/index.js</span>
+<span class="nx">exports</span><span class="p">.</span><span class="nx">init</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">require</span><span class="p">(</span><span class="s1">'./console'</span><span class="p">).</span><span class="nx">init</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
 
 <p>Currently supported plugins:</p>
 
@@ -133,18 +156,18 @@ exports.init = function() {
 <code>console</code>: log pings and events in the console in real time</li>
 </ul><p>You can add your own plugins under the <code>plugins</code> directory. A plugin is simply a module with a public <code>init()</code> method. For instance, if you had to recreate a simple version of the <code>console</code> plugin, you could write it as follows:</p>
 
-<pre><code>// in plugins/console/index.js
-var CheckEvent = require('../../models/checkEvent');
-exports.init = function() {
-  CheckEvent.on('postInsert', function(checkEvent) {
-    checkEvent.findCheck(function(err, check) {
-      console.log(new Date() + check.name + checkEvent.isGoDown ? ' goes down' : ' goes back up');
-    });
-  });
-}
-</code></pre>
+<div class="highlight"><pre><span class="c1">// in plugins/console/index.js</span>
+<span class="kd">var</span> <span class="nx">CheckEvent</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'../../models/checkEvent'</span><span class="p">);</span>
+<span class="nx">exports</span><span class="p">.</span><span class="nx">init</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">CheckEvent</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'afterInsert'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">checkEvent</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">checkEvent</span><span class="p">.</span><span class="nx">findCheck</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">check</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">new</span> <span class="nb">Date</span><span class="p">()</span> <span class="o">+</span> <span class="nx">check</span><span class="p">.</span><span class="nx">name</span> <span class="o">+</span> <span class="nx">checkEvent</span><span class="p">.</span><span class="nx">isGoDown</span> <span class="o">?</span> <span class="s1">' goes down'</span> <span class="o">:</span> <span class="s1">' goes back up'</span><span class="p">);</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+</pre></div>
 
-<p>All Uptime entities emit lifecycle events that you can listen to on the Model class. These events are <code>preInsert</code>, <code>postInsert</code>, <code>preUpdate</code>, <code>postUpdate</code>, <code>preSave</code> (called for both inserts and updates), <code>postSave</code> (called for both inserts and updates), <code>preRemove</code>, and <code>postRemove</code>.</p>
+<p>All Uptime entities emit lifecycle events that you can listen to on the Model class. These events are <code>beforeInsert</code>, <code>afterInsert</code>, <code>beforeUpdate</code>, <code>afterUpdate</code>, <code>beforeSave</code> (called for both inserts and updates), <code>afterSave</code> (called for both inserts and updates), <code>beforeRemove</code>, and <code>afterRemove</code>. For more information about these events, check the <a href="https://github.com/fzaninotto/mongoose-lifecycle">mongoose-lifecycle</a> plugin.</p>
 
 <h2>License</h2>
 
@@ -164,7 +187,9 @@ exports.init = function() {
 <li>
 <a href="http://twitter.github.com/bootstrap/">TwitterBootstrap</a>, licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License v2.0</a>,</li>
 <li>
-<a href="http://shop.highsoft.com/highcharts.html">Highcharts.js</a>, free for non-commercial use under the <a href="http://creativecommons.org/licenses/by-nc/3.0/">Creative Commons Attribution-NonCommercial 3.0 License</a>.</li>
+<a href="http://www.humblesoftware.com/flotr2/">Flotr2</a>, licensed under the <a href="https://github.com/HumbleSoftware/Flotr2/blob/master/LICENSE">MIT License</a>.</li>
+<li>
+<a href="http://www.alexpeattie.com/projects/justvector_icons/">Favicon</a>, distributed under the <a href="http://artlibre.org/licence/lal/en">Free Art License</a>.</li>
 </ul><p>If you like the software, please help improving it by contributing PRs on the <a href="https://github.com/fzaninotto/uptime">GitHub project</a>!</p>
 
 <h2>TODO</h2>
