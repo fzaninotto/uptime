@@ -57,7 +57,7 @@ var createFixturePings = function(callback) {
           );
           nbPings++;
           if (nbPings % 288 == 0) {
-            console.log(ping.timestamp + ' Created pings for check "' + check.name + '"');
+            console.log(new Date(date) + ' Created pings for check "' + check.name + '"');
           };
         },
         callme

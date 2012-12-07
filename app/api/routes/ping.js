@@ -49,6 +49,7 @@ module.exports = function(app) {
     .find({ timestamp: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } })
     .sort({ timestamp: -1 })
     .select({ tags: 0 })
+    .limit(100)
     .exec(function(err, events) {
       if (err) return next(err);
       CheckEvent.aggregateEventsByDay(events, function(err, aggregatedEvents) {

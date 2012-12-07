@@ -1,0 +1,87 @@
+<div class="stat" style="display:none">
+  <h2>Data</h2>
+  <table class="table stat" style="display:none">
+    <thead>
+      <tr>
+        <th class="date">Date</th>
+        <th title="Percentage of uptime">Availability</th>
+        <th title="Total downtime">Downtime</th>
+        <th title="Percentage of all pings below slow threshold">Responsiveness</th>
+        <th title="Average response time of all pings">Response time</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+<div class="ping" style="display:none">
+  <h2>Data - Pings</h2>
+  <table class="table ping" style="display:none">
+    <thead>
+      <tr><th>Date</th><th>Status</th><th>Response time</th><th>Error</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+<script id="stat_template" type="text/template">
+<tr class="{{= (stat.availability < 100) ? 'red' : (stat.responsiveness < 100) ? 'orange' : '' }}{{= ['0','6'].indexOf(moment(stat.timestamp).format('d')) !== -1 ? ' week-end' : '' }}">
+  <td title="{{= new Date(stat.timestamp) }}"><a href="#" class="date" data-type="{{= subType }}" data-date="{{= stat.timestamp }}">{{= moment(stat.timestamp).format(dateFormat) }}</a></td>
+  <td>{{= stat.availability.replace('.000', '') }}%</td>
+  <td title="{{= stat.downtime }}s">{{= stat.downtime == 0 ? '' : stat.downtime < 300 ? stat.downtime + 's' : moment.duration(stat.downtime, 'seconds').humanize() }}</td>
+  <td>{{= stat.responsiveness.replace('.000', '') }}%</td>
+  <td>{{= stat.responseTime }}ms</td>
+</tr>
+</script>
+<script id="ping_template" type="text/template">
+<tr class="{{= !ping.isUp ? 'red' : !ping.isResponsive ? 'orange' : '' }}">
+  <td title="{{= new Date(ping.timestamp) }}">{{= moment(ping.timestamp).format('LLLL') }}</td>
+  <td>
+    <span class="label {{= (ping.isUp ? 'label-success' : 'label-important') }}">{{= (ping.isUp ? 'Up' : 'Down') }}</span>
+    {{ if (ping.isUp && !ping.isResponsive) { }}<span class="label label-warning">Slow</span>{{ } }}
+  </td>
+  <td>{{= parseInt(ping.time) }}ms</td>
+  <td>{{= ping.error || '' }}</td>
+</tr>
+</script>
+<script>
+$(document).ready(function() {
+  var stat_template = document.getElementById('stat_template').innerHTML;
+  var ping_template = document.getElementById('ping_template').innerHTML;
+  var updateStats = function() {
+    var dateFormats = {
+      'day': 'LLLL',
+      'month': 'dddd, LL',
+      'year': 'MMMM YYYY'
+    }
+    var type = dateInterval.type;
+    var subType = dateInterval.subType(type);
+    var date = dateInterval.momentForDate;
+    var begin = dateInterval.begin;
+    var end = dateInterval.end;
+    var stats = dateInterval.stats;
+    var lines = [];
+    if (type == 'hour') {
+      // display pings
+      $.each(stats, function(key, stat) {
+        lines.unshift(ejs.render(ping_template, { ping: stat }));
+      });
+      $('#data .stat').hide();
+      $('#data .ping tbody').html(lines.join(''));
+      $('#data .ping').show();
+    } else {
+      // display aggregated stats
+      $.each(stats, function(key, stat) {
+        lines.unshift(ejs.render(stat_template, { stat: stat, dateFormat: dateFormats[type], subType: subType }));
+      });
+      $('#data .ping').hide();
+      $('#data .stat tbody').html(lines.join(''));
+      $('#data .stat').show();
+    }
+  }
+  dateInterval.on('refresh-stats', updateStats);
+  $('.stat table').on('click', 'a.date', function(event) {
+    var data = $(this).data();
+    dateInterval.update(data.type, parseInt(data.date));
+    return false;
+  });
+});
+</script>

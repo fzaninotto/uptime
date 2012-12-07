@@ -1,0 +1,39 @@
+<script src="<%= route %>/javascripts/checkState.js"></script>
+<div style="float: right;">
+  <span id="check_24h"></span>
+</div>
+<h1>Edit check "<%= check.name %>"</h1>
+<% if (info.length) { %>
+<div class="alert alert-success"><%= info %></div>
+<% } %>
+<%- partial('_check_details', { check: check, route: route }) %>
+<div>
+</div>
+<script>
+jQuery(document).ready(function($) {
+  // highlight current section in main nav
+  $('.navbar-inner li').eq(1).addClass('active');
+
+  // update check state live
+  updateCheckState(<%- JSON.stringify(check) %>);
+  socket.on('CheckEvent', function() {
+    $.getJSON('/api/checks/<%= check._id %>', updateCheckState);
+  });
+  
+  // manage pause
+  $('button[name="pause"]').click(function(e) {
+    var button = $(this).children();
+    $.getJSON('/api/checks/<%= check._id %>/pause', function() {
+      if(button.hasClass('icon-pause')) {
+        button.removeClass('icon-pause');
+        button.addClass('icon-play');
+      } else {
+        button.removeClass('icon-play');
+        button.addClass('icon-pause');
+      }
+    });
+    e.preventDefault();
+  });
+
+});
+</script>

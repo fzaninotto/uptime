@@ -1,9 +1,21 @@
 Uptime Changelog
 ================
 
-To be released
---------------
+2012-12-07, v3.0
+----------------
 
+* Uptime bars
+* Exact availability calculation
+* New stats page and date navigation
+* Replaced Highcharts by Flotr2 for charts. No more licence problem!
+* Upgraded to Twitter Bootstrap V2
+* Many tweaks in the GUI
+* Heavy refactoring
+
+2012-12-07, v2.0
+----------------
+
+* Moved Mongo initialization to a dedicated bootstrap file
 * Added support for setting the full MongoDB connection string in the config file
 * Fixed engine requirement in package.json
 * Updated Node poller user agent version
