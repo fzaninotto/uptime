@@ -1,12 +1,12 @@
 {
   "name":    "node-uptime",
   "description": "Remote monitoring for HTTP applications",
-  "version": "2.0.0rc0",
+  "version": "3.0.0",
   "author": "Francois Zaninotto",
   "dependencies": {
     "mongoose":  "3.2.2",
     "mongoose-lifecycle": "1.0.0",
-    "express":   "3.0.0rc3",
+    "express":   "3.0.0",
     "express-partials": "0.0.6",
     "connect-flash": "0.1.0",
     "ejs":       "0.8.0",
