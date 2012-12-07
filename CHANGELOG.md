@@ -1,9 +1,10 @@
 Uptime Changelog
 ================
 
-To be released
---------------
+2012-12-07, v2.0
+----------------
 
+* Moved Mongo initialization to a dedicated bootstrap file
 * Added support for setting the full MongoDB connection string in the config file
 * Fixed engine requirement in package.json
 * Updated Node poller user agent version

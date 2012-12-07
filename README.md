@@ -7,6 +7,8 @@ A simple remote monitoring utility using Node.js and MongoDB.
 
 You can watch a [demo screencast on Vimeo](https://vimeo.com/39302164).
 
+*Warning*: This version of Uptime, 2.0, is deprecated. Please use the latest version from master branch.
+
 Features
 --------
 
@@ -144,11 +146,3 @@ Uptime uses third-party libraries:
 * [Highcharts.js](http://shop.highsoft.com/highcharts.html), free for non-commercial use under the [Creative Commons Attribution-NonCommercial 3.0 License](http://creativecommons.org/licenses/by-nc/3.0/).
 * [Favicon] (http://www.alexpeattie.com/projects/justvector_icons/), distributed under the Free Art License, and as such can be copied, distributed, transformed and used as you please. If you enjoy the icons, a link back to [Alex Peattie](http://www.alexpeattie.com/projects/justvector_icons/) and [iconify](http://iconify.it) would certainly be appreciated. 
 If you like the software, please help improving it by contributing PRs on the [GitHub project](https://github.com/fzaninotto/uptime)!
-
-TODO
-----
-
-* Allow email alerts in case of non-availability (not sure if this should be part of the lib)
-* Account for scheduled maintenance (and provide two QoS calculations: with and without scheduled maintenance)
-* Allow for JavaScript execution in the monitored resources by using a headless browser (probably zombie.js)
-* Unit tests
