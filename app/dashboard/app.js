@@ -12,6 +12,7 @@ var Tag = require('../../models/tag');
 var TagDailyStat = require('../../models/tagDailyStat');
 var TagMonthlyStat = require('../../models/tagMonthlyStat');
 var CheckMonthlyStat = require('../../models/checkMonthlyStat');
+var moduleInfo = require('../../package.json');
 
 var app = module.exports = express();
 
@@ -51,7 +52,8 @@ app.configure('production', function(){
 });
 
 app.locals({
-  addedCss: []
+  addedCss: [],
+  version: moduleInfo.version
 });
 
 // Routes

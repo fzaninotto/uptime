@@ -1,6 +1,11 @@
 Uptime Changelog
 ================
 
+To be released
+--------------
+
+* Added uptime version in the footer
+
 2012-12-07, v3.0
 ----------------
 
