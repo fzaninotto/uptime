@@ -144,6 +144,11 @@ exports.init = function() {
 
 All Uptime entities emit lifecycle events that you can listen to on the Model class. These events are `beforeInsert`, `afterInsert`, `beforeUpdate`, `afterUpdate`, `beforeSave` (called for both inserts and updates), `afterSave` (called for both inserts and updates), `beforeRemove`, and `afterRemove`. For more information about these events, check the [mongoose-lifecycle](https://github.com/fzaninotto/mongoose-lifecycle) plugin.
 
+Support and Discussion
+----------------------
+
+Join the [node-uptime](https://groups.google.com/d/forum/node-uptime) Google Group to discuss features, bugs and use cases related to Uptime.
+
 License
 -------
 
