@@ -12,10 +12,11 @@ Features
 
 * Monitor thousands of websites (powered by [Node.js asynchronous programming](http://dotheweb.posterous.com/nodejs-for-php-programmers-1-event-driven-pro))
 * Tweak frequency of monitoring on a per-check basis, up to the second
-* Receive instant web alerts on every page when a check goes down (thanks [socket.io](http://socket.io/))
+* Receive on screen notifications whenever a check goes down (powered by [socket.io](http://socket.io/))
+* Receive email notifications whenever a check goes down
 * Record availability statistics for further reporting (powered by [MongoDB](http://www.mongodb.org/))
 * Detailed uptime reports with animated charts (powered by [Flotr2](http://www.humblesoftware.com/flotr2/))
-* Monitor availability, responsiveness, average response time , and total uptime/downtime
+* Monitor availability, responsiveness, average response time, and total uptime/downtime
 * Get details about failed checks (HTTP error code, etc.)
 * Group checks by tags and get reports by tag
 * Familiar web interface (powered by [Twitter Bootstrap 2.0](http://twitter.github.com/bootstrap/index.html))
@@ -127,6 +128,9 @@ exports.init = function() {
 Currently supported plugins:
 
  * `console`: log pings and events in the console in real time
+ * `email`: notify events (up, down pause) by email
+
+You can customize plugins using the YAML configuration.
 
 You can add your own plugins under the `plugins` directory. A plugin is simply a module with a public `init()` method. For instance, if you had to recreate a simple version of the `console` plugin, you could write it as follows:
 
@@ -169,7 +173,6 @@ If you like the software, please help improving it by contributing PRs on the [G
 TODO
 ----
 
-* Allow email alerts in case of non-availability (not sure if this should be part of the lib)
 * Account for scheduled maintenance (and provide two QoS calculations: with and without scheduled maintenance)
 * Allow for JavaScript execution in the monitored resources by using a headless browser (probably zombie.js)
 * Unit tests

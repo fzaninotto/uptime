@@ -14,7 +14,8 @@
     "async":     "0.1.22",
     "socket.io": "0.9.10",
     "semver":    "1.1.0",
-    "moment":    "1.7.2"
+    "moment":    "1.7.2",
+    "nodemailer": "0.3.35"
   },
   "devDependencies": {
     "should": "1.1.0"

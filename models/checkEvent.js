@@ -5,7 +5,7 @@ var CheckEvent = new Schema({
   timestamp   : { type: Date, default: Date.now },
   check       : { type: Schema.ObjectId, ref: 'Check' },
   tags        : [String],
-  message     : String,
+  message     : String, // possible values are 'down', 'up', 'paused', 'restarted'
   details     : String,
   // for error events, more details need to be persisted
   downtime    : Number

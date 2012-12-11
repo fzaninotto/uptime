@@ -1,3 +1,14 @@
+/**
+ * Console plugin
+ *
+ * Logs all pings and events (up, down, paused, restarted) on the console
+ *
+ * To enable the plugin, call init() from plugins/index.js
+ *   exports.init = function() {
+ *     require('./console').init();
+ *   }
+ * 
+ */
 var Ping = require('../../models/ping');
 var CheckEvent = require('../../models/checkEvent');
 
