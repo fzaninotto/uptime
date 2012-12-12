@@ -36,6 +36,5 @@
     "scripts": {
         "test": "node_modules/.bin/mocha test/lib/",
         "start": "node app.js"
-    },
-    "subdomain": "uptime"
+    }
 }
