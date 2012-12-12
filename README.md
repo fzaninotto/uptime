@@ -5,7 +5,7 @@ A remote monitoring application using Node.js, MongoDB, and Twitter Bootstrap.
 
 <img src="https://raw.github.com/fzaninotto/uptime/downloads/check_details.png" title="Uptime screenshot" />
 
-You can watch a [demo screencast on Vimeo](https://vimeo.com/39302164).
+You can watch a [demo screencast on Vimeo](https://vimeo.com/39302164) or try the [live demo](http://uptime.jit.su).
 
 Features
 --------
@@ -39,7 +39,7 @@ Alternatively, clone the repository from GitHub and install dependencies using n
 
 Lastly, start the application with:
 
-    > node app.js
+    > npm start --production
 
 Upgrading From a 2.0 Install
 ----------------------------

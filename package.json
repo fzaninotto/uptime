@@ -1,30 +1,41 @@
 {
-  "name":    "node-uptime",
-  "description": "Remote monitoring for HTTP applications",
-  "version": "3.0.0",
-  "author": "Francois Zaninotto",
-  "dependencies": {
-    "mongoose":  "3.2.2",
-    "mongoose-lifecycle": "1.0.0",
-    "express":   "3.0.0",
-    "express-partials": "0.0.6",
-    "connect-flash": "0.1.0",
-    "ejs":       "0.8.0",
-    "config":    "0.4.15",
-    "async":     "0.1.22",
-    "socket.io": "0.9.10",
-    "semver":    "1.1.0",
-    "moment":    "1.7.2",
-    "nodemailer": "0.3.35"
-  },
-  "devDependencies": {
-    "should": "1.1.0"
-  },
-  "keywords": ["uptime", "monitoring", "api", "check"],
-  "repository": "https://github.com/fzaninotto/uptime",
-  "license": "MIT",
-  "engines": {
-    "node": "0.8.x",
-    "npm": "1.1.x"
-  }
+    "name": "node-uptime",
+    "description": "Remote monitoring for HTTP applications",
+    "version": "3.0.0",
+    "author": "François Zaninotto",
+    "dependencies": {
+        "mongoose": "3.2.2",
+        "mongoose-lifecycle": "1.0.0",
+        "express": "3.0.0",
+        "express-partials": "0.0.6",
+        "connect-flash": "0.1.0",
+        "ejs": "0.8.0",
+        "config": "0.4.15",
+        "async": "0.1.22",
+        "socket.io": "0.9.10",
+        "semver": "1.1.0",
+        "moment": "1.7.2",
+        "nodemailer": "0.3.35"
+    },
+    "devDependencies": {
+        "mocha": "1.7.x",
+        "should": "1.1.0"
+    },
+    "keywords": [
+        "uptime",
+        "monitoring",
+        "api",
+        "check"
+    ],
+    "repository": "https://github.com/fzaninotto/uptime",
+    "license": "MIT",
+    "engines": {
+        "node": "0.8.x",
+        "npm": "1.1.x"
+    },
+    "scripts": {
+        "test": "node_modules/.bin/mocha test/lib/",
+        "start": "node app.js"
+    },
+    "subdomain": "uptime"
 }
