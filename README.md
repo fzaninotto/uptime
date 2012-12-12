@@ -39,7 +39,7 @@ Alternatively, clone the repository from GitHub and install dependencies using n
 
 Lastly, start the application with:
 
-    > npm start --production
+    > node app.js
 
 Upgrading From a 2.0 Install
 ----------------------------
