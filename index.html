@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Uptime, a free remote monitoring application using Node.js, MongoDB, and Twitter Bootstrap</title>
+    <title>Uptime by fzaninotto</title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
@@ -32,7 +32,7 @@
 
 <p>A remote monitoring application using Node.js, MongoDB, and Twitter Bootstrap.</p>
 
-<p><img src="https://github.com/downloads/fzaninotto/uptime/check_details.png" title="Uptime screenshot"></p>
+<p><img src="https://raw.github.com/fzaninotto/uptime/downloads/check_details.png" title="Uptime screenshot"></p>
 
 <p>You can watch a <a href="https://vimeo.com/39302164">demo screencast on Vimeo</a>.</p>
 
@@ -41,10 +41,11 @@
 <ul>
 <li>Monitor thousands of websites (powered by <a href="http://dotheweb.posterous.com/nodejs-for-php-programmers-1-event-driven-pro">Node.js asynchronous programming</a>)</li>
 <li>Tweak frequency of monitoring on a per-check basis, up to the second</li>
-<li>Receive instant web alerts on every page when a check goes down (thanks <a href="http://socket.io/">socket.io</a>)</li>
+<li>Receive on screen notifications whenever a check goes down (powered by <a href="http://socket.io/">socket.io</a>)</li>
+<li>Receive email notifications whenever a check goes down</li>
 <li>Record availability statistics for further reporting (powered by <a href="http://www.mongodb.org/">MongoDB</a>)</li>
 <li>Detailed uptime reports with animated charts (powered by <a href="http://www.humblesoftware.com/flotr2/">Flotr2</a>)</li>
-<li>Monitor availability, responsiveness, average response time , and total uptime/downtime</li>
+<li>Monitor availability, responsiveness, average response time, and total uptime/downtime</li>
 <li>Get details about failed checks (HTTP error code, etc.)</li>
 <li>Group checks by tags and get reports by tag</li>
 <li>Familiar web interface (powered by <a href="http://twitter.github.com/bootstrap/index.html">Twitter Bootstrap 2.0</a>)</li>
@@ -154,7 +155,11 @@
 <ul>
 <li>
 <code>console</code>: log pings and events in the console in real time</li>
-</ul><p>You can add your own plugins under the <code>plugins</code> directory. A plugin is simply a module with a public <code>init()</code> method. For instance, if you had to recreate a simple version of the <code>console</code> plugin, you could write it as follows:</p>
+<li>
+<code>email</code>: notify events (up, down pause) by email</li>
+</ul><p>You can customize plugins using the YAML configuration.</p>
+
+<p>You can add your own plugins under the <code>plugins</code> directory. A plugin is simply a module with a public <code>init()</code> method. For instance, if you had to recreate a simple version of the <code>console</code> plugin, you could write it as follows:</p>
 
 <div class="highlight"><pre><span class="c1">// in plugins/console/index.js</span>
 <span class="kd">var</span> <span class="nx">CheckEvent</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'../../models/checkEvent'</span><span class="p">);</span>
@@ -168,6 +173,10 @@
 </pre></div>
 
 <p>All Uptime entities emit lifecycle events that you can listen to on the Model class. These events are <code>beforeInsert</code>, <code>afterInsert</code>, <code>beforeUpdate</code>, <code>afterUpdate</code>, <code>beforeSave</code> (called for both inserts and updates), <code>afterSave</code> (called for both inserts and updates), <code>beforeRemove</code>, and <code>afterRemove</code>. For more information about these events, check the <a href="https://github.com/fzaninotto/mongoose-lifecycle">mongoose-lifecycle</a> plugin.</p>
+
+<h2>Support and Discussion</h2>
+
+<p>Join the <a href="https://groups.google.com/d/forum/node-uptime">node-uptime</a> Google Group to discuss features, bugs and use cases related to Uptime.</p>
 
 <h2>License</h2>
 
@@ -195,7 +204,6 @@
 <h2>TODO</h2>
 
 <ul>
-<li>Allow email alerts in case of non-availability (not sure if this should be part of the lib)</li>
 <li>Account for scheduled maintenance (and provide two QoS calculations: with and without scheduled maintenance)</li>
 <li>Allow for JavaScript execution in the monitored resources by using a headless browser (probably zombie.js)</li>
 <li>Unit tests</li>
