@@ -18,6 +18,7 @@
     "nodemailer": "0.3.35"
   },
   "devDependencies": {
+    "mocha": "1.7.x",
     "should": "1.1.0"
   },
   "keywords": ["uptime", "monitoring", "api", "check"],
@@ -26,5 +27,9 @@
   "engines": {
     "node": "0.8.x",
     "npm": "1.1.x"
+  },
+  "scripts": {
+    "test": "node_modules/.bin/mocha test/lib/",
+    "start": "node app.js"
   }
 }
