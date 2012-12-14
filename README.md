@@ -35,6 +35,7 @@ One line install:
 Alternatively, clone the repository from GitHub and install dependencies using npm:
 
     > git clone git://github.com/fzaninotto/uptime.git
+    > cd uptime
     > npm install
 
 Lastly, start the application with:
