@@ -73,7 +73,7 @@ app.get('/checks/new', function(req, res) {
   res.render('check_new', { check: new Check(), info: req.flash('info') });
 });
 
-app.post('/checks', function(req, res) {
+app.post('/checks', function(req, res, next) {
   var check = new Check(req.body.check);
   check.name = check.name || check.url;
   check.tags = Check.convertTags(req.body.check.tags);
