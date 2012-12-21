@@ -41,12 +41,23 @@ email:
 
 
 prowl:
-   key:         '36e605fd9717f5b28967ca546593bbe84abb63b1'   
-   event:
-      up:        true
-      down:      true
-      paused:    true
-      restarted: true
-	
-	
+  key:         '36e605fd9717f5b28967ca546593bbe84abb63b1'   
+  event:
+    up:        true
+    down:      true
+    paused:    true
+    restarted: true
+
+
+boxcar:
+  email:                   'alexandre.assouad@gmail.com'
+  key: 'AagXreNW1r8Ib9HQHMnO'
+  secret: 'qSCpuH1ep6wLhU0MLPxbFZWqe0io7ighMKLXTTOO'
+  event:
+    up:        true
+    down:      true
+    paused:    true
+    restarted: true
+
+  	
 verbose: true # only used in dev

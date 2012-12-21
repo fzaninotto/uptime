@@ -16,7 +16,8 @@
     "semver":    "1.1.0",
     "moment":    "1.7.2",
     "nodemailer": "0.3.35",
-    "prowler": "*"
+    "prowler": "*",
+    "boxcar": "*"
   },
   "devDependencies": {
     "mocha": "1.7.x",
