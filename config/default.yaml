@@ -45,19 +45,19 @@ prowl:
   event:
     up:        true
     down:      true
-    paused:    true
-    restarted: true
+    paused:    false
+    restarted: false
 
 
 boxcar:
-  email:                   'alexandre.assouad@gmail.com'
+  email: 'alexandre.assouad@gmail.com'
   key: 'AagXreNW1r8Ib9HQHMnO'
   secret: 'qSCpuH1ep6wLhU0MLPxbFZWqe0io7ighMKLXTTOO'
   event:
     up:        true
     down:      true
-    paused:    true
-    restarted: true
+    paused:    false
+    restarted: false
 
   	
 verbose: true # only used in dev
