@@ -26,13 +26,9 @@ Features
 Installing Uptime
 -----------------
 
-Uptime 3.0 requires Node.js 0.8 (if you're stuck with Node 0.6, try Uptime v1.4, available as a tag and on npm).
+Uptime 3.0 requires Node.js 0.8 (if you're stuck with Node 0.6, try Uptime v1.4, available as a tag and on npm) and MongoDB 2.1.
 
-One line install:
-
-    > npm install node-uptime
-
-Alternatively, clone the repository from GitHub and install dependencies using npm:
+To install from GitHub, clone the repository and install dependencies using `npm`:
 
     > git clone git://github.com/fzaninotto/uptime.git
     > cd uptime
