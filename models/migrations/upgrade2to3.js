@@ -43,7 +43,7 @@ var migrateCheckStats = function(name, callback) {
     }
     callback();
   });
-}
+};
 
 var addEndToMonthlyStat = function(name, callback) {
   var nbMigratedDocuments = 0;
@@ -72,7 +72,7 @@ var addEndToMonthlyStat = function(name, callback) {
     }
     callback();
   });
-}
+};
 
 var getOldestDate = function(callback) {
   CheckHourlyStat
@@ -81,7 +81,7 @@ var getOldestDate = function(callback) {
   .findOne(function(err, stat) {
     return callback(err, stat ? stat.timestamp.valueOf() : null);
   });
-}
+};
 
 var updateMonthlyQos = function(start, callback) {
   var date = Date.now() + 28 * 24 * 60 * 60 * 1000;
@@ -96,7 +96,7 @@ var updateMonthlyQos = function(start, callback) {
     },
     callback
   );
-}
+};
 
 var updateYearlyQos = function(start, callback) {
   var date = Date.now() + 365 * 24 * 60 * 60 * 1000;
@@ -111,12 +111,12 @@ var updateYearlyQos = function(start, callback) {
     },
     callback
   );
-}
+};
 
 var ensureTagsHaveFirstTestedDate = function(callback) {
   console.log('Updating tags for firstTested date');
   Tag.ensureTagsHaveFirstTestedDate(callback);
-}
+};
 
 mongoose.connection.on('open', function(err) {
   if (err) return console.error(err);
