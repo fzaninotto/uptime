@@ -47,7 +47,7 @@ Tag.methods.removeStats = function(callback) {
 Tag.methods.getChecks = function(callback) {
   var Check   = require('./check');
   Check.find({ tags: this.name }, callback);
-}
+};
 
 Tag.methods.getFirstTested = function(callback) {
   var firstTested = Infinity;
@@ -58,7 +58,7 @@ Tag.methods.getFirstTested = function(callback) {
     });
     callback(err, firstTested);
   });
-}
+};
 
 var statProvider = {
   'day':   { model: 'TagHourlyStat', duration: 60 * 60 * 1000 },
@@ -86,7 +86,7 @@ Tag.methods.getStatsForPeriod = function(period, begin, end, callback) {
   }).on('close', function() {
     callback(null, stats);
   });
-}
+};
 
 var singleStatsProvider = {
   'hour':  'TagHourlyStat',
@@ -113,7 +113,7 @@ Tag.methods.getSingleStatsForPeriod = function(period, date, callback) {
       end: end.valueOf()
     })
   });
-}
+};
 
 var checkProvider = {
   'hour':  { model: 'CheckHourlyStat', duration: 60 * 60 * 1000 },
@@ -161,7 +161,7 @@ Tag.methods.getChecksForPeriod = function(period, date, callback) {
       callback(null, orderedStats);
     });
   });
-}
+};
 
 Tag.statics.ensureTagsHaveFirstTestedDate = function(callback) {
   this.find({ firstTested: { $exists: false }}, function(err, tags) {
@@ -174,7 +174,7 @@ Tag.statics.ensureTagsHaveFirstTestedDate = function(callback) {
       });
     }, callback);
   });
-}
+};
 
 Tag.statics.removeOrphanTags = function(callback) {
   var Check = require('./check');
@@ -188,6 +188,6 @@ Tag.statics.removeOrphanTags = function(callback) {
       }, callback);
     });
   });
-}
+};
 
 module.exports = mongoose.model('Tag', Tag);
