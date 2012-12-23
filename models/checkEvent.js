@@ -15,7 +15,7 @@ CheckEvent.plugin(require('mongoose-lifecycle'));
 
 CheckEvent.methods.findCheck = function(callback) {
   return this.db.model('Check').findById(this.check, callback);
-}
+};
 
 CheckEvent.statics.aggregateEventsByDay = function(events, callback) {
   // list checks concerned by all events
@@ -56,11 +56,11 @@ CheckEvent.statics.aggregateEventsByDay = function(events, callback) {
     });
     callback(null, aggregatedEvents);
   });
-}
+};
 
 CheckEvent.statics.cleanup = function(maxAge, callback) {
   oldestDateToKeep = new Date(Date.now() - (maxAge ||  3 * 31 * 24 * 60 * 60 * 1000));
   this.find({ timestamp: { $lt: oldestDateToKeep } }).remove(callback);
-}
+};
 
 module.exports = mongoose.model('CheckEvent', CheckEvent);
