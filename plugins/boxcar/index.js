@@ -21,13 +21,18 @@
  */
  
 
-var boxcar = require('boxcar');
 var moment     = require('moment');
 var config     = require('config').boxcar;
 var CheckEvent = require('../../models/checkEvent');
 
- 
+var boxcar = require('boxcar');
+var provider = new boxcar.Provider(config.key, config.secret);
+
 exports.init = function() {
+
+    //Should automatically subscribe user to notifications (the user has to register first to boxcar)
+    provider.subscribe(config.email);
+
 
   	CheckEvent.on('afterInsert', function(checkEvent) {
     	if (!config.event[checkEvent.message]) return;
@@ -37,16 +42,8 @@ exports.init = function() {
       		if (err) return console.error(err);
 
       		var text = check.name + ' has been ' + checkEvent.message;
-      		
-      		//+ 'failed with this error : '+checkEvent.details
-      		//console.log("boxcar : " + text);
-      		//console.log(config.email + ',' + config.password);
-      		
-      		var boxcar = require('boxcar');
-			var provider = new boxcar.Provider(config.key, config.secret);
-			
-			
-			//send a message to a user directly
+
+            // TODO: boxcar lib looks old
 			provider.notify(config.email, text);
 
     	});
