@@ -69,10 +69,10 @@ mongodb:
 
 monitor:
   name:                   origin
-  apiUrl:                 'http://localhost:8082/api'
+  apiUrl:                 'http://localhost:8082/api' # must be accessible without a proxy
   pollingInterval:        10000      # ten seconds
   timeout:                5000       # five seconds
-  userAgent:              NodeUptime/1.3 (https://github.com/fzaninotto/uptime)
+  userAgent:              NodeUptime/2.0 (https://github.com/fzaninotto/uptime)
 
 analyzer:
   updateInterval:         60000      # one minute

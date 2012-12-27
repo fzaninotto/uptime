@@ -19,7 +19,7 @@ Ping.plugin(require('mongoose-lifecycle'));
 
 Ping.methods.findCheck = function(callback) {
   return this.db.model('Check').findById(this.check, callback);
-}
+};
 
 Ping.statics.createForCheck = function(status, timestamp, time, check, monitorName, error, callback) {
   timestamp = constructor == Date ? timestamp : new Date(parseInt(timestamp));
@@ -47,11 +47,11 @@ Ping.statics.createForCheck = function(status, timestamp, time, check, monitorNa
       callback(null, ping);
     })
   });
-}
+};
 
 Ping.statics.cleanup = function(maxAge, callback) {
   oldestDateToKeep = new Date(Date.now() - (maxAge ||  3 * 31 * 24 * 60 * 60 * 1000));
   this.find({ timestamp: { $lt: new Date(oldestDateToKeep) } }).remove(callback);
-}
+};
 
 module.exports = mongoose.model('Ping', Ping);

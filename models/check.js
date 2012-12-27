@@ -43,7 +43,7 @@ Check.methods.removePings = function(callback) {
 
 Check.methods.removeEvents = function(callback) {
   CheckEvent.remove({ check: this._id }, callback);
-}
+};
 
 Check.methods.removeStats = function(callback) {
   var self = this;
@@ -60,7 +60,7 @@ Check.methods.needsPoll = function() {
   if (!this.firstTested) return true;
   var delay = (this.lastTested.getTime() - this.firstTested.getTime()) % this.interval;
   return (Date.now() - this.lastTested.getTime() + delay) >= (this.interval || 60000);
-}
+};
 
 Check.methods.togglePause = function() {
   this.isPaused = !this.isPaused;
@@ -69,7 +69,7 @@ Check.methods.togglePause = function() {
     this.isUp = undefined;
   }
   this.lastChanged = new Date();
-}
+};
 
 Check.methods.setLastTest = function(status, time, error) {
   var now = time ? new Date(time) : new Date();
@@ -102,12 +102,12 @@ Check.methods.setLastTest = function(status, time, error) {
     this.downtime = durationSinceLastChange;
   }
   return this;
-}
+};
 
 Check.methods.getQosPercentage = function() {
   if (!this.qos) return false;
   return (this.qos.ups / this.qos.count) * 100;
-}
+};
 
 Check.methods.updateUptime = function(callback) {
   var self = this;
@@ -182,7 +182,7 @@ Check.methods.updateUptime = function(callback) {
       });
     }
   });
-}
+};
 
 Check.methods.updateQos = function(callback) {
   var check = this;
@@ -192,7 +192,7 @@ Check.methods.updateQos = function(callback) {
     check.markModified('qos');
     check.save(callback);
   });
-}
+};
 
 var statProvider = {
   'hour':  { model: 'Ping', beginMethod: 'resetHour', endMethod: 'completeHour' },
@@ -227,7 +227,7 @@ Check.methods.getStatsForPeriod = function(period, begin, end, callback) {
   }).on('close', function() {
     callback(null, stats);
   });
-}
+};
 
 var singleStatsProvider = {
   'hour':  'CheckHourlyStat',
@@ -254,7 +254,7 @@ Check.methods.getSingleStatForPeriod = function(period, date, callback) {
       end: end.valueOf()
     })
   });
-}
+};
 
 Check.statics.getAllTags = function(callback) {
   this.aggregate(
@@ -266,11 +266,11 @@ Check.statics.getAllTags = function(callback) {
     if (err || !res.length) return callback(err, []);
     return callback(null, res[0].tags);
   });
-}
+};
 
 Check.statics.findForTag = function(tag, callback) {
   return this.find().where('tags').equals(tag).exec(callback);
-}
+};
 
 Check.statics.convertTags = function(tags) {
   if (typeof(tags) === 'string') {
@@ -281,7 +281,7 @@ Check.statics.convertTags = function(tags) {
     }
   }
   return tags;
-}
+};
 
 Check.statics.guessType = function(url) {
   if (url.search(/^http:\/\//) != -1) {
@@ -293,7 +293,7 @@ Check.statics.guessType = function(url) {
   if (url.search(/^udp:\/\//) != -1) {
     return 'udp';
   }
-}
+};
 
 /**
  * Calls a function for all checks that need to be polled.
@@ -308,17 +308,17 @@ Check.statics.callForChecksNeedingPoll = function(callback) {
   stream.on('data', function(check) {
     callback(check);
   });
-}
+};
 
 Check.statics.needingPoll = function() {
   return this.$where(Check.methods.needsPoll);
-}
+};
 
 Check.statics.updateAllQos = function(callback) {
   this.find({}).each(function (err, check) {
     if(err || !check) return;
     check.updateQos(callback);
   });
-}
+};
 
 module.exports = mongoose.model('Check', Check);
