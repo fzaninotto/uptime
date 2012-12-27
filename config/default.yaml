@@ -39,25 +39,4 @@ email:
     to:              # The message recipient, e.g. 'bar@blurdybloop.com, baz@blurdybloop.com'
   dashboardUrl: 'http://localhost:8082'
 
-
-prowl:
-  key:         '36e605fd9717f5b28967ca546593bbe84abb63b1'   
-  event:
-    up:        true
-    down:      true
-    paused:    false
-    restarted: false
-
-
-boxcar:
-  email: 'alexandre.assouad@gmail.com'
-  key: 'AagXreNW1r8Ib9HQHMnO'
-  secret: 'qSCpuH1ep6wLhU0MLPxbFZWqe0io7ighMKLXTTOO'
-  event:
-    up:        true
-    down:      true
-    paused:    false
-    restarted: false
-
-  	
 verbose: true # only used in dev

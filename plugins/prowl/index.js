@@ -25,11 +25,9 @@ var moment     = require('moment');
 var config     = require('config').prowl;
 var CheckEvent = require('../../models/checkEvent');
 
- 
+var prowl = new Prowl.connection(config.key);
+
 exports.init = function() {
-
-	var prowl = new Prowl.connection(config.key);
-
 
   	CheckEvent.on('afterInsert', function(checkEvent) {
     	if (!config.event[checkEvent.message]) return;
@@ -38,17 +36,22 @@ exports.init = function() {
 
       		if (err) return console.error(err);
 
-      		var text = check.name+' check failed with this error : '+checkEvent.details;
-      		
-      		console.log("prowl : " + text);
-      		
-      		prowl.send({
-					'application': check.name,
-					'event': check.name,
-					'description': text
-			});
-				
-		
+      		//var text = check.name+' check failed with this error : '+checkEvent.details;
+            var text = check.name + ' has been ' + checkEvent.message;
+
+      		var prowlOptions = {
+                  'application': check.name,
+                  'event': checkEvent.message,
+                  'description': text,
+                  'priority': 0
+              };
+
+      		prowl.send( prowlOptions, function(err, info) {
+                  if (err) {
+                      return console.error(err);
+                  }
+                  console.log(info);
+            });
     	});
   	});
   	console.log('Enabled prowl plugin');
