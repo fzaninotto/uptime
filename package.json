@@ -17,7 +17,7 @@
     "moment":    "1.7.2",
     "nodemailer": "0.3.35",
     "prowler": "*",
-    "boxcar": "*"
+    "node-boxcar": "0.1.*"
   },
   "devDependencies": {
     "mocha": "1.7.x",

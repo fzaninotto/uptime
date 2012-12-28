@@ -25,13 +25,25 @@ var moment     = require('moment');
 var config     = require('config').boxcar;
 var CheckEvent = require('../../models/checkEvent');
 
-var boxcar = require('boxcar');
-var provider = new boxcar.Provider(config.key, config.secret);
+var Boxcar = require('node-boxcar');
+var provider = new Boxcar.provider(config.key, config.secret);
+
+
+
+
+
+
 
 exports.init = function() {
 
     //Should automatically subscribe user to notifications (the user has to register first to boxcar)
-    provider.subscribe(config.email);
+    provider.subscribe({
+        'email': config.email
+    }, function(err, info) {
+        if (err) {
+            console.log("the email might be already registered");
+        }
+    });
 
 
   	CheckEvent.on('afterInsert', function(checkEvent) {
@@ -43,8 +55,17 @@ exports.init = function() {
 
       		var text = check.name + ' has been ' + checkEvent.message;
 
-            // TODO: boxcar lib looks old
-			provider.notify(config.email, text);
+            provider.notify({
+                'email': config.email,
+                'message': text,
+                'from_screen_name': check.name,
+                'source_url': config.dashboardUrl
+            }, function(err, info) {
+                if (err) {
+                    throw err;
+                }
+                console.log(info);
+            });
 
     	});
   	});
