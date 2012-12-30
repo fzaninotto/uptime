@@ -1,6 +1,8 @@
 [Up] Check "<%= check.name %>" went back up
 On <%= moment(checkEvent.timestamp).format('LLLL') %>,
+<% if (checkEvent.downtime) { %>
 and after <%= moment.duration(checkEvent.downtime).humanize() %> of downtime,
+<% } %>
 a test on URL "<%= check.url %>" responded correctly.
 
 <% include details %>
