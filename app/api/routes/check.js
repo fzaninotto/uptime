@@ -68,6 +68,13 @@ module.exports = function(app) {
     });
   });
 
+  app.put('/check/:id/test', function (req, res, next) {
+    Check.update({ _id: req.params.id }, { lastTested: new Date() }, function(err, numberAffected) {
+      if (err) return next(err);
+      res.json({ numberAffected: numberAffected });
+    });
+  });
+
   app.get('/checks/:id/stat/:period/:timestamp', loadCheck, function(req, res, next) {
     req.check.getSingleStatForPeriod(req.params.period, new Date(parseInt(req.params.timestamp)), function(err, stat) {
       if (err) return next(err);
