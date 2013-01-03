@@ -4,7 +4,3 @@ plugins/index.js
 node_modules
 npm-debug.log
 *.swp
-
-#exclude osx and phpstorm files
-.DS_Store
-/.idea/*
