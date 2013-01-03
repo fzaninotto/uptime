@@ -48,7 +48,9 @@ exports.init = function() {
         if (err) {
             return console.error("The email might be already registered: " + err);
         }
+        console.info(info);
     });
+
 
   	CheckEvent.on('afterInsert', function(checkEvent) {
     	if (!config.event[checkEvent.message]) return;
@@ -57,7 +59,22 @@ exports.init = function() {
 
       		if (err) return console.error(err);
 
-      		var text = check.name + ' has been ' + checkEvent.message;
+            var text = "";
+
+            switch(checkEvent.message)
+            {
+                case "up":
+                    if(checkEvent.downtime !== undefined)
+                        text = check.name + ' went back up after ' + moment.duration(checkEvent.downtime).humanize() + ' of downtime';
+                    else
+                        text = check.name + ' went back up on ' + moment(checkEvent.timestamp).format('LLLL');
+                    break;
+                case "down":
+                    text = check.name + ' just went down on ' + moment(checkEvent.timestamp).format('LLLL');
+                    break;
+                default:
+                    text = check.name + ' has been ' + checkEvent.message + ' on ' +moment(checkEvent.timestamp).format('LLLL');
+            };
 
             provider.notify({
                 'email': config.email,
@@ -66,12 +83,12 @@ exports.init = function() {
                 'source_url': config.dashboardUrl
             }, function(err, info) {
                 if (err) {
-                    throw err;
+                    return console.error(err);
                 }
-                console.log(info);
+                console.info(info);
             });
 
     	});
   	});
-  	console.log('Enabled boxcar plugin');
+  	console.log('Enabled boxcar plugin ');
 };
