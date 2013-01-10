@@ -62,7 +62,7 @@ require('./routes/ping')(app);
 // route list
 app.get('/', function(req, res) {
   var routes = [];
-  for (verb in app.routes) {
+  for (var verb in app.routes) {
     app.routes[verb].forEach(function(route) {
       routes.push({method: verb.toUpperCase() , path: app.route + route.path});
     });
