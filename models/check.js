@@ -12,6 +12,8 @@ var CheckMonthlyStat = require('../models/checkMonthlyStat');
 var CheckYearlyStat  = require('../models/checkYearlyStat');
 var Tag              = require('../models/tag');
 
+var statusCounter = 0;
+
 // main model
 var Check = new Schema({
   name        : String,
@@ -19,6 +21,7 @@ var Check = new Schema({
   url         : String,
   interval    : { type: Number, default: 60000 }, // interval between two pings
   maxTime     : { type: Number, default: 1500 },  // time under which a ping is considered responsive
+  nbErrors    : { type: Number, default: 1 },  // nb of errors from which to trigger a new CheckEvent
   tags        : [String],
   lastChanged : Date,
   firstTested : Date,
@@ -77,7 +80,20 @@ Check.methods.setLastTest = function(status, time, error) {
     this.firstTested = now;
   }
   this.lastTested = now;
+  
+  // First down check or First up check
   if (this.isUp != status) {
+      
+      statusCounter = 1;
+      
+  // more up checks
+  } else {
+      
+      statusCounter++;
+      
+  }
+  
+  if (statusCounter>2) {
     var event = new CheckEvent({
       timestamp: now,
       check: this,
