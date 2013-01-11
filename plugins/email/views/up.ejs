@@ -1,8 +1,8 @@
-<% if (checkEvent.downtime) { %>
+<% if (checkEvent.downtime) { -%>
 [Up] Check "<%= check.name %>" went back up
 On <%= moment(checkEvent.timestamp).format('LLLL') %>,
 and after <%= moment.duration(checkEvent.downtime).humanize() %> of downtime,
-<% } else { %>
+<% } else { -%>
 [Up] Check "<%= check.name %>" is now up
 On <%= moment(checkEvent.timestamp).format('LLLL') %>,
 <% }%>
