@@ -38,6 +38,15 @@
         </div>
       </div>
       <div class="control-group">
+        <label class="control-label">Threshold Alert</label>
+        <div class="controls">
+          <div class="input-append">
+            <input type="text" name="check[nbErrors]" value="<%= check.nbErrors %>" class="span2" />
+            <span class="add-on">ms</span>
+          </div>
+        </div>
+      </div>
+      <div class="control-group">
         <label class="control-label">Tags</label>
         <div class="controls">
           <textarea name="check[tags]" rows="2"/><%= check.tags.join(', ') %></textarea>
