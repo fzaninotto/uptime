@@ -20,7 +20,7 @@ var Check = new Schema({
   interval    : { type: Number, default: 60000 }, // interval between two pings
   maxTime     : { type: Number, default: 1500 },  // time under which a ping is considered responsive
   nbErrors    : { type: Number, default: 1 },  // nb of errors from which to trigger a new CheckEvent
-  statusCounter : { type: Number, default: 4 },  // nb of errors from which to trigger a new CheckEvent
+  statusCounter : { type: Number, default: 4 },  // count number of errors
   tags        : [String],
   lastChanged : Date,
   firstTested : Date,
