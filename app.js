@@ -17,13 +17,13 @@ var Ping       = require('./models/ping');
 var mongoose   = require('./bootstrap');
 
 // monitor
-
+var m;
 if (config.autoStartMonitor) {
   m = monitor.createMonitor(config.monitor);
   m.start();
 }
 
-a = analyzer.createAnalyzer(config.analyzer);
+var a = analyzer.createAnalyzer(config.analyzer);
 a.start();
 
 // web front
