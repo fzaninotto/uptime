@@ -13,14 +13,14 @@ var emptyStats = function(callback) {
     if (!checks.length) return callback(new Error('No check in database, please use the populate script first'));
     async.forEach(checks, function(check, cb) { check.removeStats(cb); }, callback);
   });
-}
+};
 
 var updateUptime = function(callback) {
   console.log('Updating uptime');
   Check.find({}, function(err, checks) {
     async.forEach(checks, function(check, cb) { check.updateUptime(cb); }, callback);
   });
-}
+};
 
 var updateHourlyQosSinceTheFirstPing = function(callback) {
   Ping
@@ -43,7 +43,7 @@ var updateHourlyQosSinceTheFirstPing = function(callback) {
       callback
     );
   });
-}
+};
 
 var updateDailyQosSinceTheFirstPing = function(callback) {
   Ping
@@ -62,7 +62,7 @@ var updateDailyQosSinceTheFirstPing = function(callback) {
       callback
     );
   });
-}
+};
 
 var updateMonthlyQosSinceTheFirstPing = function(callback) {
   Ping
@@ -83,7 +83,7 @@ var updateMonthlyQosSinceTheFirstPing = function(callback) {
       callback
     );
   });
-}
+};
 
 var updateYearlyQosSinceTheFirstPing = function(callback) {
   Ping
@@ -104,17 +104,17 @@ var updateYearlyQosSinceTheFirstPing = function(callback) {
       callback
     );
   });
-}
+};
 
 var updateLastDayQos = function(callback) {
   console.log('Updating last day Qos for all checks');
   QosAggregator.updateLast24HoursQos(callback);
-}
+};
 
 var ensureTagsHaveFirstTestedDate = function(callback) {
   console.log('Updating tags for firstTested date');
   Tag.ensureTagsHaveFirstTestedDate(callback);
-}
+};
 
 async.series([emptyStats, updateUptime, updateHourlyQosSinceTheFirstPing, updateDailyQosSinceTheFirstPing, updateMonthlyQosSinceTheFirstPing, updateYearlyQosSinceTheFirstPing, updateLastDayQos, ensureTagsHaveFirstTestedDate], function(err) {
   if (err) {

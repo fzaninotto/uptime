@@ -38,7 +38,7 @@ Ping.statics.createForCheck = function(status, timestamp, time, check, monitorNa
   if (!status) {
     ping.downtime = check.interval || 60000;
     ping.error = error;
-  };
+  }
   ping.save(function(err1) {
     if (err1) return callback(err1);
     check.setLastTest(status, timestamp, error);

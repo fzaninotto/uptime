@@ -134,7 +134,7 @@ Tag.methods.getChecksForPeriod = function(period, date, callback) {
     var ids = [];
     res.forEach(function(doc) {
       ids.push(doc._id);
-    })
+    });
     var query = { check: { $in: ids }, timestamp: { $gte: begin, $lte: end } };
     var stream = self.db.model(periodPrefs['model']).find(query).populate('check').stream();
     stream
@@ -157,7 +157,7 @@ Tag.methods.getChecksForPeriod = function(period, date, callback) {
       checkNames.sort();
       checkNames.forEach(function(checkName) {
         orderedStats.push(stats[checkName]);
-      })
+      });
       callback(null, orderedStats);
     });
   });

@@ -62,13 +62,13 @@ module.exports = function(app) {
     Check.findById(req.body.checkId, function(err1, check) {
       if (err1) {
         return res.send(err1.message, 500);
-      };
+      }
       if (!check) {
         return rest.send('Error: No existing check with id ' + req.body.checkId, 403);
-      };
+      }
       if (!check.needsPoll) {
         return res.send('Error: This check was already polled. No ping was created', 403);
-      };
+      }
       var status = req.body.status === 'true';
       Ping.createForCheck(status, req.body.timestamp, req.body.time, check, req.body.name, req.body.error, function(err2, ping) {
         if (err2) {

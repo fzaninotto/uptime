@@ -48,7 +48,7 @@ module.exports = function(app) {
       req.check = check;
       next();
     });
-  }
+  };
 
   app.get('/checks/:id', loadCheck, function(req, res, next) {
     res.json(req.check);

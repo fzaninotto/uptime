@@ -33,7 +33,7 @@ app.configure(function(){
       } else {
         return '';
       }
-    }
+    };
     res.locals.moment = moment;
     next();
   });

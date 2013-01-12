@@ -30,7 +30,7 @@ module.exports = function(app) {
       req.tag = tag;
       next();
     });
-  }
+  };
   
   app.get('/tags/:name', loadTag, function(req, res, next) {
     res.json(req.tag);

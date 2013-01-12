@@ -36,7 +36,7 @@ var refreshUpCount = function(callback) {
     upCount = count;
     callback();
   });
-}
+};
 
 Check.on('afterInsert', function() { upCount = undefined; });
 Check.on('afterRemove', function() { upCount = undefined; });

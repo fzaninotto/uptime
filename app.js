@@ -96,7 +96,7 @@ io.sockets.on('connection', function(socket) {
 fs.exists('./plugins/index.js', function(exists) {
   if (exists) {
     require('./plugins').init(app, io, config, mongoose);
-  };
+  }
 });
 
 var port = process.env.PORT || config.server.port;
