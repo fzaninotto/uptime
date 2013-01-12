@@ -85,7 +85,7 @@ var getOldestDate = function(callback) {
 
 var updateMonthlyQos = function(start, callback) {
   var date = Date.now() + 28 * 24 * 60 * 60 * 1000;
-  nbDates = 0;
+  var nbDates = 0;
   async.whilst(
     function() { date -= 28 * 24 * 60 * 60 * 1000; return date > start; },
     function(cb) {
@@ -100,7 +100,7 @@ var updateMonthlyQos = function(start, callback) {
 
 var updateYearlyQos = function(start, callback) {
   var date = Date.now() + 365 * 24 * 60 * 60 * 1000;
-  nbDates = 0;
+  var nbDates = 0;
   async.whilst(
     function() { date -= 365 * 24 * 60 * 60 * 1000; return date > start; },
     function(cb) {
