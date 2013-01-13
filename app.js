@@ -99,5 +99,6 @@ fs.exists('./plugins/index.js', function(exists) {
   };
 });
 
-server.listen(config.server.port);
-console.log("Express server listening on port %d in %s mode", config.server.port, app.settings.env);
+var port = process.env.PORT || config.server.port;
+server.listen(port);
+console.log("Express server listening on port %d in %s mode", port, app.settings.env);
