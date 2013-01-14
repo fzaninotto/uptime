@@ -38,7 +38,7 @@ Ping.statics.createForCheck = function(status, timestamp, time, check, monitorNa
   if (!status) {
     ping.downtime = check.interval || 60000;
     ping.error = error;
-  };
+  }
   ping.save(function(err1) {
     if (err1) return callback(err1);
     check.setLastTest(status, timestamp, error);
@@ -50,7 +50,7 @@ Ping.statics.createForCheck = function(status, timestamp, time, check, monitorNa
 };
 
 Ping.statics.cleanup = function(maxAge, callback) {
-  oldestDateToKeep = new Date(Date.now() - (maxAge ||  3 * 31 * 24 * 60 * 60 * 1000));
+  var oldestDateToKeep = new Date(Date.now() - (maxAge ||  3 * 31 * 24 * 60 * 60 * 1000));
   this.find({ timestamp: { $lt: new Date(oldestDateToKeep) } }).remove(callback);
 };
 

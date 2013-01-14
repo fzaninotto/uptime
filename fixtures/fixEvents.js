@@ -30,4 +30,4 @@ Event.find({ message: { $exists: false }}).each(function(err, event) {
   if (!event) process.exit();
   event.message = event.isGoDown ? 'down' : 'up';
   event.save();
-})
+});

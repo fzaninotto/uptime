@@ -17,13 +17,13 @@ var Ping       = require('./models/ping');
 var mongoose   = require('./bootstrap');
 
 // monitor
-
+var m;
 if (config.autoStartMonitor) {
   m = monitor.createMonitor(config.monitor);
   m.start();
 }
 
-a = analyzer.createAnalyzer(config.analyzer);
+var a = analyzer.createAnalyzer(config.analyzer);
 a.start();
 
 // web front
@@ -96,7 +96,7 @@ io.sockets.on('connection', function(socket) {
 fs.exists('./plugins/index.js', function(exists) {
   if (exists) {
     require('./plugins').init(app, io, config, mongoose);
-  };
+  }
 });
 
 var port = process.env.PORT || config.server.port;
