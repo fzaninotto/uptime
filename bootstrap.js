@@ -1,6 +1,6 @@
 var mongoose   = require('mongoose');
 var config     = require('config');
-var semver     = require('semver')
+var semver     = require('semver');
 
 // configure mongodb
 mongoose.connect(config.mongodb.connectionString || 'mongodb://' + config.mongodb.user + ':' + config.mongodb.password + '@' + config.mongodb.server +'/' + config.mongodb.database);
@@ -28,7 +28,7 @@ mongoose.connection.on('open', function (err) {
     if (!semver.satisfies(data.version, '>=2.1.0')) {
       console.error('Error: Uptime requires MongoDB v2.1 minimum. The current MongoDB server uses only '+ data.version);
       process.exit(1);
-    };
+    }
   });
 });
 

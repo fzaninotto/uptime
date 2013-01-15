@@ -223,7 +223,7 @@ Check.methods.getStatsForPeriod = function(period, begin, end, callback) {
         outages: stat.outages || [],
         end: stat.end ? stat.end.valueOf() : (Date.parse(stat.timestamp) + periodPrefs['duration'])
       });
-    };
+    }
   }).on('close', function() {
     callback(null, stats);
   });

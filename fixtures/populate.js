@@ -12,7 +12,7 @@ var removeChecks = function(callback) {
     function(cb) { CheckEvent.collection.remove(cb); },
     function(cb) { Check.collection.remove(cb); },
   ], callback);
-}
+};
 
 var createFixtureChecks = function(callback) {
   async.parallel([
@@ -22,7 +22,7 @@ var createFixtureChecks = function(callback) {
     function(cb) { createDummyCheck(80, 'My Unstable Site', ['average', 'all'], cb); },
     function(cb) { createDummyCheck(70, 'The lousy site I built for Al', ['low', 'all'], cb); },
   ], callback);
-}
+};
 
 var createDummyCheck = function(quality, name, tags, callback) {
   console.log('Creating check "' + name + '"');
@@ -34,7 +34,7 @@ var createDummyCheck = function(quality, name, tags, callback) {
     tags: tags || ['all']
   });
   check.save(callback);
-}
+};
 
 var createFixturePings = function(callback) {
   Check.find({}, function(err, checks) {
@@ -58,13 +58,13 @@ var createFixturePings = function(callback) {
           nbPings++;
           if (nbPings % 288 == 0) {
             console.log(new Date(date) + ' Created pings for check "' + check.name + '"');
-          };
+          }
         },
         callme
       );
   }, callback);
  });
-}
+};
 
 async.series([removeChecks, createFixtureChecks, createFixturePings], function(err) {
   if (err) {
