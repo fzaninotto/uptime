@@ -105,6 +105,9 @@ app.get('/checks/:id/edit', function(req, res, next) {
 
 app.put('/checks/:id', function(req, res, next) {
   var check = req.body.check;
+  if (!check.name) {
+    check.name = check.url;
+  }
   check.tags = Check.convertTags(check.tags);
   check.interval = req.body.check.interval * 1000;
   check.type = Check.guessType(check.url);
