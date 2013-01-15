@@ -19,6 +19,8 @@ var Check = new Schema({
   url         : String,
   interval    : { type: Number, default: 60000 }, // interval between two pings
   maxTime     : { type: Number, default: 1500 },  // time under which a ping is considered responsive
+  nbErrors    : { type: Number, default: 1 },  // nb of errors from which to trigger a new CheckEvent
+  statusCounter : { type: Number, default: 4 },  // count number of errors
   tags        : [String],
   lastChanged : Date,
   firstTested : Date,
@@ -77,7 +79,27 @@ Check.methods.setLastTest = function(status, time, error) {
     this.firstTested = now;
   }
   this.lastTested = now;
-  if (this.isUp != status) {
+  
+  
+  if (!status && this.isUp != status) {      
+      this.statusCounter = 1;
+  } else if(status && this.isUp != status && this.statusCounter >= this.nbErrors) {
+      this.statusCounter = this.nbErrors;
+  } else if(!status && this.statusCounter<(this.nbErrors+1)) {
+      this.statusCounter++;
+  }
+    
+  if (this.isUp != status) { 
+
+    this.lastChanged = now;
+    this.isUp = status;
+    this.uptime = 0;
+    this.downtime = 0;
+
+  } 
+  
+  if(this.statusCounter == this.nbErrors) {
+    this.statusCounter = this.nbErrors + 1;
     var event = new CheckEvent({
       timestamp: now,
       check: this,
@@ -90,10 +112,6 @@ Check.methods.setLastTest = function(status, time, error) {
       event.downtime = now.getTime() - this.lastChanged.getTime();
     }
     event.save();
-    this.lastChanged = now;
-    this.isUp = status;
-    this.uptime = 0;
-    this.downtime = 0;
   }
   var durationSinceLastChange = now.getTime() - this.lastChanged.getTime();
   if (status) {
