@@ -26,7 +26,6 @@
 var http       = require('http');
 var url        = require('url');
 var util       = require('util');
-var moment     = require('moment');
 var config     = require('config');
 var CheckEvent = require('../../models/checkEvent');
 
