@@ -19,8 +19,8 @@ var Check = new Schema({
   url         : String,
   interval    : { type: Number, default: 60000 }, // interval between two pings
   maxTime     : { type: Number, default: 1500 },  // time under which a ping is considered responsive
-  nbErrors    : { type: Number, default: 1 },  // nb of errors from which to trigger a new CheckEvent
-  statusCounter : { type: Number, default: 4 },  // count number of errors
+  alertTreshold : { type: Number, default: 1 },   // nb of errors from which to trigger a new CheckEvent
+  errorCount  : { type: Number, default: 0 },     // count number of errors
   tags        : [String],
   lastChanged : Date,
   firstTested : Date,
@@ -75,31 +75,22 @@ Check.methods.togglePause = function() {
 
 Check.methods.setLastTest = function(status, time, error) {
   var now = time ? new Date(time) : new Date();
+  var mustNotifyEvent = this.mustNotifyEvent(status);
+
   if (!this.firstTested) {
     this.firstTested = now;
   }
-  this.lastTested = now;
-  
-  
-  if (!status && this.isUp != status) {      
-      this.statusCounter = 1;
-  } else if(status && this.isUp != status && this.statusCounter >= this.nbErrors) {
-      this.statusCounter = this.nbErrors;
-  } else if(!status && this.statusCounter<(this.nbErrors+1)) {
-      this.statusCounter++;
-  }
-    
-  if (this.isUp != status) { 
 
+  this.lastTested = now;
+
+  if (this.isUp != status) {
     this.lastChanged = now;
     this.isUp = status;
     this.uptime = 0;
     this.downtime = 0;
+  }
 
-  } 
-  
-  if(this.statusCounter == this.nbErrors) {
-    this.statusCounter = this.nbErrors + 1;
+  if (mustNotifyEvent) {
     var event = new CheckEvent({
       timestamp: now,
       check: this,
@@ -112,6 +103,7 @@ Check.methods.setLastTest = function(status, time, error) {
       event.downtime = now.getTime() - this.lastChanged.getTime();
     }
     event.save();
+    this.markEventNotified();
   }
   var durationSinceLastChange = now.getTime() - this.lastChanged.getTime();
   if (status) {
@@ -121,6 +113,42 @@ Check.methods.setLastTest = function(status, time, error) {
   }
   return this;
 };
+
+Check.methods.mustNotifyEvent = function(status) {
+  if (!this.firstTested) {
+    return true;
+  }
+  if (!status) {
+    // check is down
+    if (this.isUp != status) {
+      // check goes down for the first time
+      this.errorCount = 1;
+    }
+    if (this.errorCount < this.alertTreshold) {
+      // repeated down pings - increase error count until reaching the down alert treshold
+      this.errorCount++;
+      return false;
+    }
+    if (this.errorCount === this.alertTreshold) {
+      // enough down pings to trigger notofication
+      return true;
+    }
+    // error count higher than treshold, that means the alert was already sent
+    return false;
+  }
+  // check is up
+  if (this.isUp != status && this.errorCount > this.alertTreshold) {
+    // check goes up after reaching the down alert treshold before
+    return true;
+  }
+  // check either goes up after less than alertTreshold down pings, or is already up for long
+  return false;
+}
+
+Check.methods.markEventNotified = function() {
+  // increase error count to disable notification if the next ping has the same status
+  this.errorCount = this.alertTreshold + 1;
+}
 
 Check.methods.getQosPercentage = function() {
   if (!this.qos) return false;
