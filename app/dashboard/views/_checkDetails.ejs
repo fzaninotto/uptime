@@ -32,8 +32,17 @@
         <label class="control-label">Slow threshold</label>
         <div class="controls">
           <div class="input-append">
-            <input type="text" name="check[maxTime]" value="<%= check.maxTime %>" class="span2" />
+            <input type="text" name="check[maxTime]" value="<%= check.maxTime %>" class="span1" />
             <span class="add-on">ms</span>
+          </div>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label">Alert Treshold</label>
+        <div class="controls">
+          <div class="input-append">
+            <input type="text" name="check[nbErrors]" value="<%= check.nbErrors %>" class="span1" />
+            <span class="add-on">failed pings</span>
           </div>
         </div>
       </div>
