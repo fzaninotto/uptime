@@ -100,7 +100,7 @@ fs.exists('./plugins/index.js', function(exists) {
 });
 
 var port = process.env.PORT || config.server.port;
-var hostname = process.env.HOST || config.server.host;
+var host = process.env.HOST || config.server.host;
 
 server.listen(port, host, function() {
   console.log("Express server listening on %s:%d in %s mode", host, port, app.settings.env);
