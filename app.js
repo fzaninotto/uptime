@@ -7,6 +7,7 @@ var express    = require('express');
 var config     = require('config');
 var socketIo   = require('socket.io');
 var fs         = require('fs');
+var util       = require('util');
 var monitor    = require('./lib/monitor');
 var analyzer   = require('./lib/analyzer');
 var CheckEvent = require('./models/checkEvent');
@@ -33,7 +34,7 @@ var server = http.createServer(app);
 
 app.configure(function(){
   app.use(app.router);
-  // the following middlewares are only necessary for the mounted 'dashboard' app, 
+  // the following middlewares are only necessary for the mounted 'dashboard' app,
   // but express needs it on the parent app (?) and it therefore pollutes the api
   app.use(express.bodyParser());
   app.use(express.methodOverride());
@@ -98,6 +99,15 @@ fs.exists('./plugins/index.js', function(exists) {
     require('./plugins').init(app, io, config, mongoose);
   }
 });
+
+// load any plugins from installed as npm packages
+if (config.plugins) {
+  for (var key in config.plugins) {
+    var plugin = config.plugins[key];
+    var path = plugin['package'] || key;
+    require(path).init(app, io, config, mongoose);
+  }
+}
 
 var port = process.env.PORT || config.server.port;
 server.listen(port);
