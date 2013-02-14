@@ -330,15 +330,19 @@ Check.statics.convertTags = function(tags) {
 };
 
 Check.statics.guessType = function(url) {
+  var type;
+
   if (url.search(/^http:\/\//) != -1) {
-    return 'http';
+    type = 'http';
+  } else if (url.search(/^https:\/\//) != -1) {
+    type = 'https';
+  } else if (url.search(/^udp:\/\//) != -1) {
+    type = 'udp';
+  } else if (url.search(/^icmp:\/\//) != -1) {
+    type = 'icmp';
   }
-  if (url.search(/^https:\/\//) != -1) {
-    return 'https';
-  }
-  if (url.search(/^udp:\/\//) != -1) {
-    return 'udp';
-  }
+
+  return type
 };
 
 /**
