@@ -31,8 +31,14 @@ a.start();
 var app = module.exports = express();
 var server = http.createServer(app);
 
+
+
+if (config.monitor.auth) {
+  app.use(express.basicAuth(config.monitor.auth.username, config.monitor.auth.password));
+}
+
 app.configure(function(){
-  app.use(app.router);
+  app.use(app.router);  
   // the following middlewares are only necessary for the mounted 'dashboard' app, 
   // but express needs it on the parent app (?) and it therefore pollutes the api
   app.use(express.bodyParser());
