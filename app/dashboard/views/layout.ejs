@@ -13,7 +13,7 @@
     <script src="<%= route %>/javascripts/jquery.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-    var socket = io.connect('http://' + location.hostname);
+    var socket = io.connect(location.protocol + '//' + location.hostname);
     </script>
     <script src="<%= route %>/javascripts/moment.min.js"></script>
     <!--[if lt IE 9]>
