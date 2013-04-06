@@ -10,9 +10,9 @@ mongoose.connection.on('error', function (err) {
   process.exit(1);
 });
 mongoose.connection.on('open', function (err) {
-  mongoose.connection.db.admin().serverStatus(function(err, data) { 
+  mongoose.connection.db.admin().serverStatus(function(err, data) {
     if (err) {
-      if (err.name === "MongoError" && err.errmsg === 'need to login') {
+      if (err.name === "MongoError" && (err.errmsg === 'need to login' || err.errmsg === 'unauthorized')) {
         console.log('Forcing MongoDB authentication');
         mongoose.connection.db.authenticate(config.mongodb.user, config.mongodb.password, function(err) {
           if (!err) return;
