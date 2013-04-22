@@ -1,9 +1,18 @@
 Uptime Changelog
 ================
 
-To be released
---------------
+2013-04-22, v3.1
+----------------
 
+* Update README.md
+* Use Url as Check name when left empty
+* Stop the server if MongoDB is not started
+* Support port overriding via process.env.PORT
+* Fix bug with pause and email
+* Fix bug where checks are pinged too often when they timeout
+* Add link to uptime home page in the dashboard footer
+* Mention the fact that the monitor URL must be accessible without proxy
+* Add email plugin
 * Added uptime version in the footer
 
 2012-12-07, v3.0
