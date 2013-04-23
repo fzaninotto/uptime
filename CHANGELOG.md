@@ -1,6 +1,11 @@
 Uptime Changelog
 ================
 
+To be released
+--------------
+
+* Node 0.10 support
+
 2013-04-22, v3.1
 ----------------
 

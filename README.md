@@ -26,7 +26,7 @@ Features
 Installing Uptime
 -----------------
 
-Uptime 3.0 requires Node.js 0.8 (if you're stuck with Node 0.6, try Uptime v1.4, available as a tag and on npm) and MongoDB 2.1.
+Uptime 3.0 requires Node.js 0.10 and MongoDB 2.1. Older versions provide compatibility with Node 0.8 (Uptime v3.1) and 0.6 (Uptime v1.4).
 
 To install from GitHub, clone the repository and install dependencies using `npm`:
 
