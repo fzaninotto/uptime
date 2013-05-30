@@ -16,7 +16,8 @@
     "semver":    "1.1.0",
     "moment":    "1.7.2",
     "nodemailer": "0.3.35",
-    "twilio": "1.1.0"
+    "twilio": "1.1.0",
+    "node-hipchat": "0.2.0"
   },
   "devDependencies": {
     "mocha": "1.7.x",
