@@ -75,6 +75,7 @@ app.get('/checks/new', function(req, res) {
 
 app.post('/checks', function(req, res, next) {
   var check = new Check(req.body.check);
+  if (!check.url) return next(new Error('Missing URL parameter'));
   check.name = check.name || check.url;
   check.tags = Check.convertTags(req.body.check.tags);
   check.interval = req.body.check.interval * 1000;
