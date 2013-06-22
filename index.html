@@ -28,18 +28,21 @@
         </ul>
       </header>
       <section>
-        <h1>uptime</h1>
+        <h1>
+<a name="uptime" class="anchor" href="#uptime"><span class="octicon octicon-link"></span></a>uptime</h1>
 
 <p>A remote monitoring application using Node.js, MongoDB, and Twitter Bootstrap.</p>
 
-<p><img src="https://raw.github.com/fzaninotto/uptime/downloads/check_details.png" title="Uptime screenshot"></p>
+<p><img src="https://raw.github.com/fzaninotto/uptime/downloads/check_details.png" title="Visualizing the availability of an HTTP check in Uptime" width="50%" valign="top"><img src="https://raw.github.com/fzaninotto/uptime/downloads/check_form.png" title="Editing check attributes (polling interval, slow threshold, alert threshold, pattern to match, tags) in Uptime" width="50%" valign="top"></p>
 
-<p>You can watch a <a href="https://vimeo.com/39302164">demo screencast on Vimeo</a> or try the <a href="http://uptime.eu01.aws.af.cm/">live demo</a>.</p>
+<p>You can watch a <a href="https://vimeo.com/39302164">demo screencast on Vimeo</a>.</p>
 
-<h2>Features</h2>
+<h2>
+<a name="features" class="anchor" href="#features"><span class="octicon octicon-link"></span></a>Features</h2>
 
 <ul>
 <li>Monitor thousands of websites (powered by <a href="http://dotheweb.posterous.com/nodejs-for-php-programmers-1-event-driven-pro">Node.js asynchronous programming</a>)</li>
+<li>Check the presence of a pattern in the response body</li>
 <li>Tweak frequency of monitoring on a per-check basis, up to the second</li>
 <li>Receive on screen notifications whenever a check goes down (powered by <a href="http://socket.io/">socket.io</a>)</li>
 <li>Receive email notifications whenever a check goes down</li>
@@ -51,9 +54,10 @@
 <li>Familiar web interface (powered by <a href="http://twitter.github.com/bootstrap/index.html">Twitter Bootstrap 2.0</a>)</li>
 <li>Complete API for integration with third-party monitoring services</li>
 <li>Easy installation and zero administration</li>
-</ul><h2>Installing Uptime</h2>
+</ul><h2>
+<a name="installing-uptime" class="anchor" href="#installing-uptime"><span class="octicon octicon-link"></span></a>Installing Uptime</h2>
 
-<p>Uptime 3.0 requires Node.js 0.8 (if you're stuck with Node 0.6, try Uptime v1.4, available as a tag and on npm) and MongoDB 2.1.</p>
+<p>Uptime 3.2 requires Node.js 0.10 and MongoDB 2.1. Older versions provide compatibility with Node 0.8 (Uptime v3.1) and 0.6 (Uptime v1.4).</p>
 
 <p>To install from GitHub, clone the repository and install dependencies using <code>npm</code>:</p>
 
@@ -67,14 +71,16 @@
 <pre><code>&gt; node app.js
 </code></pre>
 
-<h2>Upgrading From a 2.0 Install</h2>
+<h2>
+<a name="upgrading-from-a-20-install" class="anchor" href="#upgrading-from-a-20-install"><span class="octicon octicon-link"></span></a>Upgrading From a 2.0 Install</h2>
 
 <p>If you have been using uptime 1.0 or 2.0, you have to execute the migration script before using the new release.</p>
 
 <pre><code>&gt; node models/migrations/upgrade2to3
 </code></pre>
 
-<h2>Adding Checks</h2>
+<h2>
+<a name="adding-checks" class="anchor" href="#adding-checks"><span class="octicon octicon-link"></span></a>Adding Checks</h2>
 
 <p>By default, the web UI runs on port 8082, so just browse to </p>
 
@@ -83,7 +89,8 @@
 
 <p>And you're ready to begin. Create your first check by entering an URL, wait for the first ping, and you'll soon see data flowing through your charts!</p>
 
-<h2>Configuring</h2>
+<h2>
+<a name="configuring" class="anchor" href="#configuring"><span class="octicon octicon-link"></span></a>Configuring</h2>
 
 <p>Uptime uses <a href="https://github.com/lorenwest/node-config">node-config</a> to allow YAML configuration and environment support. Here is the default configuration, taken from <code>config/default.yaml</code>:</p>
 
@@ -120,7 +127,8 @@
 
 <p>Node that Uptime works great behind a proxy - it uses the http_proxy environment variable transparently.</p>
 
-<h2>Monitoring From Various Locations</h2>
+<h2>
+<a name="monitoring-from-various-locations" class="anchor" href="#monitoring-from-various-locations"><span class="octicon octicon-link"></span></a>Monitoring From Various Locations</h2>
 
 <p>Heavily browsing the web dashboard may slow down the server - including the polling monitor. In other terms, using the application can influence the uptime measurements. To avoid this effect, it is recommended to run the polling monitor in a separate process.</p>
 
@@ -134,7 +142,8 @@
 
 <p>You can even run several monitor servers in several datacenters to get average response time. In that case, make sure you set a different <code>monitor.name</code> setting for all monitor servers to be able to tell which server make a particular ping.</p>
 
-<h2>Using Plugins</h2>
+<h2>
+<a name="using-plugins" class="anchor" href="#using-plugins"><span class="octicon octicon-link"></span></a>Using Plugins</h2>
 
 <p>Uptime provides plugins that you can enable to add more functionality.</p>
 
@@ -146,13 +155,20 @@
 <span class="p">}</span>
 </pre></div>
 
-<p>Currently supported plugins:</p>
+<p>Currently bundled plugins:</p>
 
 <ul>
 <li>
 <code>console</code>: log pings and events in the console in real time</li>
 <li>
 <code>email</code>: notify events (up, down pause) by email</li>
+</ul><p>Third-party plugins:</p>
+
+<ul>
+<li>
+<a href="https://github.com/mintbridge/uptime-webhooks"><code>webhooks</code></a>: notify events to an URL by sending an HTTP POST request </li>
+<li>
+<a href="https://gist.github.com/dmathieu/5592418"><code>campfire</code></a>: notify events to Campfire</li>
 </ul><p>You can customize plugins using the YAML configuration.</p>
 
 <p>You can add your own plugins under the <code>plugins</code> directory. A plugin is simply a module with a public <code>init()</code> method. For instance, if you had to recreate a simple version of the <code>console</code> plugin, you could write it as follows:</p>
@@ -170,11 +186,13 @@
 
 <p>All Uptime entities emit lifecycle events that you can listen to on the Model class. These events are <code>beforeInsert</code>, <code>afterInsert</code>, <code>beforeUpdate</code>, <code>afterUpdate</code>, <code>beforeSave</code> (called for both inserts and updates), <code>afterSave</code> (called for both inserts and updates), <code>beforeRemove</code>, and <code>afterRemove</code>. For more information about these events, check the <a href="https://github.com/fzaninotto/mongoose-lifecycle">mongoose-lifecycle</a> plugin.</p>
 
-<h2>Support and Discussion</h2>
+<h2>
+<a name="support-and-discussion" class="anchor" href="#support-and-discussion"><span class="octicon octicon-link"></span></a>Support and Discussion</h2>
 
 <p>Join the <a href="https://groups.google.com/d/forum/node-uptime">node-uptime</a> Google Group to discuss features, bugs and use cases related to Uptime.</p>
 
-<h2>License</h2>
+<h2>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
 
 <p>The Uptime code is free to use and distribute, under the <a href="https://raw.github.com/fzaninotto/uptime/master/LICENSE">MIT license</a>.</p>
 
@@ -197,7 +215,8 @@
 <a href="http://www.alexpeattie.com/projects/justvector_icons/">Favicon</a>, distributed under the <a href="http://artlibre.org/licence/lal/en">Free Art License</a>.</li>
 </ul><p>If you like the software, please help improving it by contributing PRs on the <a href="https://github.com/fzaninotto/uptime">GitHub project</a>!</p>
 
-<h2>TODO</h2>
+<h2>
+<a name="todo" class="anchor" href="#todo"><span class="octicon octicon-link"></span></a>TODO</h2>
 
 <ul>
 <li>Account for scheduled maintenance (and provide two QoS calculations: with and without scheduled maintenance)</li>
