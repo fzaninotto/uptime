@@ -15,7 +15,8 @@
     "socket.io": "0.9.14",
     "semver":    "1.1.0",
     "moment":    "1.7.2",
-    "nodemailer": "0.3.35"
+    "nodemailer": "0.3.35",
+    "prowler": "0.0.3"
   },
   "devDependencies": {
     "mocha": "1.7.x",
