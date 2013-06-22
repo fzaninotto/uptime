@@ -20,8 +20,6 @@ var app = module.exports = express();
 
 app.configure(function(){
   app.use(partials());
-  app.use(express.cookieParser('uptime secret string'));
-  app.use(express.session({ cookie: { maxAge: 60000 }}));
   app.use(flash());
   app.use(function locals(req, res, next) {
     res.locals.route = app.route;
