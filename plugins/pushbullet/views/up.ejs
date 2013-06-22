@@ -1,0 +1,5 @@
+<% if (checkEvent.downtime) { -%>
+<%= check.name %> is back online on <%= moment(checkEvent.timestamp).format('D MMM YYYY, HH:mm:ss') %> after <%= moment.duration(checkEvent.downtime).humanize() %> of downtime,
+<% } else { -%>
+<%= check.name %> is back online on <%= moment(checkEvent.timestamp).format('D MMM YYYY, HH:mm:ss') %>
+<% }%>
