@@ -4,6 +4,12 @@ Uptime Changelog
 To be released
 --------------
 
+* Fix warnings in production by using cookie store for sessions
+* Add mention of external plugins in README
+* Add pattern detection in response body
+* Fix bug allowing the creation of empty checks
+* Add Http Status 303 to allowed redirect Types
+* Fix "Cannot set property 'protocol' of undefined" error when running Uptime behind a proxy
 * Node 0.10 support
 
 2013-04-22, v3.1
