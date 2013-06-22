@@ -122,10 +122,14 @@ exports.init = function() {
 }
 ```
 
-Currently supported plugins:
+Currently bundled plugins:
 
  * `console`: log pings and events in the console in real time
  * `email`: notify events (up, down pause) by email
+
+Third-party plugins:
+
+ * [`webhooks`](https://github.com/mintbridge/uptime-webhooks): notifies events by sending a HTTP POST request to an URL
 
 You can customize plugins using the YAML configuration.
 
