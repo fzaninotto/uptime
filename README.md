@@ -48,7 +48,7 @@ If you have been using uptime 1.0 or 2.0, you have to execute the migration scri
 Adding Checks
 -------------
 
-By default, the web UI runs on port 8082, so just browse to 
+By default, the web UI runs on port 8082, so just browse to
 
     http://localhost:8082/
 
@@ -63,7 +63,7 @@ Uptime uses [node-config](https://github.com/lorenwest/node-config) to allow YAM
 mongodb:
   server:   localhost
   database: uptime
-  user:     root 
+  user:     root
   password:
   connectionString:       # alternative to setting server, database, user and password separately
 
@@ -111,9 +111,9 @@ You can even run several monitor servers in several datacenters to get average r
 Using Plugins
 -------------
 
-Uptime provides plugins that you can enable to add more functionality.
+Uptime provides plugins that you can enable to add more functionality. Plugins can be added 2 ways; developed locally or installed using npm.
 
-To enable plugins, create a `plugins/index.js` module. This module must offer a public `init()` method, where you will require and initialize plugin modules. For instance, to enable only the `console` plugin:
+To enable local plugins, create a `plugins/index.js` module. This module must offer a public `init()` method, where you will require and initialize plugin modules. For instance, to enable only the `console` plugin:
 
 ```js
 // in plugins/index.js
@@ -127,7 +127,9 @@ Currently supported plugins:
  * `console`: log pings and events in the console in real time
  * `email`: notify events (up, down pause) by email
 
-You can customize plugins using the YAML configuration.
+To install plugins using npm, either add the plugin as a dependancy in the ```package.json``` file or install the plugin with ```npm install plugin-name```
+
+You can enable (if installed with npm) and customize plugins using the YAML configuration.
 
 You can add your own plugins under the `plugins` directory. A plugin is simply a module with a public `init()` method. For instance, if you had to recreate a simple version of the `console` plugin, you could write it as follows:
 
