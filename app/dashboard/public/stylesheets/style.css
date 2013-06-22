@@ -201,6 +201,11 @@ table.chart th.uptimeCol {
   width: 22%;
 }
 
+table.ping .error {
+  max-width: 350px;
+  word-wrap: break-word;
+}
+
 #sectionList section {
   padding-top: 88px;
 }

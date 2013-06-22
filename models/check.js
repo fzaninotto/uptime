@@ -29,7 +29,8 @@ var Check = new Schema({
   isPaused    : { type: Boolean, default: false },
   uptime      : { type: Number, default: 0 },
   downtime    : { type: Number, default: 0 },
-  qos         : {}
+  qos         : {},
+  match       : String
 });
 Check.plugin(require('mongoose-lifecycle'));
 
