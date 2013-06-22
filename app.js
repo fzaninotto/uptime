@@ -33,7 +33,7 @@ var server = http.createServer(app);
 
 app.configure(function(){
   app.use(app.router);
-  // the following middlewares are only necessary for the mounted 'dashboard' app, 
+  // the following middlewares are only necessary for the mounted 'dashboard' app,
   // but express needs it on the parent app (?) and it therefore pollutes the api
   app.use(express.bodyParser());
   app.use(express.methodOverride());
@@ -100,5 +100,8 @@ fs.exists('./plugins/index.js', function(exists) {
 });
 
 var port = process.env.PORT || config.server.port;
-server.listen(port);
-console.log("Express server listening on port %d in %s mode", port, app.settings.env);
+var host = process.env.HOST || config.server.host;
+
+server.listen(port, host, function() {
+  console.log("Express server listening on %s:%d in %s mode", host, port, app.settings.env);
+});
