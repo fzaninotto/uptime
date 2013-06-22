@@ -78,8 +78,12 @@ app.post('/checks', function(req, res, next) {
   check.tags = Check.convertTags(req.body.check.tags);
   check.interval = req.body.check.interval * 1000;
   check.type = Check.guessType(check.url);
-  if (check.match && check.match.indexOf('/') !== 0) {
-    check.match = '/' + check.match + '/';
+  if (check.match) {
+    sanitizedMatch = Check.validateMatch(check.match);
+    if (!sanitizedMatch) {
+      return next(new Error('Malformed regular expression ' + check.match));
+    }
+    check.match = sanitizedMatch;
   }
   check.save(function(err) {
     if (err) return next(err);
@@ -113,6 +117,13 @@ app.put('/checks/:id', function(req, res, next) {
   check.tags = Check.convertTags(check.tags);
   check.interval = req.body.check.interval * 1000;
   check.type = Check.guessType(check.url);
+  if (check.match) {
+    sanitizedMatch = Check.validateMatch(check.match);
+    if (!sanitizedMatch) {
+      return next(new Error('Malformed regular expression ' + check.match));
+    }
+    check.match = sanitizedMatch;
+  }
   Check.update({ _id: req.params.id }, { $set: check }, { upsert: true }, function(err) {
     if (err) return next(err);
     req.flash('info', 'Changes have been saved');
