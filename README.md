@@ -11,6 +11,7 @@ Features
 --------
 
 * Monitor thousands of websites (powered by [Node.js asynchronous programming](http://dotheweb.posterous.com/nodejs-for-php-programmers-1-event-driven-pro))
+* Check the presence of a pattern in the response body
 * Tweak frequency of monitoring on a per-check basis, up to the second
 * Receive on screen notifications whenever a check goes down (powered by [socket.io](http://socket.io/))
 * Receive email notifications whenever a check goes down
