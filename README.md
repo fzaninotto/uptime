@@ -130,7 +130,8 @@ Currently bundled plugins:
 
 Third-party plugins:
 
- * [`webhooks`](https://github.com/mintbridge/uptime-webhooks): notifies events by sending a HTTP POST request to an URL
+ * [`webhooks`](https://github.com/mintbridge/uptime-webhooks): notify events to an URL by sending an HTTP POST request 
+ * [`campfire`](https://gist.github.com/dmathieu/5592418): notify events to Campfire
 
 You can customize plugins using the YAML configuration.
 
