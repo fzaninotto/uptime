@@ -32,20 +32,26 @@ Uptime 3.2 requires Node.js 0.10 and MongoDB 2.1. Older versions provide compati
 
 To install from GitHub, clone the repository and install dependencies using `npm`:
 
-    > git clone git://github.com/fzaninotto/uptime.git
-    > cd uptime
-    > npm install
+```sh
+$ git clone git://github.com/fzaninotto/uptime.git
+$ cd uptime
+$ npm install
+```
 
 Lastly, start the application with:
 
-    > node app
+```sh
+$ node app
+```
 
 Upgrading From a 2.0 Install
 ----------------------------
 
 If you have been using uptime 1.0 or 2.0, you have to execute the migration script before using the new release.
 
-    > node models/migrations/upgrade2to3
+```sh
+$ node models/migrations/upgrade2to3
+```
 
 Adding Checks
 -------------
@@ -101,12 +107,16 @@ Architecture
 
 Uptime is composed of two services: a webapp (in `app.js`), and a polling monitor (in `monitor.js)`. For your convenience, the two services start together when you call `node app`.
 
+<img src="https://raw.github.com/fzaninotto/uptime/downloads/architecture.png" title="Uptime architecture" />
+
 However, heavily browsing the webapp may slow down the whole server - including the polling monitor. In other terms, using the application can influence the uptime measurements. To avoid this effect, it is recommended to run the polling monitor in a separate process.
 
 To that extent, set the `autoStartMonitor` setting to `false` in the `production.yaml`, and launch the monitor by hand:
 
-    > node monitor &
-    > node app
+```sh
+$ node monitor &
+$ node app
+```
 
 You can also run the monitor in a different server. This second server must be able to reach the API of the webapp server: set the `monitor.apiUrl` setting accordingly in the `production.yaml` file of the monitor server.
 
