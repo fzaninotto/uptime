@@ -11,6 +11,7 @@ var monitor    = require('./lib/monitor');
 var analyzer   = require('./lib/analyzer');
 var CheckEvent = require('./models/checkEvent');
 var Ping       = require('./models/ping');
+var PollerCollection = require('./lib/pollers/pollerCollection');
 
 // database
 
@@ -37,6 +38,7 @@ app.configure(function(){
     proxy:  true,
     cookie: { maxAge: 60 * 60 * 1000 }
   }));
+  app.set('pollerCollection', new PollerCollection());
 });
 
 app.configure('development', function() {

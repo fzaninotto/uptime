@@ -330,22 +330,6 @@ Check.statics.convertTags = function(tags) {
   return tags;
 };
 
-Check.statics.guessType = function(url) {
-  var type;
-
-  if (url.search(/^http:\/\//) != -1) {
-    type = 'http';
-  } else if (url.search(/^https:\/\//) != -1) {
-    type = 'https';
-  } else if (url.search(/^udp:\/\//) != -1) {
-    type = 'udp';
-  } else if (url.search(/^icmp:\/\//) != -1) {
-    type = 'icmp';
-  }
-
-  return type
-};
-
 /**
  * Calls a function for all checks that need to be polled.
  *

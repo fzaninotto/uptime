@@ -68,22 +68,37 @@ app.get('/checks', function(req, res, next) {
 });
 
 app.get('/checks/new', function(req, res) {
-  res.render('check_new', { check: new Check(), info: req.flash('info') });
+  res.render('check_new', { check: new Check(), pollerCollection: app.get('pollerCollection'), info: req.flash('info') });
 });
 
-app.post('/checks', function(req, res, next) {
-  var check = new Check(req.body.check);
-  if (!check.url) return next(new Error('Missing URL parameter'));
-  check.name = check.name || check.url;
-  check.tags = Check.convertTags(req.body.check.tags);
-  check.interval = req.body.check.interval * 1000;
-  check.type = Check.guessType(check.url);
-  if (check.match) {
-    sanitizedMatch = Check.validateMatch(check.match);
-    if (!sanitizedMatch) {
-      return next(new Error('Malformed regular expression ' + check.match));
+var getCheckFromRequest = function(dirtyCheck) {
+  if (!dirtyCheck.url) {
+    throw new Error('Missing URL parameter');
+  }
+  var check = {
+    url:           dirtyCheck.url,
+    maxTime:       dirtyCheck.maxTime,
+    alertTreshold: dirtyCheck.alertTreshold
+  };
+  check.name = dirtyCheck.name || dirtyCheck.url;
+  check.type = dirtyCheck.type || app.get('pollerCollection').guessTypeForUrl(dirtyCheck.url);
+  check.tags = Check.convertTags(dirtyCheck.tags);
+  check.interval = dirtyCheck.interval * 1000;
+  if (dirtyCheck.match) {
+    check.match = Check.validateMatch(dirtyCheck.match);
+    if (!check.match) {
+      throw new Error('Malformed regular expression ' + dirtyCheck.match);
     }
-    check.match = sanitizedMatch;
+  }
+  return check;
+};
+
+app.post('/checks', function(req, res, next) {
+  var check;
+  try {
+    check = new Check(getCheckFromRequest(req.body.check));
+  } catch (err) {
+    return next(err);
   }
   check.save(function(err) {
     if (err) return next(err);
@@ -104,25 +119,16 @@ app.get('/checks/:id/edit', function(req, res, next) {
   Check.findOne({ _id: req.params.id }, function(err, check) {
     if (err) return next(err);
     if (!check) return res.send(404, 'failed to load check ' + req.params.id);
-    res.render('check_edit', { check: check, info: req.flash('info'), req: req });
+    res.render('check_edit', { check: check, pollerCollection: app.get('pollerCollection'), info: req.flash('info'), req: req });
   });
 });
 
-
 app.put('/checks/:id', function(req, res, next) {
-  var check = req.body.check;
-  if (!check.name) {
-    check.name = check.url;
-  }
-  check.tags = Check.convertTags(check.tags);
-  check.interval = req.body.check.interval * 1000;
-  check.type = Check.guessType(check.url);
-  if (check.match) {
-    sanitizedMatch = Check.validateMatch(check.match);
-    if (!sanitizedMatch) {
-      return next(new Error('Malformed regular expression ' + check.match));
-    }
-    check.match = sanitizedMatch;
+  var check;
+  try {
+    check = getCheckFromRequest(req.body.check);
+  } catch (err) {
+    return next(err);
   }
   Check.update({ _id: req.params.id }, { $set: check }, { upsert: true }, function(err) {
     if (err) return next(err);
