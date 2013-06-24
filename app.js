@@ -96,8 +96,9 @@ io.sockets.on('connection', function(socket) {
 fs.exists('./plugins/index.js', function(exists) {
   if (exists) {
     var pluginIndex = require('./plugins');
-    if (typeof pluginIndex.init === 'function') {
-      pluginIndex.init(app, io, config, mongoose);
+    var initFunction = pluginIndex.init || pluginIndex.initWebApp;
+    if (typeof initFunction === 'function') {
+      initFunction(app, io, config, mongoose);
     }
   }
 });
