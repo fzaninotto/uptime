@@ -81,7 +81,15 @@ var getCheckFromRequest = function(dirtyCheck) {
     alertTreshold: dirtyCheck.alertTreshold
   };
   check.name = dirtyCheck.name || dirtyCheck.url;
-  check.type = dirtyCheck.type || app.get('pollerCollection').guessTypeForUrl(dirtyCheck.url);
+  if (dirtyCheck.type) {
+    if (!app.get('pollerCollection').getForType(dirtyCheck.type).validateTarget(dirtyCheck.url)) {
+      throw new Error('URL ' + dirtyCheck.url + ' and poller type ' + dirtyCheck.type + ' mismatch');
+    }
+    check.type = dirtyCheck.type;
+  } else {
+    check.type = app.get('pollerCollection').guessTypeForUrl(dirtyCheck.url);
+  }
+
   check.tags = Check.convertTags(dirtyCheck.tags);
   check.interval = dirtyCheck.interval * 1000;
   if (dirtyCheck.match) {
