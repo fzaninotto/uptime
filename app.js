@@ -16,13 +16,6 @@ var Ping       = require('./models/ping');
 
 var mongoose   = require('./bootstrap');
 
-// monitor
-var m;
-if (config.autoStartMonitor) {
-  m = monitor.createMonitor(config.monitor);
-  m.start();
-}
-
 var a = analyzer.createAnalyzer(config.analyzer);
 a.start();
 
@@ -100,10 +93,18 @@ io.sockets.on('connection', function(socket) {
 // load plugins
 fs.exists('./plugins/index.js', function(exists) {
   if (exists) {
-    require('./plugins').init(app, io, config, mongoose);
+    var pluginIndex = require('./plugins');
+    if (typeof pluginIndex.init === 'function') {
+      pluginIndex.init(app, io, config, mongoose);
+    }
   }
 });
 
 var port = process.env.PORT || config.server.port;
 server.listen(port);
 console.log("Express server listening on port %d in %s mode", port, app.settings.env);
+
+// monitor
+if (config.autoStartMonitor) {
+  require('./monitor');
+}

@@ -1,6 +1,20 @@
-var config     = require('config');
-var monitor    = require('./lib/monitor');
+var fs      = require('fs');
+var config  = require('config');
+var Monitor = require('./lib/monitor');
 
 // start the monitor
-m = monitor.createMonitor(config.monitor);
-m.start();
+monitor = Monitor.createMonitor(config.monitor);
+
+// load plugins
+fs.exists('./plugins/index.js', function(exists) {
+  if (exists) {
+    var pluginIndex = require('./plugins');
+    if (typeof pluginIndex.initMonitor === 'function') {
+      pluginIndex.initMonitor(monitor, config);
+    }
+  }
+});
+
+monitor.start();
+
+module.exports = monitor;
