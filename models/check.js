@@ -30,7 +30,7 @@ var Check = new Schema({
   uptime      : { type: Number, default: 0 },
   downtime    : { type: Number, default: 0 },
   qos         : {},
-  match       : String
+  pollerParams : Schema.Types.Mixed
 });
 Check.plugin(require('mongoose-lifecycle'));
 
@@ -39,6 +39,17 @@ Check.pre('remove', function(next) {
     next();
   });
 });
+
+Check.methods.setPollerParam = function(name, value) {
+  if (!this.pollerParams) this.pollerParams = {};
+  this.pollerParams[name] = value;
+  this.markModified('pollerParams');
+};
+
+Check.methods.getPollerParam = function(name) {
+  if (!this.pollerParams) return;
+  return this.pollerParams[name];
+};
 
 Check.methods.removePings = function(callback) {
   Ping.remove({ check: this._id }, callback);
@@ -144,12 +155,12 @@ Check.methods.mustNotifyEvent = function(status) {
   }
   // check either goes up after less than alertTreshold down pings, or is already up for long
   return false;
-}
+};
 
 Check.methods.markEventNotified = function() {
   // increase error count to disable notification if the next ping has the same status
   this.errorCount = this.alertTreshold + 1;
-}
+};
 
 Check.methods.getQosPercentage = function() {
   if (!this.qos) return false;

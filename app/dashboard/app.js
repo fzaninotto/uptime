@@ -71,40 +71,38 @@ app.get('/checks/new', function(req, res) {
   res.render('check_new', { check: new Check(), pollerCollection: app.get('pollerCollection'), info: req.flash('info') });
 });
 
-var getCheckFromRequest = function(dirtyCheck) {
+var populateCheckFromRequest = function(checkDocument, dirtyCheck) {
   if (!dirtyCheck.url) {
     throw new Error('Missing URL parameter');
   }
-  var check = {
-    url:           dirtyCheck.url,
-    maxTime:       dirtyCheck.maxTime,
-    alertTreshold: dirtyCheck.alertTreshold
-  };
-  check.name = dirtyCheck.name || dirtyCheck.url;
+  checkDocument.url = dirtyCheck.url;
+  checkDocument.maxTime = dirtyCheck.maxTime;
+  checkDocument.alertTreshold = dirtyCheck.alertTreshold;
+  checkDocument.name = dirtyCheck.name || dirtyCheck.url;
   if (dirtyCheck.type) {
     if (!app.get('pollerCollection').getForType(dirtyCheck.type).validateTarget(dirtyCheck.url)) {
       throw new Error('URL ' + dirtyCheck.url + ' and poller type ' + dirtyCheck.type + ' mismatch');
     }
-    check.type = dirtyCheck.type;
+    checkDocument.type = dirtyCheck.type;
   } else {
-    check.type = app.get('pollerCollection').guessTypeForUrl(dirtyCheck.url);
+    checkDocument.type = app.get('pollerCollection').guessTypeForUrl(dirtyCheck.url);
   }
 
-  check.tags = Check.convertTags(dirtyCheck.tags);
-  check.interval = dirtyCheck.interval * 1000;
+  checkDocument.tags = Check.convertTags(dirtyCheck.tags);
+  checkDocument.interval = dirtyCheck.interval * 1000;
   if (dirtyCheck.match) {
-    check.match = Check.validateMatch(dirtyCheck.match);
-    if (!check.match) {
+    var match = Check.validateMatch(dirtyCheck.match);
+    if (!match) {
       throw new Error('Malformed regular expression ' + dirtyCheck.match);
     }
+    checkDocument.setPollerParam('match', match);
   }
-  return check;
 };
 
 app.post('/checks', function(req, res, next) {
-  var check;
+  var check = new Check();
   try {
-    check = new Check(getCheckFromRequest(req.body.check));
+    populateCheckFromRequest(check, req.body.check);
   } catch (err) {
     return next(err);
   }
@@ -132,16 +130,18 @@ app.get('/checks/:id/edit', function(req, res, next) {
 });
 
 app.put('/checks/:id', function(req, res, next) {
-  var check;
-  try {
-    check = getCheckFromRequest(req.body.check);
-  } catch (err) {
-    return next(err);
-  }
-  Check.update({ _id: req.params.id }, { $set: check }, { upsert: true }, function(err) {
+  Check.findById(req.params.id, function(err, check) {
     if (err) return next(err);
-    req.flash('info', 'Changes have been saved');
-    res.redirect(app.route + '/checks/' + req.params.id);
+    try {
+      populateCheckFromRequest(check, req.body.check);
+    } catch (populationError) {
+      return next(populationError);
+    }
+    check.save(function(err2) {
+      if (err2) return next(err2);
+      req.flash('info', 'Changes have been saved');
+      res.redirect(app.route + '/checks/' + req.params.id);
+    });
   });
 });
 

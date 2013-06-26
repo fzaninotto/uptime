@@ -93,7 +93,7 @@
       <div class="control-group">
         <label class="control-label">Pattern to match</label>
         <div class="controls">
-          <input type="text" name="check[match]" value="<%= check.match || '' %>" class="span8" placeholder="Uses regular expressions. Leave blank to disable pattern detection."/>
+          <input type="text" name="check[match]" value="<%= check.getPollerParam('match') || '' %>" class="span8" placeholder="Uses regular expressions. Leave blank to disable pattern detection."/>
         </div>
       </div>
       <div class="control-group">

@@ -53,10 +53,11 @@ var createFixturePings = function(callback) {
             check,
             'populator',
             'Dummy Error',
+            null,
             cb
           );
           nbPings++;
-          if (nbPings % 288 == 0) {
+          if (nbPings % 288 === 0) {
             console.log(new Date(date) + ' Created pings for check "' + check.name + '"');
           }
         },
