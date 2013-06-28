@@ -341,6 +341,8 @@ Check.statics.guessType = function(url) {
     type = 'udp';
   } else if (url.search(/^icmp:\/\//) != -1) {
     type = 'icmp';
+  } else if (url.search(/^tcp:\/\//) != -1) {
+    type = 'tcp';
   }
 
   return type
