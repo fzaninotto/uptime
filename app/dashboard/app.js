@@ -129,6 +129,19 @@ app.get('/checks/:id/edit', function(req, res, next) {
   });
 });
 
+app.get('/pollerPartial/:type', function(req, res, next) {
+  var poller;
+  try {
+    poller = app.get('pollerCollection').getForType(req.params.type);
+  } catch (err) {
+    return next(err);
+  }
+  if (!poller.getDetailsEditPartial) {
+    return res.send();
+  }
+  res.send(poller.getDetailsEditPartial({ locals: { check: new Check() } }));
+});
+
 app.put('/checks/:id', function(req, res, next) {
   Check.findById(req.params.id, function(err, check) {
     if (err) return next(err);
