@@ -75,27 +75,26 @@ var populateCheckFromRequest = function(checkDocument, dirtyCheck) {
   if (!dirtyCheck.url) {
     throw new Error('Missing URL parameter');
   }
+
   checkDocument.url = dirtyCheck.url;
   checkDocument.maxTime = dirtyCheck.maxTime;
   checkDocument.alertTreshold = dirtyCheck.alertTreshold;
   checkDocument.name = dirtyCheck.name || dirtyCheck.url;
+  checkDocument.tags = Check.convertTags(dirtyCheck.tags);
+  checkDocument.interval = dirtyCheck.interval * 1000;
+
+  var pollerCollection = app.get('pollerCollection');
   if (dirtyCheck.type) {
-    if (!app.get('pollerCollection').getForType(dirtyCheck.type).validateTarget(dirtyCheck.url)) {
+    if (!pollerCollection.getForType(dirtyCheck.type).validateTarget(dirtyCheck.url)) {
       throw new Error('URL ' + dirtyCheck.url + ' and poller type ' + dirtyCheck.type + ' mismatch');
     }
     checkDocument.type = dirtyCheck.type;
   } else {
-    checkDocument.type = app.get('pollerCollection').guessTypeForUrl(dirtyCheck.url);
+    checkDocument.type = pollerCollection.guessTypeForUrl(dirtyCheck.url);
   }
-
-  checkDocument.tags = Check.convertTags(dirtyCheck.tags);
-  checkDocument.interval = dirtyCheck.interval * 1000;
-  if (dirtyCheck.match) {
-    var match = Check.validateMatch(dirtyCheck.match);
-    if (!match) {
-      throw new Error('Malformed regular expression ' + dirtyCheck.match);
-    }
-    checkDocument.setPollerParam('match', match);
+  var poller = pollerCollection.getForType(checkDocument.type);
+  if (poller.populateCheckFromRequest) {
+    poller.populateCheckFromRequest(checkDocument, dirtyCheck);
   }
 };
 

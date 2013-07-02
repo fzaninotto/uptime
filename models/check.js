@@ -367,23 +367,4 @@ Check.statics.updateAllQos = function(callback) {
   });
 };
 
-/**
- * Sanitizes and validates a given string to check that
- * it can be transformed to a regexp
- */
-Check.statics.validateMatch = function(match) {
-  if (!match) return true;
-  if (match.indexOf('/') !== 0) {
-    match = '/' + match + '/';
-  }
-  var matchParts = match.match(new RegExp('^/(.*?)/(g?i?m?y?)$'));
-  try {
-    // check that the regexp doesn't crash
-    new RegExp(matchParts[1], matchParts[2]);
-  } catch (e) {
-    return false;
-  }
-  return match;
-};
-
 module.exports = mongoose.model('Check', Check);
