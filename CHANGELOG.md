@@ -72,7 +72,7 @@ To be released
 
 * This is the last release compatible with Node 0.6.
 * New events appear as such when watching event list
-* Added favicon. The favison turns red when at least one check is down.
+* Added favicon. The favicon turns red when at least one check is down.
 
 2012-08-05, v1.3
 ----------------

@@ -53,7 +53,7 @@ exports.init = function() {
         from:    config.message.from,
         to:      config.message.to,
         subject: lines.shift(),
-        text:    lines.join('\n'),
+        text:    lines.join('\n')
       };
       mailer.sendMail(mailOptions, function(err2, response) {
         if (err2) return console.error(err2);

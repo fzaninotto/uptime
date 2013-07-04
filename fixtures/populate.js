@@ -10,7 +10,7 @@ var removeChecks = function(callback) {
   console.log('Removing Checks');
   async.series([
     function(cb) { CheckEvent.collection.remove(cb); },
-    function(cb) { Check.collection.remove(cb); },
+    function(cb) { Check.collection.remove(cb); }
   ], callback);
 };
 
@@ -20,7 +20,7 @@ var createFixtureChecks = function(callback) {
     function(cb) { createDummyCheck(99.85, 'Good Quality', ['good', 'all'], cb); },
     function(cb) { createDummyCheck(99, 'Neun und neunzig Luftballons', ['average', 'all'], cb); },
     function(cb) { createDummyCheck(80, 'My Unstable Site', ['average', 'all'], cb); },
-    function(cb) { createDummyCheck(70, 'The lousy site I built for Al', ['low', 'all'], cb); },
+    function(cb) { createDummyCheck(70, 'The lousy site I built for Al', ['low', 'all'], cb); }
   ], callback);
 };
 
