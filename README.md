@@ -146,7 +146,7 @@ Uptime currently bundles three plugins. Check their documentation for installati
 
  * [`console`](https://github.com/fzaninotto/uptime/blob/master/plugins/console/index.js): log pings and events in the console in real time
  * [`email`](https://github.com/fzaninotto/uptime/blob/master/plugins/email/index.js): notify events (up, down pause) by email
- * [`patternMatcher`](https://github.com/fzaninotto/uptime/blob/master/plugins/patternsMatcher/index.js): allow HTTP & HTTPS pollers to test the response body against a pattern
+ * [`patternMatcher`](https://github.com/fzaninotto/uptime/blob/master/plugins/patternMatcher/index.js): allow HTTP & HTTPS pollers to test the response body against a pattern
 
 Third-party plugins:
 
