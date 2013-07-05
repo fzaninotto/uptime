@@ -4,6 +4,18 @@ Uptime Changelog
 To be released
 --------------
 
+* Add pollerCollections to allow the addition of custom pollers
+* Update HTTP and HTTPS pollers (they now specialize a BaseHttpPoller, to reduce code duplication)
+* Fix monitor crash when poller is badly set
+* Update plugins to let them extend both the monitor and the webapp (warning: changes plugins signature)
+* Add architecture schema in the README
+* Update Dummy Target more to make it verbose on the console
+* Update Check model to store pollerParams
+* Update Ping model tostore pollerDetails
+* Add new events to Monitor and dashboard app
+* Add more plugins extension points: they can now add details to checks, abilities to pollers, and store additional details about pings
+* Move Pattern Matcher logic to a plugin
+* Update the README accordingly
 * Fix warnings in production by using cookie store for sessions
 * Add mention of external plugins in README
 * Add pattern detection in response body
