@@ -32,20 +32,26 @@ Uptime 3.2 requires Node.js 0.10 and MongoDB 2.1. Older versions provide compati
 
 To install from GitHub, clone the repository and install dependencies using `npm`:
 
-    > git clone git://github.com/fzaninotto/uptime.git
-    > cd uptime
-    > npm install
+```sh
+$ git clone git://github.com/fzaninotto/uptime.git
+$ cd uptime
+$ npm install
+```
 
 Lastly, start the application with:
 
-    > node app.js
+```sh
+$ node app
+```
 
 Upgrading From a 2.0 Install
 ----------------------------
 
 If you have been using uptime 1.0 or 2.0, you have to execute the migration script before using the new release.
 
-    > node models/migrations/upgrade2to3
+```sh
+$ node models/migrations/upgrade2to3
+```
 
 Adding Checks
 -------------
@@ -96,47 +102,58 @@ server:
 
 Node that Uptime works great behind a proxy - it uses the http_proxy environment variable transparently.
 
-Monitoring From Various Locations
----------------------------------
+Architecture
+------------
 
-Heavily browsing the web dashboard may slow down the server - including the polling monitor. In other terms, using the application can influence the uptime measurements. To avoid this effect, it is recommended to run the polling monitor in a separate process.
+Uptime is composed of two services: a webapp (in `app.js`), and a polling monitor (in `monitor.js)`. For your convenience, the two services start together when you call `node app`.
+
+<img src="https://raw.github.com/fzaninotto/uptime/downloads/architecture.png" title="Uptime architecture" />
+
+However, heavily browsing the webapp may slow down the whole server - including the polling monitor. In other terms, using the application can influence the uptime measurements. To avoid this effect, it is recommended to run the polling monitor in a separate process.
 
 To that extent, set the `autoStartMonitor` setting to `false` in the `production.yaml`, and launch the monitor by hand:
 
-    > node monitor.js &
-    > node app.js
+```sh
+$ node monitor &
+$ node app
+```
 
-You can also run the monitor in a different server. This second server must be able to reach the API of the dashboard server: set the `monitor.apiUrl` setting accordingly in the `production.yaml` file of the monitor server.
+You can also run the monitor in a different server. This second server must be able to reach the API of the webapp server: set the `monitor.apiUrl` setting accordingly in the `production.yaml` file of the monitor server.
+
+Monitoring From Various Locations
+---------------------------------
 
 You can even run several monitor servers in several datacenters to get average response time. In that case, make sure you set a different `monitor.name` setting for all monitor servers to be able to tell which server make a particular ping.
 
 Using Plugins
 -------------
 
-Uptime provides plugins that you can enable to add more functionality.
+Uptime provides plugins that you can enable to add more functionality. Plugins can add more notification types, more poller types, new routes to the webapp, etc. To enable plugins, create a `plugins/index.js` module. Uptime automatically requires this module when starting the webapp and the monitor, and tries to call the two following functions:
 
-To enable plugins, create a `plugins/index.js` module. This module must offer a public `init()` method, where you will require and initialize plugin modules. For instance, to enable only the `console` plugin:
+* `initWebApp()` when starting the webapp
+* `initMonitor()` when starting the monitor
+
+For instance, to enable the `console` plugin:
 
 ```js
 // in plugins/index.js
-exports.init = function() {
+exports.initWebApp = function() {
   require('./console').init();
-}
+};
 ```
 
-Currently bundled plugins:
+Uptime currently bundles three plugins. Check their documentation for installation/configuration instructions:
 
- * `console`: log pings and events in the console in real time
- * `email`: notify events (up, down pause) by email
+ * [`console`](https://github.com/fzaninotto/uptime/blob/master/plugins/console/index.js): log pings and events in the console in real time
+ * [`email`](https://github.com/fzaninotto/uptime/blob/master/plugins/email/index.js): notify events (up, down pause) by email
+ * [`patternMatcher`](https://github.com/fzaninotto/uptime/blob/master/plugins/patternsMatcher/index.js): allow HTTP & HTTPS pollers to test the response body against a pattern
 
 Third-party plugins:
 
  * [`webhooks`](https://github.com/mintbridge/uptime-webhooks): notify events to an URL by sending an HTTP POST request 
  * [`campfire`](https://gist.github.com/dmathieu/5592418): notify events to Campfire
 
-You can customize plugins using the YAML configuration.
-
-You can add your own plugins under the `plugins` directory. A plugin is simply a module with a public `init()` method. For instance, if you had to recreate a simple version of the `console` plugin, you could write it as follows:
+You can also create your own plugins. For instance, if you had to recreate a simple version of the `console` plugin, you could write it as follows:
 
 ```js
 // in plugins/console/index.js

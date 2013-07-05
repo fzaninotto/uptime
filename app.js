@@ -11,17 +11,13 @@ var monitor    = require('./lib/monitor');
 var analyzer   = require('./lib/analyzer');
 var CheckEvent = require('./models/checkEvent');
 var Ping       = require('./models/ping');
+var PollerCollection = require('./lib/pollers/pollerCollection');
+var apiApp     = require('./app/api/app');
+var dashboardApp = require('./app/dashboard/app');
 
 // database
 
 var mongoose   = require('./bootstrap');
-
-// monitor
-var m;
-if (config.autoStartMonitor) {
-  m = monitor.createMonitor(config.monitor);
-  m.start();
-}
 
 var a = analyzer.createAnalyzer(config.analyzer);
 a.start();
@@ -44,6 +40,7 @@ app.configure(function(){
     proxy:  true,
     cookie: { maxAge: 60 * 60 * 1000 }
   }));
+  app.set('pollerCollection', new PollerCollection());
 });
 
 app.configure('development', function() {
@@ -59,8 +56,8 @@ app.configure('production', function() {
 });
 
 // Routes
-app.use('/api',       require('./app/api/app'));
-app.use('/dashboard', require('./app/dashboard/app'));
+app.use('/api', apiApp);
+app.use('/dashboard', dashboardApp);
 app.get('/', function(req, res) {
   res.redirect('/dashboard/events');
 });
@@ -100,10 +97,26 @@ io.sockets.on('connection', function(socket) {
 // load plugins
 fs.exists('./plugins/index.js', function(exists) {
   if (exists) {
-    require('./plugins').init(app, io, config, mongoose);
+    var pluginIndex = require('./plugins');
+    var initFunction = pluginIndex.init || pluginIndex.initWebApp;
+    if (typeof initFunction === 'function') {
+      initFunction({
+        app:       app,
+        api:       apiApp,       // mounted into app, but required for events
+        dashboard: dashboardApp, // mounted into app, but required for events
+        io:        io,
+        config:    config,
+        mongoose:  mongoose
+      });
+    }
   }
 });
 
 var port = process.env.PORT || config.server.port;
 server.listen(port);
 console.log("Express server listening on port %d in %s mode", port, app.settings.env);
+
+// monitor
+if (config.autoStartMonitor) {
+  require('./monitor');
+}

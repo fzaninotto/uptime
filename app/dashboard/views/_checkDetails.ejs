@@ -2,6 +2,39 @@
 <div class="tab-pane" id="admin">
   <form id="check_form" method="post" class="form-horizontal" action="<%= route %>/checks<%= check.isNew ? '' : '/' + check._id %>">
     <input type="hidden" name="_method" value="<%= (check.isNew) ? 'post' : 'put' %>" />
+
+    <div class="row">
+
+      <div class="span6">
+        <fieldset>
+          <div class="control-group">
+            <label class="control-label">Url</label>
+            <div class="controls controls-row">
+              <input type="text" required name="check[url]" value="<%= check.url || '' %>" class="span5"  placeholder="http://www.example.com"/>
+              <span class="help-inline" style="position:absolute"><a href="<%= check.url %>" target="_blank"><img src="<%= route %>/images/external-link-ltr-icon.png"></a></span>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="span6">
+        <fieldset>
+          <div class="control-group">
+            <label class="control-label">Type</label>
+            <div class="controls controls-row">
+              <select name="check[type]" value="<% check.type || '' %>" class="span2">
+                <option value="">auto</option>
+                <% pollerCollection.getTypes().forEach(function(poller) { %>
+                <option value="<%= poller %>" <% if (poller === check.type) { %> selected="true" <% } %>><%= poller %></option>
+                <% }) %>
+              </select>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+    </div>
+
     <fieldset>
       <div class="control-group">
         <label class="control-label">Name</label>
@@ -9,34 +42,45 @@
           <input type="text" name="check[name]" value="<%= check.name || '' %>" class="span8" placeholder="Type a name here"/>
         </div>
       </div>
-      <div class="control-group">
-        <label class="control-label">Url</label>
-        <div class="controls">
-          <input type="text" required name="check[url]" value="<%= check.url || '' %>" class="span8"  placeholder="http://www.example.com"/>
-          <span class="help-inline"><a href="<%= check.url %>" target="_blank"><img src="<%= route %>/images/external-link-ltr-icon.png"></a></span>
-        </div>
-      </div>
-      <div class="control-group">
-        <label class="control-label">Polling interval</label>
-        <div class="controls">
-          <div class="input-prepend input-append">
-            <% if (check.lastTested) { %>
-            <button class="btn" name="pause"><i class="icon-<%= check.isPaused ? 'play' : 'pause' %>"></i></button>
-            <% } %>
-            <input type="text" name="check[interval]" value="<%= (check.interval / 1000).toFixed() %>" class="span2" />
-            <span class="add-on">s</span>
+    </fieldset>
+
+    <div class="row">
+
+      <div class="span6">
+        <fieldset>
+          <div class="control-group">
+            <label class="control-label">Polling interval</label>
+            <div class="controls">
+              <div class="input-prepend input-append">
+                <% if (check.lastTested) { %>
+                <button class="btn" name="pause"><i class="icon-<%= check.isPaused ? 'play' : 'pause' %>"></i></button>
+                <% } %>
+                <input type="text" name="check[interval]" value="<%= (check.interval / 1000).toFixed() %>" class="span2" />
+                <span class="add-on">s</span>
+              </div>
+            </div>
           </div>
-        </div>
+        </fieldset>
       </div>
-      <div class="control-group">
-        <label class="control-label">Slow threshold</label>
-        <div class="controls">
-          <div class="input-append">
-            <input type="text" name="check[maxTime]" value="<%= check.maxTime %>" class="span1" />
-            <span class="add-on">ms</span>
+
+      <div class="span6">
+        <fieldset>
+          <div class="control-group">
+            <label class="control-label">Slow threshold</label>
+            <div class="controls">
+              <div class="input-append">
+                <input type="text" name="check[maxTime]" value="<%= check.maxTime %>" class="span1" />
+                <span class="add-on">ms</span>
+              </div>
+            </div>
           </div>
-        </div>
+        </fieldset>
       </div>
+
+    </div>
+
+
+    <fieldset>
       <div class="control-group">
         <label class="control-label">Alert threshold</label>
         <div class="controls">
@@ -46,12 +90,13 @@
           </div>
         </div>
       </div>
-      <div class="control-group">
-        <label class="control-label">Pattern to match</label>
-        <div class="controls">
-          <input type="text" name="check[match]" value="<%= check.match || '' %>" class="span8" placeholder="Uses regular expressions. Leave blank to disable pattern detection."/>
-        </div>
-      </div>
+    </fieldset>
+
+    <span id="pollerDetails">
+    <%- pollerDetails %>
+    </span>
+
+    <fieldset>
       <div class="control-group">
         <label class="control-label">Tags</label>
         <div class="controls">
@@ -100,13 +145,23 @@ $(document).ready(function() {
     $('#check_form input[name="_method"]').val('delete');
   });
   updatePollingIntervalTooltip();
+
   $(intervalFieldSelector).bind('keypress keyup', updatePollingIntervalTooltip);
+
   $('#check_form input[name*="url"]').blur(function() {
     var field = $(this);
-    if (field.val().indexOf('://') == -1) {
+    if (field.val() && field.val().indexOf('://') == -1) {
       field.val('http://' + field.val());
     }
   });
+
+  $('form select[name="check\\[type\\]"]').bind('change', function() {
+    var pollerDetails = $('#pollerDetails');
+    $.get('<%= route %>/pollerPartial/' + $(this).val())
+      .fail(function() { pollerDetails.html(''); })
+      .done(function(html) { pollerDetails.html(html); });
+  });
+
   var tagField = $('#check_form textarea');
   var tags = tagField.val().split(', ');
   tagField.tagsInput();

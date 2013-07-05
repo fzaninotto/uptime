@@ -68,22 +68,39 @@ app.get('/checks', function(req, res, next) {
 });
 
 app.get('/checks/new', function(req, res) {
-  res.render('check_new', { check: new Check(), info: req.flash('info') });
+  res.render('check_new', { check: new Check(), pollerCollection: app.get('pollerCollection'), info: req.flash('info') });
 });
 
-app.post('/checks', function(req, res, next) {
-  var check = new Check(req.body.check);
-  if (!check.url) return next(new Error('Missing URL parameter'));
-  check.name = check.name || check.url;
-  check.tags = Check.convertTags(req.body.check.tags);
-  check.interval = req.body.check.interval * 1000;
-  check.type = Check.guessType(check.url);
-  if (check.match) {
-    sanitizedMatch = Check.validateMatch(check.match);
-    if (!sanitizedMatch) {
-      return next(new Error('Malformed regular expression ' + check.match));
+var populateCheckFromRequest = function(checkDocument, dirtyCheck) {
+  if (!dirtyCheck.url) {
+    throw new Error('Missing URL parameter');
+  }
+
+  checkDocument.url = dirtyCheck.url;
+  checkDocument.maxTime = dirtyCheck.maxTime;
+  checkDocument.alertTreshold = dirtyCheck.alertTreshold;
+  checkDocument.name = dirtyCheck.name || dirtyCheck.url;
+  checkDocument.tags = Check.convertTags(dirtyCheck.tags);
+  checkDocument.interval = dirtyCheck.interval * 1000;
+
+  var pollerCollection = app.get('pollerCollection');
+  if (dirtyCheck.type) {
+    if (!pollerCollection.getForType(dirtyCheck.type).validateTarget(dirtyCheck.url)) {
+      throw new Error('URL ' + dirtyCheck.url + ' and poller type ' + dirtyCheck.type + ' mismatch');
     }
-    check.match = sanitizedMatch;
+    checkDocument.type = dirtyCheck.type;
+  } else {
+    checkDocument.type = pollerCollection.guessTypeForUrl(dirtyCheck.url);
+  }
+  app.emit('populateCheckFromRequest', checkDocument, dirtyCheck, checkDocument.type);
+};
+
+app.post('/checks', function(req, res, next) {
+  var check = new Check();
+  try {
+    populateCheckFromRequest(check, req.body.check);
+  } catch (err) {
+    return next(err);
   }
   check.save(function(err) {
     if (err) return next(err);
@@ -104,30 +121,37 @@ app.get('/checks/:id/edit', function(req, res, next) {
   Check.findOne({ _id: req.params.id }, function(err, check) {
     if (err) return next(err);
     if (!check) return res.send(404, 'failed to load check ' + req.params.id);
-    res.render('check_edit', { check: check, info: req.flash('info'), req: req });
+    var pollerDetails = [];
+    app.emit('checkEdit', check.type, check, pollerDetails);
+    res.render('check_edit', { check: check, pollerCollection: app.get('pollerCollection'), pollerDetails: pollerDetails.join(''), info: req.flash('info'), req: req });
   });
 });
 
+app.get('/pollerPartial/:type', function(req, res, next) {
+  var poller;
+  try {
+    poller = app.get('pollerCollection').getForType(req.params.type);
+  } catch (err) {
+    return next(err);
+  }
+  var pollerDetails = [];
+  app.emit('checkEdit', req.params.type, new Check(), pollerDetails);
+  res.send(pollerDetails.join(''));
+});
 
 app.put('/checks/:id', function(req, res, next) {
-  var check = req.body.check;
-  if (!check.name) {
-    check.name = check.url;
-  }
-  check.tags = Check.convertTags(check.tags);
-  check.interval = req.body.check.interval * 1000;
-  check.type = Check.guessType(check.url);
-  if (check.match) {
-    sanitizedMatch = Check.validateMatch(check.match);
-    if (!sanitizedMatch) {
-      return next(new Error('Malformed regular expression ' + check.match));
-    }
-    check.match = sanitizedMatch;
-  }
-  Check.update({ _id: req.params.id }, { $set: check }, { upsert: true }, function(err) {
+  Check.findById(req.params.id, function(err, check) {
     if (err) return next(err);
-    req.flash('info', 'Changes have been saved');
-    res.redirect(app.route + '/checks/' + req.params.id);
+    try {
+      populateCheckFromRequest(check, req.body.check);
+    } catch (populationError) {
+      return next(populationError);
+    }
+    check.save(function(err2) {
+      if (err2) return next(err2);
+      req.flash('info', 'Changes have been saved');
+      res.redirect(app.route + '/checks/' + req.params.id);
+    });
   });
 });
 

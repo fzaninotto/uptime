@@ -3,8 +3,8 @@
  *
  * Notifies all events (up, down, paused, restarted) by email
  *
- * To enable the plugin, call init() from plugins/index.js
- *   exports.init = function() {
+ * To enable the plugin, call init() in the webapp hook in plugins/index.js
+ *   exports.initWebApp = function() {
  *     require('./email').init();
  *   }
  *
