@@ -12,6 +12,8 @@ var analyzer   = require('./lib/analyzer');
 var CheckEvent = require('./models/checkEvent');
 var Ping       = require('./models/ping');
 var PollerCollection = require('./lib/pollers/pollerCollection');
+var apiApp     = require('./app/api/app');
+var dashboardApp = require('./app/dashboard/app');
 
 // database
 
@@ -54,8 +56,8 @@ app.configure('production', function() {
 });
 
 // Routes
-app.use('/api',       require('./app/api/app'));
-app.use('/dashboard', require('./app/dashboard/app'));
+app.use('/api', apiApp);
+app.use('/dashboard', dashboardApp);
 app.get('/', function(req, res) {
   res.redirect('/dashboard/events');
 });
@@ -98,7 +100,14 @@ fs.exists('./plugins/index.js', function(exists) {
     var pluginIndex = require('./plugins');
     var initFunction = pluginIndex.init || pluginIndex.initWebApp;
     if (typeof initFunction === 'function') {
-      initFunction(app, io, config, mongoose);
+      initFunction({
+        app:       app,
+        api:       apiApp,       // mounted into app, but required for events
+        dashboard: dashboardApp, // mounted into app, but required for events
+        io:        io,
+        config:    config,
+        mongoose:  mongoose
+      });
     }
   }
 });

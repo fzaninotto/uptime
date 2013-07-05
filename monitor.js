@@ -10,7 +10,10 @@ fs.exists('./plugins/index.js', function(exists) {
   if (exists) {
     var pluginIndex = require('./plugins');
     if (typeof pluginIndex.initMonitor === 'function') {
-      pluginIndex.initMonitor(monitor, config);
+      pluginIndex.initMonitor({
+        monitor: monitor,
+        config:  config
+      });
     }
   }
 });

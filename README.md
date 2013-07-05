@@ -130,8 +130,8 @@ Using Plugins
 
 Uptime provides plugins that you can enable to add more functionality. Plugins can add more notification types, more poller types, new routes to the webapp, etc. To enable plugins, create a `plugins/index.js` module. Uptime automatically requires this module when starting the webapp and the monitor, and tries to call the two following functions:
 
-* `initWebApp(app, io, config, mongoose)` when starting the webapp
-* `initMonitor(monitor, config)` when starting the monitor
+* `initWebApp()` when starting the webapp
+* `initMonitor()` when starting the monitor
 
 For instance, to enable the `console` plugin:
 
@@ -142,17 +142,16 @@ exports.initWebApp = function() {
 };
 ```
 
-Currently bundled plugins:
+Uptime currently bundles three plugins. Check their documentation for installation/configuration instructions:
 
- * `console`: log pings and events in the console in real time
- * `email`: notify events (up, down pause) by email
+ * [`console`](https://github.com/fzaninotto/uptime/blob/master/plugins/console/index.js): log pings and events in the console in real time
+ * [`email`](https://github.com/fzaninotto/uptime/blob/master/plugins/email/index.js): notify events (up, down pause) by email
+ * [`patternMatcher`](https://github.com/fzaninotto/uptime/blob/master/plugins/patternsMatcher/index.js): allow HTTP & HTTPS pollers to test the response body against a pattern
 
 Third-party plugins:
 
  * [`webhooks`](https://github.com/mintbridge/uptime-webhooks): notify events to an URL by sending an HTTP POST request 
  * [`campfire`](https://gist.github.com/dmathieu/5592418): notify events to Campfire
-
-You can customize most plugins using the YAML configuration.
 
 You can also create your own plugins. For instance, if you had to recreate a simple version of the `console` plugin, you could write it as follows:
 

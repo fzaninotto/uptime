@@ -93,12 +93,7 @@
     </fieldset>
 
     <span id="pollerDetails">
-    <% if (check.type) { %>
-      <% var poller = pollerCollection.getForType(check.type) %>
-      <% if (poller.getDetailsEditPartial) { %>
-        <%- poller.getDetailsEditPartial({ locals: { check: check, pollerCollection: pollerCollection, route: route } }) %>
-      <% } %>
-    <% } %>
+    <%- pollerDetails %>
     </span>
 
     <fieldset>

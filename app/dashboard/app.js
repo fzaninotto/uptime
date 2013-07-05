@@ -92,10 +92,7 @@ var populateCheckFromRequest = function(checkDocument, dirtyCheck) {
   } else {
     checkDocument.type = pollerCollection.guessTypeForUrl(dirtyCheck.url);
   }
-  var poller = pollerCollection.getForType(checkDocument.type);
-  if (poller.populateCheckFromRequest) {
-    poller.populateCheckFromRequest(checkDocument, dirtyCheck);
-  }
+  app.emit('populateCheckFromRequest', checkDocument, dirtyCheck, checkDocument.type);
 };
 
 app.post('/checks', function(req, res, next) {
@@ -124,7 +121,9 @@ app.get('/checks/:id/edit', function(req, res, next) {
   Check.findOne({ _id: req.params.id }, function(err, check) {
     if (err) return next(err);
     if (!check) return res.send(404, 'failed to load check ' + req.params.id);
-    res.render('check_edit', { check: check, pollerCollection: app.get('pollerCollection'), info: req.flash('info'), req: req });
+    var pollerDetails = [];
+    app.emit('checkEdit', check.type, check, pollerDetails);
+    res.render('check_edit', { check: check, pollerCollection: app.get('pollerCollection'), pollerDetails: pollerDetails.join(''), info: req.flash('info'), req: req });
   });
 });
 
@@ -135,10 +134,9 @@ app.get('/pollerPartial/:type', function(req, res, next) {
   } catch (err) {
     return next(err);
   }
-  if (!poller.getDetailsEditPartial) {
-    return res.send();
-  }
-  res.send(poller.getDetailsEditPartial({ locals: { check: new Check() } }));
+  var pollerDetails = [];
+  app.emit('checkEdit', req.params.type, new Check(), pollerDetails);
+  res.send(pollerDetails.join(''));
 });
 
 app.put('/checks/:id', function(req, res, next) {
