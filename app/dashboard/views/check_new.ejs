@@ -2,7 +2,7 @@
 <% if (info.length) { %>
 <div class="alert alert-success"><%= info %></div>
 <% } %>
-<%- partial('_check_details', { check: check, route: route }) %>
+<%- partial('_check_details', { check: check, pollerCollection: pollerCollection, route: route }) %>
 <script>
 jQuery(document).ready(function($) {
   $('.navbar-inner li').eq(1).addClass('active');

@@ -3,8 +3,8 @@
  *
  * Logs all pings and events (up, down, paused, restarted) on the console
  *
- * To enable the plugin, call init() from plugins/index.js
- *   exports.init = function() {
+ * To enable the plugin, call init() in the webapp hook in plugins/index.js
+ *   exports.initWebApp = function() {
  *     require('./console').init();
  *   }
  * 
