@@ -16,7 +16,7 @@ DateNavigation.prototype.init = function() {
     interval.update(data.type, parseInt(data.date));
   });
   
-  // redraw date range when time passes to enable new intrerval buttons
+  // redraw date range when time passes to enable new interval buttons
   setInterval(this.redrawPeriods.bind(this), 5 * 60 * 1000);
   
   // redraw uptime bar when the data arrives
@@ -152,13 +152,13 @@ DateNavigation.prototype.redrawZoom = function() {
   if (subType !== false && !this.interval.isMaxZoom()) {
     zoom += '<button class="btn btn-small" data-type="' + subType + '" data-date="' + this.interval.date + '"><li class="icon-zoom-in"></li></button>';
   } else {
-    zoom += '<button class="btn btn-small" disabled="disabled"><li class="icon-zoom-in"></li></button>'
+    zoom += '<button class="btn btn-small" disabled="disabled"><i class="icon-zoom-in"></i></button>'
   }
   var superType = this.interval.superType(this.interval.type);
   if (superType !== false) {
     zoom += '<button class="btn btn-small" data-type="' + superType + '" data-date="' + this.interval.date + '"><li class="icon-zoom-out"></li></button>';
   } else {
-    zoom += '<button class="btn btn-small" disabled="disabled"><li class="icon-zoom-out"></li></button>'
+    zoom += '<button class="btn btn-small" disabled="disabled"><i class="icon-zoom-out"></i></button>'
   }
   $('#dateNavigation .zoom').html(zoom);
 }

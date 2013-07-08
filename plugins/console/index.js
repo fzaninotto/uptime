@@ -46,7 +46,7 @@ var registerNewEventsLogger = function() {
           messageColor = 'green+bold';
           break;
         default:
-         message += '(unnown event)';
+         message += '(unknown event)';
          messageColor = 'bold';
       }
 

@@ -142,7 +142,7 @@ Check.methods.mustNotifyEvent = function(status) {
       return false;
     }
     if (this.errorCount === this.alertTreshold) {
-      // enough down pings to trigger notofication
+      // enough down pings to trigger notification
       return true;
     }
     // error count higher than treshold, that means the alert was already sent

@@ -62,7 +62,7 @@ module.exports = function(app) {
         timestamp: new Date(),
         check: req.check,
         tags: req.check.tags,
-        message: req.check.isPaused ? 'paused' : 'restarted',
+        message: req.check.isPaused ? 'paused' : 'restarted'
       }).save();
       res.redirect(app.route + '/checks/' + req.params.id);
     });
