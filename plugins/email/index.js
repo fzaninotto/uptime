@@ -3,12 +3,35 @@
  *
  * Notifies all events (up, down, paused, restarted) by email
  *
- * To enable the plugin, call init() in the webapp hook in plugins/index.js
- *   exports.initWebApp = function() {
- *     require('./email').init();
- *   }
+ * Installation
+ * ------------
+ * This plugin is disabled by default. To enable it, add its entry 
+ * to the `plugins` key of the configuration:
  *
- * Example configuration
+ *   // in config/production.yaml
+ *   plugins:
+ *     - ./plugins/email
+ *
+ * Usage
+ * -----
+ * This plugin sends an email each time a check is started, goes down, or goes back up. 
+ * When the check goes down, the email contains the error details:
+ *
+ *   Object: [Down] Check "FooBar" just went down
+ *   On Thursday, September 4th 1986 8:30 PM,
+ *   a test on URL "http://foobar.com" failed with the following error:
+ *
+ *     Error 500
+ *
+ *   Uptime won't send anymore emails about this check until it goes back up.
+ *   ---------------------------------------------------------------------
+ *   This is an automated email sent from Uptime. Please don't reply to it.
+ *
+ * Configuration
+ * -------------
+ * Here is an example configuration:
+ *
+ *   // in config/production.yaml
  *   email:
  *     method:      SMTP  # possible methods are SMTP, SES, or Sendmail
  *     transport:         # see https://github.com/andris9/nodemailer for transport options
@@ -32,8 +55,8 @@ var moment     = require('moment');
 var config     = require('config').email;
 var CheckEvent = require('../../models/checkEvent');
 var ejs        = require('ejs');
- 
-exports.init = function() {
+
+exports.initWebApp = function() {
   var mailer = nodemailer.createTransport(config.method, config.transport);
   var templateDir = __dirname + '/views/';
   CheckEvent.on('afterInsert', function(checkEvent) {
@@ -41,11 +64,11 @@ exports.init = function() {
     checkEvent.findCheck(function(err, check) {
       if (err) return console.error(err);
       var filename = templateDir + checkEvent.message + '.ejs';
-      var renderOptions = { 
-        check: check, 
-        checkEvent: checkEvent, 
-        url: config.dashboardUrl, 
-        moment: moment, 
+      var renderOptions = {
+        check: check,
+        checkEvent: checkEvent,
+        url: config.dashboardUrl,
+        moment: moment,
         filename: filename
       };
       var lines = ejs.render(fs.readFileSync(filename, 'utf8'), renderOptions).split('\n');
@@ -53,11 +76,11 @@ exports.init = function() {
         from:    config.message.from,
         to:      config.message.to,
         subject: lines.shift(),
-        text:    lines.join('\n'),
+        text:    lines.join('\n')
       };
       mailer.sendMail(mailOptions, function(err2, response) {
-        if (err2) return console.error(err2);
-        console.log('Notified event by email: Check ' + check.name + ' ' + checkEvent.message);      
+        if (err2) return console.error('Email plugin error: %s', err2);
+        console.log('Notified event by email: Check ' + check.name + ' ' + checkEvent.message);
       });
     });
   });

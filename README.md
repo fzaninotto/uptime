@@ -12,10 +12,12 @@ Features
 --------
 
 * Monitor thousands of websites (powered by [Node.js asynchronous programming](http://dotheweb.posterous.com/nodejs-for-php-programmers-1-event-driven-pro))
-* Check the presence of a pattern in the response body
 * Tweak frequency of monitoring on a per-check basis, up to the second
-* Receive on screen notifications whenever a check goes down (powered by [socket.io](http://socket.io/))
-* Receive email notifications whenever a check goes down
+* Check the presence of a pattern in the response body
+* Receive notifications whenever a check goes down
+  * On screen (powered by [socket.io](http://socket.io/))
+  * By email
+  * On the console
 * Record availability statistics for further reporting (powered by [MongoDB](http://www.mongodb.org/))
 * Detailed uptime reports with animated charts (powered by [Flotr2](http://www.humblesoftware.com/flotr2/))
 * Monitor availability, responsiveness, average response time, and total uptime/downtime
@@ -23,6 +25,7 @@ Features
 * Group checks by tags and get reports by tag
 * Familiar web interface (powered by [Twitter Bootstrap 2.0](http://twitter.github.com/bootstrap/index.html))
 * Complete API for integration with third-party monitoring services
+* Powerful plugin system to ease extension and customization
 * Easy installation and zero administration
 
 Installing Uptime
@@ -91,6 +94,11 @@ autoStartMonitor: true
 
 server:
   port:     8082
+
+plugins:
+  - ./plugins/console
+  - ./plugins/patternMatcher
+  # - ./plugins/email
 ```
 
 To modify this configuration, create a `development.yaml` or a `production.yaml` file in the same directory, and override just the settings you need. For instance, to run Uptime on port 80 in production, create a `production.yaml` file as follows:
@@ -100,7 +108,7 @@ server:
   port:     80
 ```
 
-Node that Uptime works great behind a proxy - it uses the http_proxy environment variable transparently.
+Node that Uptime works great behind a proxy - it uses the `http_proxy` environment variable transparently.
 
 Architecture
 ------------
@@ -128,37 +136,55 @@ You can even run several monitor servers in several datacenters to get average r
 Using Plugins
 -------------
 
-Uptime provides plugins that you can enable to add more functionality. Plugins can add more notification types, more poller types, new routes to the webapp, etc. To enable plugins, create a `plugins/index.js` module. Uptime automatically requires this module when starting the webapp and the monitor, and tries to call the two following functions:
-
-* `initWebApp()` when starting the webapp
-* `initMonitor()` when starting the monitor
-
-For instance, to enable the `console` plugin:
-
-```js
-// in plugins/index.js
-exports.initWebApp = function() {
-  require('./console').init();
-};
-```
-
-Uptime currently bundles three plugins. Check their documentation for installation/configuration instructions:
+Plugins can add more notification types, more poller types, new routes to the webapp, etc. Uptime currently bundles three plugins:
 
  * [`console`](https://github.com/fzaninotto/uptime/blob/master/plugins/console/index.js): log pings and events in the console in real time
  * [`email`](https://github.com/fzaninotto/uptime/blob/master/plugins/email/index.js): notify events (up, down pause) by email
  * [`patternMatcher`](https://github.com/fzaninotto/uptime/blob/master/plugins/patternMatcher/index.js): allow HTTP & HTTPS pollers to test the response body against a pattern
+
+To enable plugins, just add a line to the `plugins:` section of the configuration file.
+Two of the bundled plugins are already enabled by default:
+
+```yaml
+# in config/default.yaml
+plugins:
+  - ./plugins/console
+  - ./plugins/patternMatcher
+  # - ./plugins/email
+```
+
+You can override these settings in your environment configuration, for instance:
+
+```yaml
+# in config/production.yaml
+# disable the console plugin and enable the email plugin
+plugins:
+  # - ./plugins/console
+  - ./plugins/patternMatcher
+  - ./plugins/email
+```
 
 Third-party plugins:
 
  * [`webhooks`](https://github.com/mintbridge/uptime-webhooks): notify events to an URL by sending an HTTP POST request 
  * [`campfire`](https://gist.github.com/dmathieu/5592418): notify events to Campfire
 
-You can also create your own plugins. For instance, if you had to recreate a simple version of the `console` plugin, you could write it as follows:
+Writing Plugins
+---------------
+
+A plugin is a simple Node.js module which hooks into predefined extension points. Uptime automatically requires plugin modules when starting the webapp and the monitor, and tries to call the two following functions:
+
+* `initWebApp(options)` when starting the webapp
+* `initMonitor(options)` when starting the monitor
+
+Check the [app.js](https://github.com/fzaninotto/uptime/blob/master/app.js#L97) and [monitor.js](https://github.com/fzaninotto/uptime/blob/master/monitor.js#L8) to see a detail of the options passed to each hook. Also, check the code of existing plugins to understand how they can add new pollers, new notification types, etc.
+
+For instance, if you had to recreate a simple version of the `console` plugin, you could write it as follows:
 
 ```js
 // in plugins/console/index.js
 var CheckEvent = require('../../models/checkEvent');
-exports.init = function() {
+exports.initWebapp = function() {
   CheckEvent.on('afterInsert', function(checkEvent) {
     checkEvent.findCheck(function(err, check) {
       console.log(new Date() + check.name + checkEvent.isGoDown ? ' goes down' : ' goes back up');
