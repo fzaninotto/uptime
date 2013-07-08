@@ -3,16 +3,19 @@
  *
  * Logs all pings and events (up, down, paused, restarted) on the console
  *
- * To enable the plugin, call init() in the webapp hook in plugins/index.js
- *   exports.initWebApp = function() {
- *     require('./console').init();
- *   }
- * 
+ * Installation
+ * ------------
+ * This plugin is enabled by default. To disable it, remove its entry 
+ * from the `plugins` key of the configuration:
+ *
+ *   // in config/production.yaml
+ *   plugins:
+ *     # - ./plugins/console
  */
 var Ping = require('../../models/ping');
 var CheckEvent = require('../../models/checkEvent');
 
-exports.init = function(enableNewEvents, enableNewPings) {
+exports.initWebApp = function(enableNewEvents, enableNewPings) {
   if (typeof enableNewEvents == 'undefined') enableNewEvents = true;
   if (typeof enableNewPings == 'undefined') enableNewPings = true;
   if (enableNewEvents) registerNewEventsLogger();

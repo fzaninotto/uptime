@@ -3,22 +3,18 @@
  *
  * Adds the ability to HTTP & HTTPS pollers to test the response body against a pattern
  *
- * The plugin must be enabled both in the monitor and in the webapp:
+ * Installation
+ * ------------
+ * This plugin is enabled by default. To disable it, remove its entry 
+ * from the `plugins` key of the configuration:
  *
- *   // in plugins/index.js
- *   var patternMatcherPlugin = require('./patternMatcher');
+ *   // in config/production.yaml
+ *   plugins:
+ *     # - ./plugins/patternMatcher
  *
- *   exports.initWebApp = function(options) {
- *     // enable patternMatcher for the webapp
- *     patternMatcherPlugin.initWebApp(options);
- *   };
- *
- *   exports.initMonitor = function(options) {
- *     // enable patternMatcher for the monitor
- *     patternMatcherPlugin.initMonitor(options);
- *   };
- *
- * Then, restart Uptime, and add a pattern to http checks in the dashboard UI.
+ * Usage
+ * -----
+ * Add a pattern to http checks in the dashboard UI.
  * Patterns are regexp, for instance '/hello/i'.
  *
  * When Uptime polls a check with a pattern, it tests the pattern against the 
