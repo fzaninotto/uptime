@@ -95,6 +95,20 @@ io.sockets.on('connection', function(socket) {
 });
 
 // load plugins
+config.plugins.forEach(function(pluginName) {
+  var plugin = require(pluginName);
+  if (typeof plugin.initWebApp !== 'function') return;
+  console.log('loading plugin %s on app', pluginName);
+  plugin.initWebApp({
+    app:       app,
+    api:       apiApp,       // mounted into app, but required for events
+    dashboard: dashboardApp, // mounted into app, but required for events
+    io:        io,
+    config:    config,
+    mongoose:  mongoose
+  });
+});
+// old way to load plugins, kept for BC
 fs.exists('./plugins/index.js', function(exists) {
   if (exists) {
     var pluginIndex = require('./plugins');
