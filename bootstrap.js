@@ -13,8 +13,9 @@ mongoose.connection.on('open', function (err) {
   mongoose.connection.db.admin().serverStatus(function(err, data) {
     if (err) {
       if (err.name === "MongoError" && (err.errmsg === 'need to login' || err.errmsg === 'unauthorized')) {
+        var userPass = getUsernameAndPassword();
         console.log('Forcing MongoDB authentication');
-        mongoose.connection.db.authenticate(config.mongodb.user, config.mongodb.password, function(err) {
+        mongoose.connection.db.authenticate(userPass[0], userPass[1], function(err) {
           if (!err) return;
           console.error(err);
           process.exit(1);
@@ -32,5 +33,19 @@ mongoose.connection.on('open', function (err) {
   });
 });
 
+var getUsernameAndPassword = function() {
+  var user, password;
+  if (config.mongodb.connectionString) {
+    var userPass = config.mongodb.connectionString.match(/^mongodb\:\/\/([^@:]+)\:?([^@]*)@/);
+    if (userPass && userPass[1]) {
+      user = userPass[1];
+      password = userPass[2];
+    }
+  } else {
+    user = config.mongodb.user;
+    password = config.mongodb.password;
+  }
+  return [user, password];
+};
 
 module.exports = mongoose;
