@@ -4,6 +4,7 @@ Uptime Changelog
 To be released
 --------------
 
+* Add basicAuth plugin to restrict access to the API and dashboard apps using Basic Authentication
 * Upgrade moment.js to version 2.1
 * Add httpOptions plugin to allow setting custom headers or HTTP options to a check
 * Update the README about the plugin system
