@@ -4,6 +4,8 @@ Uptime Changelog
 To be released
 --------------
 
+* Upgrade moment.js to version 2.1
+* Add httpOptions plugin to allow setting custom headers or HTTP options to a check
 * Update the README about the plugin system
 * Update plugins system to make it easier to enable new plugins, just by adding a line in the configuration
 * Add pollerCollections to allow the addition of custom pollers
@@ -13,13 +15,12 @@ To be released
 * Add architecture schema in the README
 * Update Dummy Target more to make it verbose on the console
 * Update Check model to store pollerParams
-* Update Ping model tostore pollerDetails
+* Update Ping model to store pollerDetails
 * Add new events to Monitor and dashboard app
 * Add more plugins extension points: they can now add details to checks, abilities to pollers, and store additional details about pings
-* Move Pattern Matcher logic to a plugin
 * Fix warnings in production by using cookie store for sessions
 * Add mention of external plugins in README
-* Add pattern detection in response body
+* Add patternMatcher plugin to allow pattern detection in response body
 * Fix bug allowing the creation of empty checks
 * Add Http Status 303 to allowed redirect Types
 * Fix "Cannot set property 'protocol' of undefined" error when running Uptime behind a proxy

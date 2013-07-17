@@ -1,0 +1,15 @@
+<script src="/httpOptions/javascripts/jquery.autoresize.js"></script>
+<fieldset>
+  <div class="control-group">
+    <label class="control-label">HTTP Options</label>
+    <div class="controls">
+      <textarea name="check[http_options]" class="span8" rows="3" placeholder="Use YAML format, e.g method: HEAD"/><%= check.getPollerParam('http_options') || '' %></textarea>
+      <span class="help-inline">See the Node.js HTTP documentation for a list of available options</span>
+    </div>
+  </div>
+</fieldset>
+<script type="text/javascript">
+jQuery(function($) {
+  $('#check_form textarea[name="check[http_options]"]').autoResize();
+});
+</script>

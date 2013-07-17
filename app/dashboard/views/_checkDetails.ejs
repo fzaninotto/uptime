@@ -162,7 +162,7 @@ $(document).ready(function() {
       .done(function(html) { pollerDetails.html(html); });
   });
 
-  var tagField = $('#check_form textarea');
+  var tagField = $('#check_form textarea[name="check[tags]"]');
   var tags = tagField.val().split(', ');
   tagField.tagsInput();
   $('.tagsinput span.tag span').live('click', function() {

@@ -25,6 +25,7 @@ server:
 plugins:
   - ./plugins/console
   - ./plugins/patternMatcher
+  - ./plugins/httpOptions
   # - ./plugins/email
 
 email:
