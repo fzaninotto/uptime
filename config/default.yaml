@@ -27,6 +27,7 @@ plugins:
   - ./plugins/patternMatcher
   - ./plugins/httpOptions
   # - ./plugins/email
+  # - ./plugins/basicAuth
 
 email:
   method:      SMTP  # possible methods are SMTP, SES, or Sendmail
@@ -45,4 +46,7 @@ email:
     to:              # The message recipient, e.g. 'bar@blurdybloop.com, baz@blurdybloop.com'
   dashboardUrl: 'http://localhost:8082'
 
+basicAuth:
+  username:    admin
+  password:    password
 verbose: true # only used in dev

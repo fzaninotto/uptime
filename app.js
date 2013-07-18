@@ -43,6 +43,23 @@ app.configure(function(){
   app.set('pollerCollection', new PollerCollection());
 });
 
+// load plugins (may add their own routes and middlewares)
+config.plugins.forEach(function(pluginName) {
+  var plugin = require(pluginName);
+  if (typeof plugin.initWebApp !== 'function') return;
+  console.log('loading plugin %s on app', pluginName);
+  plugin.initWebApp({
+    app:       app,
+    api:       apiApp,       // mounted into app, but required for events
+    dashboard: dashboardApp, // mounted into app, but required for events
+    io:        io,
+    config:    config,
+    mongoose:  mongoose
+  });
+});
+
+app.emit('beforeFirstRoute', app, apiApp);
+
 app.configure('development', function() {
   if (config.verbose) mongoose.set('debug', true);
   app.use(express.static(__dirname + '/public'));
@@ -56,14 +73,20 @@ app.configure('production', function() {
 });
 
 // Routes
+app.emit('beforeApiRoutes', app, apiApp);
 app.use('/api', apiApp);
+
+app.emit('beforeDashboardRoutes', app, dashboardApp);
 app.use('/dashboard', dashboardApp);
 app.get('/', function(req, res) {
   res.redirect('/dashboard/events');
 });
+
 app.get('/favicon.ico', function(req, res) {
   res.redirect(301, '/dashboard/favicon.ico');
 });
+
+app.emit('afterLastRoute', app);
 
 // Sockets
 var io = socketIo.listen(server);
@@ -94,20 +117,6 @@ io.sockets.on('connection', function(socket) {
   });
 });
 
-// load plugins
-config.plugins.forEach(function(pluginName) {
-  var plugin = require(pluginName);
-  if (typeof plugin.initWebApp !== 'function') return;
-  console.log('loading plugin %s on app', pluginName);
-  plugin.initWebApp({
-    app:       app,
-    api:       apiApp,       // mounted into app, but required for events
-    dashboard: dashboardApp, // mounted into app, but required for events
-    io:        io,
-    config:    config,
-    mongoose:  mongoose
-  });
-});
 // old way to load plugins, kept for BC
 fs.exists('./plugins/index.js', function(exists) {
   if (exists) {
