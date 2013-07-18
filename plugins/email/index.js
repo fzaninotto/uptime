@@ -52,11 +52,11 @@
 var fs         = require('fs');
 var nodemailer = require('nodemailer');
 var moment     = require('moment');
-var config     = require('config').email;
 var CheckEvent = require('../../models/checkEvent');
 var ejs        = require('ejs');
 
 exports.initWebApp = function() {
+  var config = options.config.email;
   var mailer = nodemailer.createTransport(config.method, config.transport);
   var templateDir = __dirname + '/views/';
   CheckEvent.on('afterInsert', function(checkEvent) {
