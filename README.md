@@ -143,6 +143,7 @@ Plugins can add more notification types, more poller types, new routes to the we
  * [`email`](https://github.com/fzaninotto/uptime/blob/master/plugins/email/index.js): notify events (up, down pause) by email
  * [`patternMatcher`](https://github.com/fzaninotto/uptime/blob/master/plugins/patternMatcher/index.js): allow HTTP & HTTPS pollers to test the response body against a pattern
  * [`httpOptions`](https://github.com/fzaninotto/uptime/blob/master/plugins/httpOptions/index.js): add custom HTTP options and headers to HTTP and HTTPS checks (e.g. to allow self-signed certificate on HTTPS, custom headers, custom HTTP methods, ...)
+ * [`basicAuth`](https://github.com/fzaninotto/uptime/blob/master/plugins/basicAuth/index.js): add HTTP Basic Access Authentication to the dashboard and API applications
 
 To enable plugins, just add a line to the `plugins:` section of the configuration file.
 Three of the bundled plugins are already enabled by default:
@@ -154,6 +155,7 @@ plugins:
   - ./plugins/patternMatcher
   - ./plugins/httpOptions
   # - ./plugins/email
+  # - ./plugins/basicAuth
 ```
 
 You can override these settings in your environment configuration, for instance:
@@ -166,6 +168,7 @@ plugins:
   - ./plugins/patternMatcher
   - ./plugins/httpOptions
   - ./plugins/email
+  # - ./plugins/basicAuth
 ```
 
 Third-party plugins:
