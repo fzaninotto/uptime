@@ -4,6 +4,7 @@ Uptime Changelog
 To be released
 --------------
 
+* Remove ICMP poller as it requires Uptime to be launched with root permissions to work
 * Add basicAuth plugin to restrict access to the API and dashboard apps using Basic Authentication
 * Upgrade moment.js to version 2.1
 * Add httpOptions plugin to allow setting custom headers or HTTP options to a check
