@@ -55,7 +55,7 @@ var moment     = require('moment');
 var CheckEvent = require('../../models/checkEvent');
 var ejs        = require('ejs');
 
-exports.initWebApp = function() {
+exports.initWebApp = function(options) {
   var config = options.config.email;
   var mailer = nodemailer.createTransport(config.method, config.transport);
   var templateDir = __dirname + '/views/';
