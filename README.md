@@ -47,6 +47,10 @@ Lastly, start the application with:
 $ node app
 ```
 
+To install all related soft & uptime itself in lxc-container (via [docker](http://www.docker.io/))
+checkout [docker-uptime](https://github.com/ekalinin/docker-uptime).
+
+
 Upgrading From a 2.0 Install
 ----------------------------
 
