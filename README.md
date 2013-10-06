@@ -23,7 +23,7 @@ Features
 * Monitor availability, responsiveness, average response time, and total uptime/downtime
 * Get details about failed checks (HTTP error code, etc.)
 * Group checks by tags and get reports by tag
-* Familiar web interface (powered by [Twitter Bootstrap 2.0](http://twitter.github.com/bootstrap/index.html))
+* Familiar web interface (powered by [Twitter Bootstrap 3.0](http://getbootstrap.com/))
 * Complete API for integration with third-party monitoring services
 * Powerful plugin system to ease extension and customization
 * Easy installation and zero administration
@@ -219,7 +219,7 @@ Uptime uses third-party libraries:
 * [Socket.io](http://socket.io/), licensed under the [MIT License](https://github.com/LearnBoost/socket.io/blob/master/Readme.md),
 * [MongooseJS](http://mongoosejs.com/), licensed under the [MIT License](https://github.com/LearnBoost/mongoose/blob/master/README.md),
 * [jQuery](http://jquery.com/), licensed under the [MIT License](http://jquery.org/license),
-* [TwitterBootstrap](http://twitter.github.com/bootstrap/), licensed under the [Apache License v2.0](http://www.apache.org/licenses/LICENSE-2.0),
+* [TwitterBootstrap](http://getbootstrap.com/), licensed under the [Apache License v2.0](http://www.apache.org/licenses/LICENSE-2.0),
 * [Flotr2](http://www.humblesoftware.com/flotr2/), licensed under the [MIT License](https://github.com/HumbleSoftware/Flotr2/blob/master/LICENSE).
 * [Favicon](http://www.alexpeattie.com/projects/justvector_icons/), distributed under the [Free Art License](http://artlibre.org/licence/lal/en).
 
