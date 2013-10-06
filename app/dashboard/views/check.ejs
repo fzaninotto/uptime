@@ -1,5 +1,5 @@
 <script src="<%= route %>/javascripts/ejs.min.js"></script>
-<script src="<%= route %>/javascripts/bootstrap-affix.js"></script>
+<script src="<%= route %>/javascripts/bootstrap.min.js"></script>
 <script src="<%= route %>/javascripts/checkState.js"></script>
 <script src="<%= route %>/javascripts/dateInterval.js"></script>
 <script src="<%= route %>/javascripts/dateNavigation.js"></script>
@@ -11,7 +11,7 @@ var ejs = require('ejs');
 ejs.open = '{{';
 ejs.close = '}}';
 </script>
-<div style="float: right;">
+<div class="pull-right">
   <span id="check_24h"></span>
   <a href="<%= route %>/checks/<%= check._id %>/edit" class="btn btn-primary">Edit</a>
 </div>
@@ -25,33 +25,33 @@ ejs.close = '}}';
 <div id="dateNavigationContainer">
   <div id="dateNavigation">
     <div class="row">
-      <div class="span2"></div>
-      <div class="span10">
+      <div class="col-md-2"></div>
+      <div class="col-md-10">
         <div class="title"></div>
         <div class="timeline"></div>
       </div>
     </div>
     <div class="row">
-      <div class="span2">
+      <div class="col-md-2">
         <ul class="btn-group zoom"></ul>
       </div>
-      <div class="span10">
+      <div class="col-md-10">
         <div class="periods"></div>
       </div>
     </div>
   </div>
 </div>
 <div id="sectionList" class="row">
-  <div class="span2">
+  <div class="col-md-2">
     <ul id="secondaryNav" class="nav nav-tabs nav-stacked">
-      <li><a href="#availability" title="Percentage of uptime over the period">Availability<i class="icon-chevron-right"></i><br/><strong class="availability"></strong>%</a></li>
-      <li><a href="#events">Downtime<i class="icon-chevron-right"></i><br/><strong class="downtime"></strong></a></li>
-      <li><a href="#responseTime" title="Average response time over the period">Response Time<i class="icon-chevron-right"></i><br/><strong class="avgRespTime"></strong>ms</a></li>
-      <li><a href="#responsiveness" title="Percentage of pings above slow treshold over the period">Responsiveness<i class="icon-chevron-right"></i><br/><strong class="responsiveness"></strong>%</a></li>
-      <li><a href="#data">Data<i class="icon-chevron-right"></i></a></li>
+      <li><a href="#availability" title="Percentage of uptime over the period">Availability<i class="glyphicon glyphicon-chevron-right"></i><br/><strong class="availability"></strong>%</a></li>
+      <li><a href="#events">Downtime<i class="glyphicon glyphicon-chevron-right"></i><br/><strong class="downtime"></strong></a></li>
+      <li><a href="#responseTime" title="Average response time over the period">Response Time<i class="glyphicon glyphicon-chevron-right"></i><br/><strong class="avgRespTime"></strong>ms</a></li>
+      <li><a href="#responsiveness" title="Percentage of pings above slow treshold over the period">Responsiveness<i class="glyphicon glyphicon-chevron-right"></i><br/><strong class="responsiveness"></strong>%</a></li>
+      <li><a href="#data">Data<i class="glyphicon glyphicon-chevron-right"></i></a></li>
     </ul>
   </div>
-  <div class="span10">
+  <div class="col-md-10">
     <section id="availability">
     <%- partial('_availability') %>
     </section>
