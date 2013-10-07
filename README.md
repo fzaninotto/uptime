@@ -11,7 +11,7 @@ You can watch a [demo screencast on Vimeo](https://vimeo.com/39302164).
 Features
 --------
 
-* Monitor thousands of websites (powered by [Node.js asynchronous programming](http://dotheweb.posterous.com/nodejs-for-php-programmers-1-event-driven-pro))
+* Monitor thousands of websites (powered by [Node.js asynchronous programming](http://redotheweb.com/2012/01/23/nodejs-for-php-programmers-1-event-driven-programming-and-pasta.html))
 * Tweak frequency of monitoring on a per-check basis, up to the second
 * Check the presence of a pattern in the response body
 * Receive notifications whenever a check goes down
