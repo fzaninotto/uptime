@@ -1,0 +1,25 @@
+  <li>
+  <span class="label" title="<%= moment(event.timestamp) %>"><%= moment(event.timestamp).format('LT') %></span>
+  <% var label = (event.message == 'paused' || event.message == 'restarted') ? 'info' : (event.message == 'up') ? 'success' : 'important' %>
+  <span class="label label-<%= label %>"><%= event.message %></span>
+  <%= event.check.name %>
+ <% switch (event.message) { // cannot close ejs tag here or compilation fails, sorry
+       case 'paused': %>
+    <% case 'restarted': %>
+      was <%= event.message %>
+    <% break; %>
+    <% case 'down': %>
+      went down (<%= event.details %>)
+    <% break; %>
+    <% case 'up': %>
+      <% if (event.downtime) { %>
+      went back up after <%= moment.duration(event.downtime).humanize() %> of downtime
+      <% } else { %>
+      is now up
+      <% } %>
+    <% break; %>
+    <% default: %>
+      unnown event
+  <% } %>
+
+  </li>

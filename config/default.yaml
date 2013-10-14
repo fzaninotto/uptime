@@ -1,7 +1,7 @@
 mongodb:
   server:   localhost
   database: uptime
-  user:     root 
+  user:     root
   password:
   connectionString:       # alternative to setting server, database, user and password separately
 
@@ -28,12 +28,13 @@ plugins:
   - ./plugins/httpOptions
   # - ./plugins/email
   # - ./plugins/basicAuth
+  # - ./plugins/statusPage
 
 email:
   method:      SMTP  # possible methods are SMTP, SES, or Sendmail
   transport:         # see https://github.com/andris9/nodemailer for transport options
     service:   Gmail # see https://github.com/andris9/Nodemailer/blob/master/lib/wellknown.js for well-known services
-    auth:            
+    auth:
       user:          # The email account username, e.g. 'username@gmail.com'
       pass:          # The email account password, e.G. 'password'
   event:
@@ -41,7 +42,7 @@ email:
     down:      true
     paused:    false
     restarted: false
-  message:           
+  message:
     from:            # The message sender, e.g. 'Fred Foo <foo@blurdybloop.com>'
     to:              # The message recipient, e.g. 'bar@blurdybloop.com, baz@blurdybloop.com'
   dashboardUrl: 'http://localhost:8082'
@@ -50,3 +51,12 @@ basicAuth:
   username:    admin
   password:    password
 verbose: true # only used in dev
+
+statusPage:
+  exec:        '(scp $1 user@server:/var/www/status/index.html)' # command executed after every status change
+  basePath:    './app/dashboard/public/'                         # base path for assets
+  event:
+    up:        true
+    down:      true
+    paused:    true
+    restarted: true
