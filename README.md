@@ -284,6 +284,9 @@ module.exports = {
     password: process.env.MONGOLAB_PASSWORD,
     connectionString: process.env.MONGOLAB_URI
   },
+  monitor: {
+        apiUrl: process.env.UPTIME_API_URL  
+  },
   verbose: false
 }
 ```
