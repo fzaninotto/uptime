@@ -23,7 +23,7 @@ Features
 * Monitor availability, responsiveness, average response time, and total uptime/downtime
 * Get details about failed checks (HTTP error code, etc.)
 * Group checks by tags and get reports by tag
-* Familiar web interface (powered by [Twitter Bootstrap 2.0](http://twitter.github.com/bootstrap/index.html))
+* Familiar web interface (powered by [Twitter Bootstrap 3.0](http://getbootstrap.com/))
 * Complete API for integration with third-party monitoring services
 * Powerful plugin system to ease extension and customization
 * Easy installation and zero administration
@@ -219,11 +219,83 @@ Uptime uses third-party libraries:
 * [Socket.io](http://socket.io/), licensed under the [MIT License](https://github.com/LearnBoost/socket.io/blob/master/Readme.md),
 * [MongooseJS](http://mongoosejs.com/), licensed under the [MIT License](https://github.com/LearnBoost/mongoose/blob/master/README.md),
 * [jQuery](http://jquery.com/), licensed under the [MIT License](http://jquery.org/license),
-* [TwitterBootstrap](http://twitter.github.com/bootstrap/), licensed under the [Apache License v2.0](http://www.apache.org/licenses/LICENSE-2.0),
+* [TwitterBootstrap](http://getbootstrap.com/), licensed under the [Apache License v2.0](http://www.apache.org/licenses/LICENSE-2.0),
 * [Flotr2](http://www.humblesoftware.com/flotr2/), licensed under the [MIT License](https://github.com/HumbleSoftware/Flotr2/blob/master/LICENSE).
 * [Favicon](http://www.alexpeattie.com/projects/justvector_icons/), distributed under the [Free Art License](http://artlibre.org/licence/lal/en).
 
 If you like the software, please help improving it by contributing PRs on the [GitHub project](https://github.com/fzaninotto/uptime)!
+
+
+Deploy to Heroku
+----
+The following documents how to setup and deploy uptime to (Heroku)[https://www.heroku.com/‎].  Some of these steps could be combined but are separated for clarity.
+
+Create Heroku App
+
+```
+$ heroku apps:create heroku-uptime
+```
+
+Add MongoLab Add-on
+
+```
+$ heroku addons:add mongolab
+```
+
+Add WebSSocket Support
+
+```
+$ heroku labs:enable websockets
+```
+
+Add PaperTrail (Optional, but very handy for debugging)
+
+```
+$ heroku addons:add papertrail
+```
+
+Heroku creates the environment variable, MONGODB_URI but we are still forced to provide a username and password (see bootstrap.js).  Set your config variables.
+
+```
+$ heroku config
+=== heroku-uptime Config Vars
+MONGOLAB_URI:         mongodb://YourAwesomeUsername:YourAwesomePassword@subdomain.mongolab.com:51368/YourAwesomeUsername
+
+$ heroku config:add MONGOLAB_USERNAME=YourAwesomeUsername MONGOLAB_PASSWORD=YourAwesomePassword
+Setting config vars and restarting uptime-demo... done, v2
+MONGOLAB_USERNAME: YourAwesomeUsername
+MONGOLAB_PASSWORD: YourAwesomePassword
+```
+
+Set the environment for node-config
+
+```
+$ heroku config:add NODE_ENV=demo
+```
+
+Create the config/demo.js file.  A .js file is used instead of a .yaml file so environment variables can be used.  Remember, yhe name of this file needs to correspond to the name of the environment set in the previous step!
+
+```
+// demo.js
+
+module.exports = {
+  mongodb: {
+    user:     process.env.MONGOLAB_USERNAME,
+    password: process.env.MONGOLAB_PASSWORD,
+    connectionString: process.env.MONGOLAB_URI
+  },
+  verbose: false
+}
+
+Push your repo to Heroku
+
+```
+$ git push heroku master
+```
+
+Navigate to your app, https://heroku-uptime.herokuapp.com.  Note the use of the HTTPS endpoint. 
+
+You're now monitoring uptime in the cloud!
 
 TODO
 ----
@@ -231,3 +303,4 @@ TODO
 * Account for scheduled maintenance (and provide two QoS calculations: with and without scheduled maintenance)
 * Allow for JavaScript execution in the monitored resources by using a headless browser (probably zombie.js)
 * Unit tests
+* Support HTTPS over the API endpoint 

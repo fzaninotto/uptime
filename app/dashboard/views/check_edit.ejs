@@ -1,5 +1,5 @@
 <script src="<%= route %>/javascripts/checkState.js"></script>
-<div style="float: right;">
+<div class="pull-right">
   <span id="check_24h"></span>
 </div>
 <h1>Edit check "<%= check.name %>"</h1>
@@ -21,15 +21,15 @@ jQuery(document).ready(function($) {
   });
   
   // manage pause
-  $('button[name="pause"]').click(function(e) {
+  $('span[name="pause"]').click(function(e) {
     var button = $(this).children();
     $.getJSON('/api/checks/<%= check._id %>/pause', function() {
-      if(button.hasClass('icon-pause')) {
-        button.removeClass('icon-pause');
-        button.addClass('icon-play');
+      if(button.hasClass('glyphicon-pause')) {
+        button.removeClass('glyphicon-pause');
+        button.addClass('glyphicon-play');
       } else {
-        button.removeClass('icon-play');
-        button.addClass('icon-pause');
+        button.removeClass('glyphicon-play');
+        button.addClass('glyphicon-pause');
       }
     });
     e.preventDefault();
