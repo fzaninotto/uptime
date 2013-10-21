@@ -286,6 +286,7 @@ module.exports = {
   },
   verbose: false
 }
+```
 
 Push your repo to Heroku
 
