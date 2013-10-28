@@ -17,7 +17,9 @@
     "moment":    "2.1.0",
     "nodemailer": "0.3.35",
     "net-ping":  "1.1.7",
-    "js-yaml": "2.1.0"
+    "js-yaml": "2.1.0",
+    "native-dns": "0.4.1",
+    "tldjs": "1.2.0"
   },
   "devDependencies": {
     "mocha": "1.7.x",
