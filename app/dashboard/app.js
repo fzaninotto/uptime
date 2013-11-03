@@ -23,6 +23,7 @@ app.configure(function(){
   app.use(flash());
   app.use(function locals(req, res, next) {
     res.locals.route = app.route;
+    res.locals.addedCss = [];
     res.locals.renderCssTags = function (all) {
       if (all != undefined) {
         return all.map(function(css) {
@@ -50,7 +51,6 @@ app.configure('production', function(){
 });
 
 app.locals({
-  addedCss: [],
   version: moduleInfo.version
 });
 
