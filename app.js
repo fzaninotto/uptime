@@ -135,9 +135,13 @@ fs.exists('./plugins/index.js', function(exists) {
   }
 });
 
-var port = process.env.PORT || config.server.port;
-server.listen(port);
-console.log("Express server listening on port %d in %s mode", port, app.settings.env);
+module.exports = app;
+if (!module.parent) {
+  var port = process.env.PORT || config.server.port;
+  server.listen(port, function(){
+    console.log("Express server listening on port %d in %s mode", port, app.settings.env);
+  });
+}
 
 // monitor
 if (config.autoStartMonitor) {

@@ -314,6 +314,33 @@ Check.methods.getSingleStatForPeriod = function(period, date, callback) {
   });
 };
 
+Check.methods.populateFromDirtyCheck = function(dirtyCheck, pollerCollection) {
+  this.url = dirtyCheck.url || this.url;
+  this.maxTime = dirtyCheck.maxTime || this.maxTime;
+  this.isPaused = dirtyCheck.isPaused || this.isPaused;
+  this.alertTreshold = dirtyCheck.alertTreshold || this.alertTreshold;
+  this.interval = dirtyCheck.interval * 1000 || this.interval;
+
+  if(typeof(dirtyCheck.name) != 'undefined') {
+      this.name = dirtyCheck.name;
+  } else if(typeof(this.name) == 'undefined') {
+      this.name = dirtyCheck.url;
+  }
+
+  if(typeof(dirtyCheck.tags) != 'undefined') {
+    this.tags = this.constructor.convertTags(dirtyCheck.tags);
+  }
+
+  if (dirtyCheck.type) {
+    if (!pollerCollection.getForType(dirtyCheck.type).validateTarget(this.url)) {
+      throw new Error('URL ' + this.url + ' and poller type ' + dirtyCheck.type + ' mismatch');
+    }
+    this.type = dirtyCheck.type;
+  } else {
+    this.type = pollerCollection.guessTypeForUrl(this.url);
+  }
+};
+
 Check.statics.getAllTags = function(callback) {
   this.aggregate(
     { $unwind: "$tags" },
