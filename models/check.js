@@ -331,6 +331,10 @@ Check.methods.populateFromDirtyCheck = function(dirtyCheck, pollerCollection) {
     this.tags = this.constructor.convertTags(dirtyCheck.tags);
   }
 
+  if(typeof(this.url) == 'undefined') {
+    throw new Error('URL must be defined');
+  }
+
   if (dirtyCheck.type) {
     if (!pollerCollection.getForType(dirtyCheck.type).validateTarget(this.url)) {
       throw new Error('URL ' + this.url + ' and poller type ' + dirtyCheck.type + ' mismatch');
