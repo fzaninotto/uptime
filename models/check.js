@@ -321,9 +321,9 @@ Check.methods.populateFromDirtyCheck = function(dirtyCheck, pollerCollection) {
   this.alertTreshold = dirtyCheck.alertTreshold || this.alertTreshold;
   this.interval = dirtyCheck.interval * 1000 || this.interval;
 
-  if(typeof(dirtyCheck.name) != 'undefined') {
+  if(typeof(dirtyCheck.name) !== 'undefined' && dirtyCheck.name.length) {
       this.name = dirtyCheck.name;
-  } else if(typeof(this.name) == 'undefined') {
+  } else if(typeof(this.name) === 'undefined' || !this.name.length ) {
       this.name = dirtyCheck.url;
   }
 
