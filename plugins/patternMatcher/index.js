@@ -30,7 +30,7 @@ exports.initWebApp = function(options) {
 
   var dashboard = options.dashboard;
 
-	dashboard.on('populateCheckFromRequest', function(checkDocument, dirtyCheck, type) {
+	dashboard.on('populateFromDirtyCheck', function(checkDocument, dirtyCheck, type) {
 		if (type !== 'http' && type !== 'https') return;
     if (!dirtyCheck.match) return;
     var match = dirtyCheck.match;
