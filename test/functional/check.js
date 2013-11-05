@@ -15,24 +15,26 @@ describe('GET /checks', function() {
     this.server = app.listen(3000, done);
   });
 
-  before(function() {
+  before(function(done) {
     check1 = new Check();
     check1.url = 'http://www.url1.fr';
     check1.name = 'name1';
     check1.isPaused = false;
-    check1.save();
-
+    check1.save(done);
+  });
+  before(function(done) {
     check2 = new Check();
     check2.url = 'http://www.url2.fr';
     check2.isPaused = false;
-    check2.save();
+    check2.save(done);
   });
 
   it('should fetch all elements', function(done) {
     request('http://127.0.0.1:3000/api/checks', function(err, resp, body){
       assert(!err);
       content = JSON.parse(body);
-      assert.equal(content.length, 2);
+      assert.notEqual(content.length, 0);
+      //@todo complete test : fetch object in database and compare it with content.length
       done();
     });
   });
@@ -83,20 +85,55 @@ describe('PUT /checks', function() {
         assert.notEqual(typeof(object._id), 'undefined');
         assert.notEqual(typeof(object.url), 'undefined');
         done();
-
-        //@todo complete test : fecth object in database
+        //@todo complete test : fetch object in database
       });
     });
 
     req.on('error', function(e) {
-      console.log('problem with request: ' + e.message);
+      done(new Error('Error on PUT request'))
     });
 
     req.write(postData);
     req.end();
   });
 
-  it('should not add an invalid element');
+  it('should not add an invalid element with no url', function(done) {
+    var postData = JSON.stringify({
+      name: 'test'
+    });
+
+    var options = {
+      hostname: '127.0.0.1',
+      port: 3000,
+      path: '/api/checks',
+      method: 'PUT',
+      headers: {
+        'Content-Length': postData.length,
+        'Content-Type': 'application/json'
+      }
+    };
+
+    var req = http.request(options, function(res) {
+      res.setEncoding('utf8');
+      var body = '';
+
+      res.on('data', function(chunk) {
+        body += chunk;
+      });
+      res.on('end', function() {
+        var object = JSON.parse(body);
+        assert.notEqual(typeof(object.error), 'undefined');
+        done();
+      });
+    });
+
+    req.on('error', function(e) {
+      done(new Error('Error on PUT request'))
+    });
+
+    req.write(postData);
+    req.end();
+  });
 
   after(function(done) {
     Check.remove({}, done);
@@ -117,22 +154,140 @@ describe('POST /checks/:id', function() {
     this.server = app.listen(3000, done);
   });
 
-  before(function() {
+  before(function(done) {
     check1 = new Check();
     check1.url = 'http://www.url1.fr';
     check1.name = 'name1';
     check1.isPaused = false;
-    check1.save();
+    check1.save(done);
+  });
 
+  before(function(done) {
     check2 = new Check();
     check2.url = 'http://www.url2.fr';
     check2.isPaused = false;
-    check2.save();
+    check2.save(done);
   });
 
-  it('should return error if id parameter does not exists');
-  it('should update object if parameters are valid');
-  it('should be the same object if called twice');
+  it('should return error if id parameter does not exists', function(done) {
+
+    var postData = JSON.stringify({
+      name: 'test'
+    });
+
+    var options = {
+      hostname: '127.0.0.1',
+      port: 3000,
+      path: '/api/checks/toto',
+      method: 'POST',
+      headers: {
+        'Content-Length': postData.length,
+        'Content-Type': 'application/json'
+      }
+    };
+
+    var req = http.request(options, function(res) {
+      res.setEncoding('utf8');
+      var body = '';
+
+      res.on('data', function(chunk) {
+        body += chunk;
+      });
+      res.on('end', function() {
+        var object = JSON.parse(body);
+        assert.notEqual(typeof(object.error), 'undefined');
+        done();
+      });
+    });
+
+    req.on('error', function(e) {
+      done(new Error('Error on PUT request'))
+    });
+
+    req.write(postData);
+    req.end();
+  });
+
+  it('should update object if parameters are valid', function(done) {
+
+    var postData = JSON.stringify({
+      name: 'test',
+      url:'http://newurl.test'
+    });
+
+    var options = {
+      hostname: '127.0.0.1',
+      port: 3000,
+      path: '/api/checks/' + check1.id,
+      method: 'POST',
+      headers: {
+        'Content-Length': postData.length,
+        'Content-Type': 'application/json'
+      }
+    };
+
+    var req = http.request(options, function(res) {
+      res.setEncoding('utf8');
+      var body = '';
+
+      res.on('data', function(chunk) {
+        body += chunk;
+      });
+      res.on('end', function() {
+        var object = JSON.parse(body);
+        assert.equal(object.name, 'test');
+        assert.equal(object.url, 'http://newurl.test');
+        done();
+      });
+    });
+
+    req.on('error', function(e) {
+      done(new Error('Error on PUT request'))
+    });
+
+    req.write(postData);
+    req.end();
+  });
+
+  it('should not throw error if called twice on same id', function(done) {
+    var postData = JSON.stringify({
+      name: 'test',
+      url:'http://newurl.test'
+    });
+
+    var options = {
+      hostname: '127.0.0.1',
+      port: 3000,
+      path: '/api/checks/' + check1.id,
+      method: 'POST',
+      headers: {
+        'Content-Length': postData.length,
+        'Content-Type': 'application/json'
+      }
+    };
+
+    var req = http.request(options, function(res) {
+      res.setEncoding('utf8');
+      var body = '';
+
+      res.on('data', function(chunk) {
+        body += chunk;
+      });
+      res.on('end', function() {
+        var object = JSON.parse(body);
+        assert.equal(typeof(object.error), 'undefined');
+        assert.notEqual(typeof(object.name), 'undefined');
+        done();
+      });
+    });
+
+    req.on('error', function(e) {
+      done(new Error('Error on PUT request'))
+    });
+
+    req.write(postData);
+    req.end();
+  });
 
 
   after(function(done) {

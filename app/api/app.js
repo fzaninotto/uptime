@@ -11,7 +11,14 @@ var app = module.exports = express();
 
 app.configure(function(){
   app.use(app.router);
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+  app.use(function(err, req, res, next) {
+    if(!err) return next();
+    var jsonError = JSON.stringify({
+      error: err.toString()
+    });
+
+    res.send(400, jsonError);
+  });
 });
 
 // up count
