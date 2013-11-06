@@ -35,9 +35,33 @@ app.configure('development', function(){
   });
 });
 
+app.configure('test', function(){
+  app.use(function(err, req, res, next) {
+    if(!err) return next();
+
+    var status = 400;
+    var messageError = '';
+
+    if(typeof(err.status) !== 'undefined') {
+      status = err.status;
+      messageError = err.error.toString();
+    } else {
+      messageError = err.toString();
+    }
+
+    var jsonError = JSON.stringify({
+      error: messageError
+    });
+
+    res.send(status, jsonError);
+  });
+});
+
 app.configure('production', function(){
   app.use(express.errorHandler());
 });
+
+
 
 // up count
 var upCount;
