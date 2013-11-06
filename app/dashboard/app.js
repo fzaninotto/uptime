@@ -155,10 +155,8 @@ app.get('/tags', function(req, res, next) {
 });
 
 app.get('/tags/:name', function(req, res, next) {
-
   Tag.findOne({ name: req.params.name }, function(err, tag) {
     if (err) {
-      console.log('Error1', err);
       return next(err);
     }
     if (!tag) return next(new Error('failed to load tag ' + req.params.name));
