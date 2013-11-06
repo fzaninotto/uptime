@@ -59,7 +59,7 @@ var page = {};
     <%- partial('_responsiveness') %>
     </section>
     <section id="checks">
-    <%- partial('checks', { url: '/api/tags/' + tag.name + '/checks/', route: route } ) %>
+    <%- partial('_checks', { url: '/api/tags/' + tag.name + '/checks/', route: route } ) %>
     </section>
     <section id="data">
     <%- partial('_data', { url: '/api/tags/' + tag.name + '/stats/', route: route } ) %>
