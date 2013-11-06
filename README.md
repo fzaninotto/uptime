@@ -200,8 +200,164 @@ exports.initWebapp = function() {
   });
 }
 ```
-
 All Uptime entities emit lifecycle events that you can listen to on the Model class. These events are `beforeInsert`, `afterInsert`, `beforeUpdate`, `afterUpdate`, `beforeSave` (called for both inserts and updates), `afterSave` (called for both inserts and updates), `beforeRemove`, and `afterRemove`. For more information about these events, check the [mongoose-lifecycle](https://github.com/fzaninotto/mongoose-lifecycle) plugin.
+
+API
+---------------
+
+All API requests should be prefixed with `api', and use JSON to serialize data.
+API requests do not require authentication.
+
+Example of a valid API request:
+
+`GET http://example.com/api/checks`
+
+Example for a valid API request using curl :
+
+curl -i -H "Accept: application/json" -X PUT -d "name=example" -d "url=http://mysite.com" -d "interval=120" http://example.com/api/checks`
+
+
+### Status codes
+
+The API is designed to return different status codes :
+
+* `200 Ok` : The request was successful, the resource(s) itself is returned as JSON
+* `400 Bad Request` : An attribute of the API request is invalid or missing (e.g. the url of a check is missing)
+* `404 Not Found` : A resource could not be accessed (e.g. a check ID could not be found)
+* `500 Server Error` : Something went wrong on the server side (e.g. a check could not be saved in database)
+
+### CRUD routes
+
+* `GET /checks`
+   Return a list of all checks
+
+* `GET /checks/needingPoll`
+   Return a list of checks that need a poll (i.e. not paused, plus new or last tested > interval set between tests)
+
+* `GET /checks/:id`
+   Return a single check
+   Parameter :
+    * `id` : (required) Id of the check
+
+* `GET /checks/:id/pause`
+   Change the status (isPaused) of a check
+   Parameter :
+    * `id` : (required) Id of the check
+
+* `PUT /check/:id/test`
+   Test a check, return the line number of affected lines in database
+   Parameter :
+    * `id` : (required) Id of the check
+
+* `GET /pings`
+   Return a list of all pings
+
+* `GET /pings/check/:id/:page?`
+   Return a list of this check's pings (50 elements per page)
+   Parameters :
+    * `id` : (required) Id of the check
+    * `page` : (optional) Number of page
+
+* `GET /pings/events`
+   Return a list of events (CheckEvent) aggregated by day
+
+* `POST /pings`
+   Create a ping for a check, if the check exists and is not already polled
+   Parameters :
+    * `checkId` : (required) Id of the check
+    * `status` : (required)  Status
+    * `timestamp` : (optional) Date of polling
+    * `time` : (required) Response time
+    * `name` : (optional) Monitor name
+    * `error` : (optional)
+    * `details` : (optional)
+
+* `GET /tags`
+   Return list of all tags
+
+* `GET /tags/:name`
+   Return a single tag
+   Parameter :
+    * `name` : (required) name of the tag
+
+* `PUT /checks`
+   Create a new check and return it
+   Parameters :
+    * `url` : (required) Url of the check
+    * `name` : (optional) Name of the check - if empty, url will be set as check name
+    * `interval` : (optional) Interval of polling
+    * `maxTime` : (optional) Slow threshold
+    * `isPaused` : (optional) Status of polling
+    * `alertTreshold` : (optional) set the threshold of failed pings that will create an alert
+    * `tags` : (optional) list of tags (comma-separated values)
+    * `type` : (optional) type of check (auto|http|https|udp)
+
+
+* `POST /checks/:id`
+   Update a check and return it
+   Parameters :
+    * `id` : (required) Id of the check
+    * `url` : (optional) Url of the check
+    * `name` : (optional) Name of the check - if empty, url will be set as check name
+    * `interval` : (optional) Interval of polling
+    * `maxTime` : (optional) Slow threshold
+    * `isPaused` : (optional) Status of polling
+    * `alertTreshold` : (optional) set the threshold of failed pings that will create an alert
+    * `tags` : (optional) list of tags (comma-separated values)
+    * `type` : (optional) type of check - values : `auto`|`http`|`https`|`udp`
+
+### Statistics routes
+
+* GET /checks/:id/stat/:period/:timestamp
+   Return check stats for a period
+   Parameters :
+       * `id` : (required) Id of the check
+       * `period` : (required) Period - values :  `hour`|`day`|`month`|`year`
+       * `timestamp` : (required) Start date (timestamp)
+
+* GET /checks/:id/stats/:type
+   Return check stats for a period
+   Parameters :
+    * `id` : (required) Id of the check
+    * `type` : (required) Period - values :  `hour`|`day`|`month`|`year`
+    * `begin` : (required) Start date (timestamp)
+    * `end` : (required) End date (timestamp)
+
+* GET /tags/:name/checks/:period/:timestamp
+   Return tag stats for a period, joined by checks
+   Parameters :
+    * `name` : (required) Name of the tag
+    * `period` : (required) Period - values :  `hour`|`day`|`month`|`year`
+    * `timestamp` : (required) Start date (timestamp)
+
+* GET /tags/:name/stat/:period/:timestamp
+   Return tag stats for a period
+   Parameters :
+    * `name` : (required) Name of the tag
+    * `period` : (required) Period - values :  `hour`|`day`|`month`|`year`
+    * `timestamp` : (required) Start date (timestamp)
+
+* GET /tags/:name/stats/:type
+   Return tag stats for a period
+   Parameters :
+    * `name` : (required) Name of the tag
+    * `period` : (required) Period - values :  `hour`|`day`|`month`|`year`
+
+
+### Event routes
+
+* GET /checks/:id/events
+   Return the list of all events for the check
+   Parameter :
+    * `id` : (required) Id of the check
+
+* GET /tags/:name/events
+   Return the list of all events associated to the tag
+   Parameter :
+    * `name` : (required) Name of the tag
+    * `begin` : (required) Start date (timestamp)
+    * `end` : (required) End date (timestamp)
+
 
 Support and Discussion
 ----------------------

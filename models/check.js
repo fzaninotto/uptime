@@ -263,6 +263,9 @@ Check.methods.getStatsForPeriod = function(period, begin, end, callback) {
   var periodPrefs = statProvider[period];
   var stats = [];
   var query = { check: this, timestamp: { $gte: begin, $lte: end } };
+
+  console.log(periodPrefs);
+
   var stream = this.db.model(periodPrefs['model']).find(query).sort({ timestamp: -1 }).stream();
   stream.on('error', function(err) {
     callback(err);
