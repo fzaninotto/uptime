@@ -82,10 +82,51 @@ describe('PUT /checks', function() {
       });
       res.on('end', function() {
         var object = JSON.parse(body);
-        assert.notEqual(typeof(object._id), 'undefined');
-        assert.notEqual(typeof(object.url), 'undefined');
+        Check.findOne({ _id : object._id }, function(error, document) {
+          assert.notEqual(typeof(document), 'undefined');
+          assert.notEqual(typeof(error), null);
+          assert.equal(document.name, 'test');
+          done();
+        });
+      });
+    });
+
+    req.on('error', function(e) {
+      done(new Error('Error on PUT request'))
+    });
+
+    req.write(postData);
+    req.end();
+  });
+
+  it('should add a new element with url as name if name is empty', function(done) {
+    var postData = JSON.stringify({
+      name: '',
+      url:'http://mynewurl.test'
+    });
+
+    var options = {
+      hostname: '127.0.0.1',
+      port: 3000,
+      path: '/api/checks',
+      method: 'PUT',
+      headers: {
+        'Content-Length': postData.length,
+        'Content-Type': 'application/json'
+      }
+    };
+
+    var req = http.request(options, function(res) {
+      res.setEncoding('utf8');
+      var body = '';
+
+      res.on('data', function(chunk) {
+        body += chunk;
+      });
+      res.on('end', function() {
+        var object = JSON.parse(body);
+        assert.equal(object.url, object.name);
         done();
-        //@todo complete test : fetch object in database
       });
     });
 
