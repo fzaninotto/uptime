@@ -244,6 +244,8 @@ Parameter :
 
 * `id` : (required) Id of the check
 
+Ex: `http://localhost:8082/api/checks/527a25bdc9de6e0000000004`
+
 #### `GET /checks/:id/pause`
 
 Toggle the status (isPaused) of a check
@@ -251,6 +253,8 @@ Toggle the status (isPaused) of a check
 Parameter :
 
 * `id` : (required) Id of the check
+
+Ex: `http://localhost:8082/api/checks/527a25bdc9de6e0000000004/pause`
 
 #### `PUT /check/:id/test`
 
@@ -260,6 +264,8 @@ Return the number of affected records in the database (1 or 0).
 Parameter :
 
 * `id` : (required) Id of the check
+
+Ex: `http://localhost:8082/api/checks/527a25bdc9de6e0000000004/test`
 
 #### `GET /pings`
 
@@ -276,6 +282,9 @@ Parameters :
 Parameters :
 * `id` : (required) Id of the check
 * `page` : (optional) Number of page
+
+Ex: `http://localhost:8082/api/pings/check/527a25bdc9de6e0000000004/2`
+
 
 #### `GET /pings/events`
 
@@ -306,6 +315,8 @@ Return a single tag
 Parameter :
 
 * `name` : (required) name of the tag
+
+Ex: `http://localhost:8082/tags/good`
 
 #### `PUT /checks`
 
@@ -338,6 +349,8 @@ Parameters :
 * `tags` : (optional) list of tags (comma-separated values)
 * `type` : (optional) type of check - values : `auto`|`http`|`https`|`udp`
 
+Ex: `http://localhost:8082/api/checks/527a25bdc9de6e0000000004`
+
 ### Statistics routes
 
 #### `GET /checks/:id/stat/:period/:timestamp`
@@ -350,6 +363,8 @@ Parameters :
    * `period` : (required) Period - values :  `hour`|`day`|`month`|`year`
    * `timestamp` : (required) Start date (timestamp)
 
+Ex: `http://localhost:8082/api/checks/527a25bdc9de6e0000000004/stat/day/1383260400000`
+
 #### `GET /checks/:id/stats/:type`
 
 Return check stats for a period
@@ -361,6 +376,8 @@ Parameters :
 * `?begin=` : (required) Start date (timestamp)
 * `?end=` : (required) End date (timestamp)
 
+Ex: `http://localhost:8082/api/checks/527a25bdc9de6e0000000004/stats/month?begin=1383260400000&end=1385852399999`
+
 #### `GET /tags/:name/checks/:period/:timestamp`
 
 Return tag stats for a period, joined by checks
@@ -371,6 +388,8 @@ Parameters :
 * `period` : (required) Period - values :  `hour`|`day`|`month`|`year`
 * `timestamp` : (required) Start date (timestamp)
 
+Ex: `http://localhost:8082/api/tags/good/checks/month/1384816432099`
+
 #### `GET /tags/:name/stat/:period/:timestamp`
 
 Return tag stats for a period
@@ -380,6 +399,8 @@ Parameters :
 * `name` : (required) Name of the tag
 * `period` : (required) Period - values :  `hour`|`day`|`month`|`year`
 * `timestamp` : (required) Start date (timestamp)
+
+Ex: `http://localhost:8082/api/tags/good/stat/month/1383260400000`
 
 #### `GET /tags/:name/stats/:type`
 
@@ -392,6 +413,8 @@ Parameters :
 * `?begin=` : (required) Start date (timestamp)
 * `?end=` : (required) End date (timestamp)
 
+Ex: `http://localhost:8082/api/tags/good/stats/month?begin=1383260400000&end=1385852399999`
+
 ### Event routes
 
 #### `GET /checks/:id/events`
@@ -402,6 +425,8 @@ Parameter :
 
 * `id` : (required) Id of the check
 
+Ex: `http://localhost:8082/api/checks/527a25bdc9de6e0000000004/events`
+
 #### `GET /tags/:name/events`
 
 Return the list of all events associated to the tag
@@ -411,6 +436,8 @@ Parameter :
 * `name` : (required) Name of the tag
 * `?begin=` : (optional) Start date (timestamp)
 * `?end=` : (optional) End date (timestamp)
+
+Ex: `http://localhost:8082/api/tags/good/events?begin=1383260400000&end=1385852399999`
 
 Support and Discussion
 ----------------------

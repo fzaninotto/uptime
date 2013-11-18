@@ -13,6 +13,10 @@ describe('GET /checks', function() {
     pollerCollection = app.get('pollerCollection');
     this.server = app.listen(3000, done);
   });
+  
+  before(function(done) {
+    Check.remove({}, done);
+  });
 
   before(function(done) {
     check1 = new Check();
@@ -49,7 +53,7 @@ describe('GET /checks', function() {
 
       res.on('end', function(){
         content = JSON.parse(body);
-        assert.notEqual(content.length, 0);
+        assert.equal(content.length, 2);
         done();
       });
     });
