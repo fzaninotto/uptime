@@ -4,7 +4,6 @@ var Check = require('../../models/check');
 var app = require('../../app');
 var assert = require('assert');
 var http = require('http');
-var request = require('request');
 
 describe('GET /checks', function() {
 
@@ -22,6 +21,7 @@ describe('GET /checks', function() {
     check1.isPaused = false;
     check1.save(done);
   });
+
   before(function(done) {
     check2 = new Check();
     check2.url = 'http://www.url2.fr';
@@ -30,24 +30,45 @@ describe('GET /checks', function() {
   });
 
   it('should fetch all elements', function(done) {
-    request('http://127.0.0.1:3000/api/checks', function(err, resp, body){
-      assert(!err);
-      content = JSON.parse(body);
-      assert.notEqual(content.length, 0);
-      //@todo complete test : fetch object in database and compare it with content.length
-      done();
+
+    var options = {
+      hostname: '127.0.0.1',
+      port: 3000,
+      path: '/api/checks',
+      headers: {
+        'Accept': 'application/json'
+      }
+    };
+
+    var req = http.request(options, function(res) {
+      var body = "";
+      res.setEncoding('utf8');
+      res.on('data', function (chunk) {
+        body += chunk;
+      });
+
+      res.on('end', function(){
+        content = JSON.parse(body);
+        assert.notEqual(content.length, 0);
+        done();
+      });
+    });
+
+    req.end();
+
+    req.on('error', function(e) {
+      done(new Error('Error on GET request'))
     });
   });
 
   after(function(done) {
-   Check.remove({}, done);
+    Check.remove({}, done);
   });
 
   after(function(done) {
     this.server.close(done);
   });
 });
-
 
 describe('PUT /checks', function() {
 
@@ -69,7 +90,8 @@ describe('PUT /checks', function() {
       method: 'PUT',
       headers: {
         'Content-Length': postData.length,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
       }
     };
 
@@ -83,6 +105,7 @@ describe('PUT /checks', function() {
       res.on('end', function() {
         var object = JSON.parse(body);
         Check.findOne({ _id : object._id }, function(error, document) {
+          if (error) {return done(new Error('Error, object not found'))}
           assert.notEqual(typeof(document), 'undefined');
           assert.notEqual(typeof(error), null);
           assert.equal(document.name, 'test');
@@ -112,7 +135,8 @@ describe('PUT /checks', function() {
       method: 'PUT',
       headers: {
         'Content-Length': postData.length,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
       }
     };
 
@@ -150,7 +174,8 @@ describe('PUT /checks', function() {
       method: 'PUT',
       headers: {
         'Content-Length': postData.length,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
       }
     };
 
@@ -184,7 +209,6 @@ describe('PUT /checks', function() {
     this.server.close(done);
   });
 });
-
 
 describe('POST /checks/:id', function() {
 
@@ -223,7 +247,8 @@ describe('POST /checks/:id', function() {
       method: 'POST',
       headers: {
         'Content-Length': postData.length,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
       }
     };
 
@@ -263,7 +288,8 @@ describe('POST /checks/:id', function() {
       method: 'POST',
       headers: {
         'Content-Length': postData.length,
-        'Content-Type': 'application/json'
+        'Content-type': 'application/json',
+        'Accept': 'application/json'
       }
     };
 
@@ -303,7 +329,8 @@ describe('POST /checks/:id', function() {
       method: 'POST',
       headers: {
         'Content-Length': postData.length,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
       }
     };
 
@@ -330,7 +357,6 @@ describe('POST /checks/:id', function() {
     req.end();
   });
 
-
   after(function(done) {
     Check.remove({}, done);
   });
@@ -339,4 +365,3 @@ describe('POST /checks/:id', function() {
     this.server.close(done);
   });
 });
-

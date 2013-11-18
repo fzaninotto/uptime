@@ -215,8 +215,7 @@ Example of a valid API request:
 
 Example for a valid API request using curl :
 
-curl -i -H "Accept: application/json" -X PUT -d "name=example" -d "url=http://mysite.com" -d "interval=120" http://example.com/api/checks`
-
+`curl -i -H "Accept: application/json" -X PUT -d "name=example" -d "url=http://mysite.com" -d "interval=120" http://example.com/api/checks`
 
 ### Status codes
 
@@ -393,7 +392,6 @@ Parameters :
 * `?begin=` : (required) Start date (timestamp)
 * `?end=` : (required) End date (timestamp)
 
-
 ### Event routes
 
 #### `GET /checks/:id/events`
@@ -413,7 +411,6 @@ Parameter :
 * `name` : (required) Name of the tag
 * `?begin=` : (optional) Start date (timestamp)
 * `?end=` : (optional) End date (timestamp)
-
 
 Support and Discussion
 ----------------------

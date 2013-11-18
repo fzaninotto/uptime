@@ -7,60 +7,22 @@ var CheckEvent = require('../../models/checkEvent');
 
 var app = module.exports = express();
 
-// middleware
+var debugErrorHandler = function() {
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+}
 
+// middleware
 app.configure(function(){
   app.use(app.router);
 });
 
-app.configure('development', function(){
-  app.use(function(err, req, res, next) {
-    if(!err) return next();
+app.configure('development', debugErrorHandler);
 
-    var status = 400;
-    var messageError = '';
-
-    if(typeof(err.status) !== 'undefined') {
-      status = err.status;
-      messageError = err.error.toString();
-    } else {
-      messageError = err.toString();
-    }
-
-    var jsonError = JSON.stringify({
-      error: messageError
-    });
-
-    res.send(status, jsonError);
-  });
-});
-
-app.configure('test', function(){
-  app.use(function(err, req, res, next) {
-    if(!err) return next();
-
-    var status = 400;
-    var messageError = '';
-
-    if(typeof(err.status) !== 'undefined') {
-      status = err.status;
-      messageError = err.error.toString();
-    } else {
-      messageError = err.toString();
-    }
-
-    var jsonError = JSON.stringify({
-      error: messageError
-    });
-
-    res.send(status, jsonError);
-  });
-});
+app.configure('test', debugErrorHandler);
 
 app.configure('production', function(){
   app.use(express.errorHandler());
 });
-
 
 
 // up count

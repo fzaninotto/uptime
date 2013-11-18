@@ -115,12 +115,12 @@ module.exports = function(app) {
    var check = new Check();
    try {
      check.populateFromDirtyCheck(req.body, app.get('pollerCollection'));
+     app.emit('populateFromDirtyCheck', check, req.body, check.type);
    } catch (checkException) {
      return next(checkException);
    }
    check.save(function(saveError) {
      if(saveError) return next({status:500, error: saveError});
-
      res.json(check);
    });
  });
@@ -132,12 +132,12 @@ module.exports = function(app) {
 
      try {
        check.populateFromDirtyCheck(req.body, app.get('pollerCollection'));
+       app.emit('populateFromDirtyCheck', check, req.body, check.type);
      } catch (checkException) {
        return next(checkException);
      }
      check.save(function(saveError) {
        if(saveError) return next({status:500, error: saveError});
-
        res.json(check);
      });
    });

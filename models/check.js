@@ -321,17 +321,17 @@ Check.methods.populateFromDirtyCheck = function(dirtyCheck, pollerCollection) {
   this.alertTreshold = dirtyCheck.alertTreshold || this.alertTreshold;
   this.interval = dirtyCheck.interval * 1000 || this.interval;
 
-  if(typeof(dirtyCheck.name) !== 'undefined' && dirtyCheck.name.length) {
+  if (typeof(dirtyCheck.name) !== 'undefined' && dirtyCheck.name.length) {
       this.name = dirtyCheck.name;
-  } else if(typeof(this.name) === 'undefined' || !this.name.length ) {
+  } else if (typeof(this.name) === 'undefined' || !this.name.length ) {
       this.name = dirtyCheck.url;
   }
 
-  if(typeof(dirtyCheck.tags) != 'undefined') {
+  if (typeof(dirtyCheck.tags) != 'undefined') {
     this.tags = this.constructor.convertTags(dirtyCheck.tags);
   }
 
-  if(typeof(this.url) == 'undefined') {
+  if (typeof(this.url) == 'undefined') {
     throw new Error('URL must be defined');
   }
 
@@ -393,7 +393,7 @@ Check.statics.needingPoll = function() {
 
 Check.statics.updateAllQos = function(callback) {
   this.find({}).each(function (err, check) {
-    if(err || !check) return;
+    if (err || !check) return;
     check.updateQos(callback);
   });
 };
