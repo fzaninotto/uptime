@@ -205,7 +205,8 @@ All Uptime entities emit lifecycle events that you can listen to on the Model cl
 API
 ---------------
 
-All API requests should be prefixed with `api', and use JSON to serialize data.
+All API requests should be prefixed with `api`.
+The API response always uses the `application/json` mimetype.
 API requests do not require authentication.
 
 Example of a valid API request:
@@ -228,135 +229,190 @@ The API is designed to return different status codes :
 
 ### CRUD routes
 
-* `GET /checks`
-   Return a list of all checks
+#### `GET /checks`
 
-* `GET /checks/needingPoll`
-   Return a list of checks that need a poll (i.e. not paused, plus new or last tested > interval set between tests)
+Return a list of all checks
 
-* `GET /checks/:id`
-   Return a single check
-   Parameter :
-    * `id` : (required) Id of the check
+#### `GET /checks/needingPoll`
 
-* `GET /checks/:id/pause`
-   Change the status (isPaused) of a check
-   Parameter :
-    * `id` : (required) Id of the check
+Return a list of checks that need a poll (i.e. not paused, plus new or last tested > interval set between tests)
 
-* `PUT /check/:id/test`
-   Test a check, return the line number of affected lines in database
-   Parameter :
-    * `id` : (required) Id of the check
+#### `GET /checks/:id`
 
-* `GET /pings`
-   Return a list of all pings
+Return a single check
 
-* `GET /pings/check/:id/:page?`
-   Return a list of this check's pings (50 elements per page)
-   Parameters :
-    * `id` : (required) Id of the check
-    * `page` : (optional) Number of page
+Parameter :
 
-* `GET /pings/events`
-   Return a list of events (CheckEvent) aggregated by day
+* `id` : (required) Id of the check
 
-* `POST /pings`
-   Create a ping for a check, if the check exists and is not already polled
-   Parameters :
-    * `checkId` : (required) Id of the check
-    * `status` : (required)  Status
-    * `timestamp` : (optional) Date of polling
-    * `time` : (required) Response time
-    * `name` : (optional) Monitor name
-    * `error` : (optional)
-    * `details` : (optional)
+#### `GET /checks/:id/pause`
 
-* `GET /tags`
-   Return list of all tags
+Toggle the status (isPaused) of a check
 
-* `GET /tags/:name`
-   Return a single tag
-   Parameter :
-    * `name` : (required) name of the tag
+Parameter :
 
-* `PUT /checks`
-   Create a new check and return it
-   Parameters :
-    * `url` : (required) Url of the check
-    * `name` : (optional) Name of the check - if empty, url will be set as check name
-    * `interval` : (optional) Interval of polling
-    * `maxTime` : (optional) Slow threshold
-    * `isPaused` : (optional) Status of polling
-    * `alertTreshold` : (optional) set the threshold of failed pings that will create an alert
-    * `tags` : (optional) list of tags (comma-separated values)
-    * `type` : (optional) type of check (auto|http|https|udp)
+* `id` : (required) Id of the check
 
+#### `PUT /check/:id/test`
 
-* `POST /checks/:id`
-   Update a check and return it
-   Parameters :
-    * `id` : (required) Id of the check
-    * `url` : (optional) Url of the check
-    * `name` : (optional) Name of the check - if empty, url will be set as check name
-    * `interval` : (optional) Interval of polling
-    * `maxTime` : (optional) Slow threshold
-    * `isPaused` : (optional) Status of polling
-    * `alertTreshold` : (optional) set the threshold of failed pings that will create an alert
-    * `tags` : (optional) list of tags (comma-separated values)
-    * `type` : (optional) type of check - values : `auto`|`http`|`https`|`udp`
+Updates the last checked date for a check. Used to avoid double check when a target is slow.
+Return the number of affected records in the database (1 or 0).
+
+Parameter :
+
+* `id` : (required) Id of the check
+
+#### `GET /pings`
+
+Return a list of all pings
+
+Parameters :
+
+* `?page=1` : (optional) Paginate results by 50
+* `?check=:id` : (optional) Return only the pings for a given check
+
+#### `GET /pings/check/:id/:page?`
+
+(deprecated) Return a list of this check's pings (50 elements per page)
+Parameters :
+* `id` : (required) Id of the check
+* `page` : (optional) Number of page
+
+#### `GET /pings/events`
+
+Return a list of events (CheckEvent) aggregated by day, limited to the latest week, and to 100 results
+
+#### `POST /pings`
+
+Create a ping for a check, if the check exists and is not already polled
+
+Parameters :
+
+* `checkId` : (required) Id of the check
+* `status` : (required)  Status
+* `timestamp` : (optional) Date of polling
+* `time` : (required) Response time
+* `name` : (optional) Monitor name
+* `error` : (optional)
+* `details` : (optional)
+
+#### `GET /tags`
+
+Return list of all tags
+
+#### `GET /tags/:name`
+
+Return a single tag
+
+Parameter :
+
+* `name` : (required) name of the tag
+
+#### `PUT /checks`
+
+Create a new check and return it
+
+Parameters :
+
+* `url` : (required) Url of the check
+* `name` : (optional) Name of the check - if empty, url will be set as check name
+* `interval` : (optional) Interval of polling
+* `maxTime` : (optional) Slow threshold
+* `isPaused` : (optional) Status of polling
+* `alertTreshold` : (optional) set the threshold of failed pings that will create an alert
+* `tags` : (optional) list of tags (comma-separated values)
+* `type` : (optional) type of check (auto|http|https|udp)
+
+#### `POST /checks/:id`
+
+Update a check and return it
+
+Parameters :
+
+* `id` : (required) Id of the check
+* `url` : (optional) Url of the check
+* `name` : (optional) Name of the check - if empty, url will be set as check name
+* `interval` : (optional) Interval of polling
+* `maxTime` : (optional) Slow threshold
+* `isPaused` : (optional) Status of polling
+* `alertTreshold` : (optional) set the threshold of failed pings that will create an alert
+* `tags` : (optional) list of tags (comma-separated values)
+* `type` : (optional) type of check - values : `auto`|`http`|`https`|`udp`
 
 ### Statistics routes
 
-* GET /checks/:id/stat/:period/:timestamp
-   Return check stats for a period
-   Parameters :
-       * `id` : (required) Id of the check
-       * `period` : (required) Period - values :  `hour`|`day`|`month`|`year`
-       * `timestamp` : (required) Start date (timestamp)
+#### `GET /checks/:id/stat/:period/:timestamp`
 
-* GET /checks/:id/stats/:type
-   Return check stats for a period
-   Parameters :
-    * `id` : (required) Id of the check
-    * `type` : (required) Period - values :  `hour`|`day`|`month`|`year`
-    * `begin` : (required) Start date (timestamp)
-    * `end` : (required) End date (timestamp)
+Return check stats for a period
 
-* GET /tags/:name/checks/:period/:timestamp
-   Return tag stats for a period, joined by checks
-   Parameters :
-    * `name` : (required) Name of the tag
-    * `period` : (required) Period - values :  `hour`|`day`|`month`|`year`
-    * `timestamp` : (required) Start date (timestamp)
+Parameters :
 
-* GET /tags/:name/stat/:period/:timestamp
-   Return tag stats for a period
-   Parameters :
-    * `name` : (required) Name of the tag
-    * `period` : (required) Period - values :  `hour`|`day`|`month`|`year`
-    * `timestamp` : (required) Start date (timestamp)
+   * `id` : (required) Id of the check
+   * `period` : (required) Period - values :  `hour`|`day`|`month`|`year`
+   * `timestamp` : (required) Start date (timestamp)
 
-* GET /tags/:name/stats/:type
-   Return tag stats for a period
-   Parameters :
-    * `name` : (required) Name of the tag
-    * `period` : (required) Period - values :  `hour`|`day`|`month`|`year`
+#### `GET /checks/:id/stats/:type`
+
+Return check stats for a period
+
+Parameters :
+
+* `id` : (required) Id of the check
+* `type` : (required) Period - values :  `hour`|`day`|`month`|`year`
+* `?begin=` : (required) Start date (timestamp)
+* `?end=` : (required) End date (timestamp)
+
+#### `GET /tags/:name/checks/:period/:timestamp`
+
+Return tag stats for a period, joined by checks
+
+Parameters :
+
+* `name` : (required) Name of the tag
+* `period` : (required) Period - values :  `hour`|`day`|`month`|`year`
+* `timestamp` : (required) Start date (timestamp)
+
+#### `GET /tags/:name/stat/:period/:timestamp`
+
+Return tag stats for a period
+
+Parameters :
+
+* `name` : (required) Name of the tag
+* `period` : (required) Period - values :  `hour`|`day`|`month`|`year`
+* `timestamp` : (required) Start date (timestamp)
+
+#### `GET /tags/:name/stats/:type`
+
+Return tag stats for a period
+
+Parameters :
+
+* `name` : (required) Name of the tag
+* `type` : (required) Period - values :  `day`|`month`|`year`
+* `?begin=` : (required) Start date (timestamp)
+* `?end=` : (required) End date (timestamp)
 
 
 ### Event routes
 
-* GET /checks/:id/events
-   Return the list of all events for the check
-   Parameter :
-    * `id` : (required) Id of the check
+#### `GET /checks/:id/events`
 
-* GET /tags/:name/events
-   Return the list of all events associated to the tag
-   Parameter :
-    * `name` : (required) Name of the tag
-    * `begin` : (required) Start date (timestamp)
-    * `end` : (required) End date (timestamp)
+Return the list of all events for the check
+
+Parameter :
+
+* `id` : (required) Id of the check
+
+#### `GET /tags/:name/events`
+
+Return the list of all events associated to the tag
+
+Parameter :
+
+* `name` : (required) Name of the tag
+* `?begin=` : (optional) Start date (timestamp)
+* `?end=` : (optional) End date (timestamp)
 
 
 Support and Discussion
