@@ -28,7 +28,7 @@ Ping.methods.setDetails = function(details) {
 };
 
 Ping.statics.createForCheck = function(status, timestamp, time, check, monitorName, error, details, callback) {
-  timestamp = constructor == Date ? timestamp : new Date(parseInt(timestamp, 10));
+  timestamp = (timestamp.length) ? new Date(parseInt(timestamp, 10)) : new Date();
   var ping = new this();
   ping.timestamp = timestamp;
   ping.isUp = status;

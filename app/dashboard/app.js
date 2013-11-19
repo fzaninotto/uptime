@@ -71,34 +71,12 @@ app.get('/checks/new', function(req, res) {
   res.render('check_new', { check: new Check(), pollerCollection: app.get('pollerCollection'), info: req.flash('info') });
 });
 
-var populateCheckFromRequest = function(checkDocument, dirtyCheck) {
-  if (!dirtyCheck.url) {
-    throw new Error('Missing URL parameter');
-  }
-
-  checkDocument.url = dirtyCheck.url;
-  checkDocument.maxTime = dirtyCheck.maxTime;
-  checkDocument.alertTreshold = dirtyCheck.alertTreshold;
-  checkDocument.name = dirtyCheck.name || dirtyCheck.url;
-  checkDocument.tags = Check.convertTags(dirtyCheck.tags);
-  checkDocument.interval = dirtyCheck.interval * 1000;
-
-  var pollerCollection = app.get('pollerCollection');
-  if (dirtyCheck.type) {
-    if (!pollerCollection.getForType(dirtyCheck.type).validateTarget(dirtyCheck.url)) {
-      throw new Error('URL ' + dirtyCheck.url + ' and poller type ' + dirtyCheck.type + ' mismatch');
-    }
-    checkDocument.type = dirtyCheck.type;
-  } else {
-    checkDocument.type = pollerCollection.guessTypeForUrl(dirtyCheck.url);
-  }
-  app.emit('populateCheckFromRequest', checkDocument, dirtyCheck, checkDocument.type);
-};
-
 app.post('/checks', function(req, res, next) {
   var check = new Check();
   try {
-    populateCheckFromRequest(check, req.body.check);
+    var dirtyCheck = req.body.check;
+    check.populateFromDirtyCheck(dirtyCheck, app.get('pollerCollection'))
+    app.emit('populateFromDirtyCheck', check, dirtyCheck, check.type);
   } catch (err) {
     return next(err);
   }
@@ -143,7 +121,9 @@ app.put('/checks/:id', function(req, res, next) {
   Check.findById(req.params.id, function(err, check) {
     if (err) return next(err);
     try {
-      populateCheckFromRequest(check, req.body.check);
+      var dirtyCheck = req.body.check;
+      check.populateFromDirtyCheck(dirtyCheck, app.get('pollerCollection'))
+      app.emit('populateFromDirtyCheck', check, dirtyCheck, check.type);
     } catch (populationError) {
       return next(populationError);
     }
@@ -176,7 +156,9 @@ app.get('/tags', function(req, res, next) {
 
 app.get('/tags/:name', function(req, res, next) {
   Tag.findOne({ name: req.params.name }, function(err, tag) {
-    if (err) return next(err);
+    if (err) {
+      return next(err);
+    }
     if (!tag) return next(new Error('failed to load tag ' + req.params.name));
     res.render('tag', { tag: tag, req: req });
   });

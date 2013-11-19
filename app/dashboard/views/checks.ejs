@@ -49,7 +49,7 @@
 jQuery(document).ready(function($) {
   // highlight current section in main nav
   $('.navbar-inner li').eq(1).addClass('active');
-  
+
   // make the chesk table sortable
   $('#checks').tablesorter({
     textExtraction: function(node) {
@@ -57,7 +57,7 @@ jQuery(document).ready(function($) {
     },
     sortList: [[1,0]]
   });
-  
+
   // Fill in the table
   var check_template = document.getElementById('check_template').innerHTML;
   var ejs = require('ejs');
@@ -76,6 +76,7 @@ jQuery(document).ready(function($) {
       $('#checks tbody').html(lines.join(''));
       $('#checks').trigger('update');
     }
+
     if (checks) {
       updateChecksSection(checks);
     } else {

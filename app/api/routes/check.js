@@ -111,4 +111,35 @@ module.exports = function(app) {
     });
   });
 
+ app.put('/checks', function(req, res, next) {
+   var check = new Check();
+   try {
+     check.populateFromDirtyCheck(req.body, app.get('pollerCollection'));
+     app.emit('populateFromDirtyCheck', check, req.body, check.type);
+   } catch (checkException) {
+     return next(checkException);
+   }
+   check.save(function(saveError) {
+     if(saveError) return next({status:500, error: saveError});
+     res.json(check);
+   });
+ });
+
+ app.post('/checks/:id', function(req, res, next) {
+   Check.findOne({ _id: req.params.id }, function(err, check) {
+     if (err) return next({status:500, error: err});
+     if (!check) return next({status:404, error: 'failed to load check ' + req.params.id})
+
+     try {
+       check.populateFromDirtyCheck(req.body, app.get('pollerCollection'));
+       app.emit('populateFromDirtyCheck', check, req.body, check.type);
+     } catch (checkException) {
+       return next(checkException);
+     }
+     check.save(function(saveError) {
+       if(saveError) return next({status:500, error: saveError});
+       res.json(check);
+     });
+   });
+ });
 };
