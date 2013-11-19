@@ -50,7 +50,7 @@ var page = {};
     </section>
     <section id="events">
     <h2>Downtime</h2>
-    <%- partial('_events', { url: '/api/tags/' + tag.name + '/events', route: route }) %>
+    <%- partial('_events', { url: '/api/tags/' + encodeURIComponent(tag.name) + '/events', route: route }) %>
     </section>
     <section id="responseTime">
     <%- partial('_responseTime') %>
@@ -59,10 +59,10 @@ var page = {};
     <%- partial('_responsiveness') %>
     </section>
     <section id="checks">
-    <%- partial('_checks', { url: '/api/tags/' + tag.name + '/checks/', route: route } ) %>
+    <%- partial('_checks', { url: '/api/tags/' + encodeURIComponent(tag.name) + '/checks/', route: route } ) %>
     </section>
     <section id="data">
-    <%- partial('_data', { url: '/api/tags/' + tag.name + '/stats/', route: route } ) %>
+    <%- partial('_data', { url: '/api/tags/' + encodeURIComponent(tag.name) + '/stats/', route: route } ) %>
     </section>
   </div>
 </div>
@@ -71,7 +71,7 @@ var dateInterval = new DateInterval(
   '<%= req.query.type || 'month' %>',
   <%= req.query.date || Date.now() %>,
   <%= tag.firstTested.valueOf() %>,
-  '/api/tags/<%= tag.name %>/',
+  '/api/tags/<%= encodeURIComponent(tag.name) %>/',
   'day'
 );
 jQuery(document).ready(function($) {
