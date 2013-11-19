@@ -276,6 +276,8 @@ Parameters :
 * `?page=1` : (optional) Paginate results by 50
 * `?check=:id` : (optional) Return only the pings for a given check
 
+Ex: `http://localhost:8082/api/pings?check=527a25bdc9de6e0000000004`
+
 #### `GET /pings/check/:id/:page?`
 
 (deprecated) Return a list of this check's pings (50 elements per page)
@@ -284,7 +286,6 @@ Parameters :
 * `page` : (optional) Number of page
 
 Ex: `http://localhost:8082/api/pings/check/527a25bdc9de6e0000000004/2`
-
 
 #### `GET /pings/events`
 

@@ -13,7 +13,7 @@ describe('GET /checks', function() {
     pollerCollection = app.get('pollerCollection');
     this.server = app.listen(3000, done);
   });
-  
+
   before(function(done) {
     Check.remove({}, done);
   });
