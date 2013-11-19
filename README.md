@@ -278,15 +278,6 @@ Parameters :
 
 Ex: `http://localhost:8082/api/pings?check=527a25bdc9de6e0000000004`
 
-#### `GET /pings/check/:id/:page?`
-
-(deprecated) Return a list of this check's pings (50 elements per page)
-Parameters :
-* `id` : (required) Id of the check
-* `page` : (optional) Number of page
-
-Ex: `http://localhost:8082/api/pings/check/527a25bdc9de6e0000000004/2`
-
 #### `GET /pings/events`
 
 Return a list of events (CheckEvent) aggregated by day, limited to the latest week, and to 100 results
