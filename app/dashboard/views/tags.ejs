@@ -15,7 +15,7 @@
 <script src="<%= route %>/javascripts/ejs.min.js"></script>
 <script id="tag_template" type="text/template">
 <tr>
-  <td data-sort="{{= tag.name }}"><a href="{{= route + '/tags/' + tag.name }}">{{= tag.name }}</a></td>
+  <td data-sort="{{= tag.name }}"><a href="{{= route + '/tags/' + encodeURIComponent(tag.name) }}">{{= tag.name }}</a></td>
   <td data-sort="{{= tag.availability }}">{{= (tag.availability * 100).toFixed(3).replace('.000', '') }}%</td>
   <td data-sort="{{= tag.availability }}">{{- uptimeBar(Date.now() - 24 * 60 * 60 * 1000, Date.now(), new Date(tag.firstTested).valueOf(), tag.outages) }}</td>
   <td data-sort="{{= tag.responseTime }}">{{= Math.round(tag.responseTime) }}ms</td>
