@@ -18,39 +18,73 @@ var uptimeBar = (function(){
               + 'title="' + (availability * 100).toFixed(3) + '% availability from '+ moment(begin).format('LL') + ' to ' + moment(end).format('LL') + '">'
          + '</div>'
   }
-  var uptimeBar = function(from, to, origin, periods, currentState) {
 
-    var ret = '<div class="uptimeBar">';
-    var duration = to - from;
+
+  var uptimeBar = function(type, args) {
+    if (type === 'check') {
+      return uptimeBarCheck(args);
+    } else if(type === 'tag') {
+      return uptimeBarTag(args);
+    } else {
+      return new Error('unkown type');
+    }
+  }
+
+  var uptimeBarCheck = function(args) {
+    var from = args.from;
+    var to = args.to;
+    var periods = args.periods;
+    var check = args.check;
     var now = Date.now();
     var currentIntervalBegin = null;
+    var duration = to - from;
+    var firstChecked = new Date(check.firstTested).valueOf();
+    var lastChanged = new Date(check.lastChanged).valueOf();
+    var ret = '<div class="uptimeBar">';
 
     // create period bar for each element
     if (periods) {
       var nbPeriods = periods.length;
       for (var i = 0; i < nbPeriods; i++) {
         currentIntervalBegin = periods[i][1];
+
+        // period is down or undefined
         if (periods[i][2] == 0 || typeof periods[i][2] == 'undefined') {
           ret += outageBar(periods[i][0], periods[i][1], from, duration);
-        } else if(periods[i][2] == -1) {
+        }
+        // period is paused
+        else if(periods[i][2] == -1) {
           ret += pauseBar(periods[i][0], periods[i][1], from, duration);
-        } else {
+        }
+        else {
           ret += availabilityBar(periods[i][0], periods[i][1], periods[i][2], from, duration);
         }
       }
     }
 
-    // if current state is down, add an outage bar for the current interval
-    if(currentState !== null && !currentState) {
+    // if current state is not up : change the bar for this period
+    if(!check.isUp || check.isPaused) {
       if(currentIntervalBegin == null) {
-        currentIntervalBegin = Math.max(origin, from);
+        currentIntervalBegin = Math.max(firstChecked, from);
       }
-      ret += outageBar(currentIntervalBegin, Math.min(now, to), from, duration);
+
+      // if the status has changed since the current interval,
+      // then the status was up from currentIntervalBegin to status changed
+      if (lastChanged > currentIntervalBegin) {
+        ret += availabilityBar(currentIntervalBegin, lastChanged, from, duration);
+        currentIntervalBegin = lastChanged;
+      }
+
+      if(check.isPaused) {
+        ret += pauseBar(currentIntervalBegin, Math.min(now, to), from, duration);
+      } else {
+        ret += outageBar(currentIntervalBegin, Math.min(now, to), from, duration);
+      }
     }
 
     // hide not measured period
-    if (from < origin && origin < to) {
-      ret += '<div style="background-color:white;left:0;width:' + (origin - from) / duration * 100 + '%"></div>';
+    if (from < firstChecked && firstChecked < to) {
+      ret += '<div style="background-color:white;left:0;width:' + (firstChecked - from) / duration * 100 + '%"></div>';
     }
 
     // hide not yet measured period
@@ -60,6 +94,41 @@ var uptimeBar = (function(){
     }
     ret += '</div>';
 
+    return ret;
+  }
+
+
+  var uptimeBarTag = function(args) {
+
+    var from = args.from;
+    var to = args.to;
+    var origin = args.origin;
+    var periods = args.periods;
+
+    var ret = '<div class="uptimeBar">';
+    var duration = to - from;
+    if (periods) {
+      var nbPeriods = periods.length;
+      for (var i = 0; i < nbPeriods; i++) {
+        if (periods[i][2] == 0 || typeof periods[i][2] == 'undefined') {
+          ret += outageBar(periods[i][0], periods[i][1], from, duration);
+        } else if(periods[i][2] == -1) {
+          ret += pauseBar(periods[i][0], periods[i][1], from, duration);
+        } else {
+          ret += availabilityBar(periods[i][0], periods[i][1], periods[i][2], from, duration);
+        }
+      }
+    }
+    if (from < origin && origin < to) {
+      // hide not measured period
+      ret += '<div style="background-color:white;left:0;width:' + (origin - from) / duration * 100 + '%"></div>';
+    }
+    var now = Date.now();
+    if (from < now && now < to) {
+      // hide not yet measured period
+      ret += '<div style="background-color:white;right:0;width:' + (to - now) / duration * 100 + '%"></div>';
+    }
+    ret += '</div>';
     return ret;
   }
 
