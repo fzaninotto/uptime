@@ -5,7 +5,7 @@ mongodb:
   database: uptime
   user:     root 
   password:
-  connectionString:  mongodb://localhost/uptime     # alternative to setting server, database, user and password separately
+  connectionString:       # alternative to setting server, database, user and password separately
 
 monitor:
   name:                   origin
@@ -52,3 +52,5 @@ verbose: true # only used in dev
 
 webPageTest:
   server: 'http://webpagetest.org'
+  key: 
+  testOptions: 
