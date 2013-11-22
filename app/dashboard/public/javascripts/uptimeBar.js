@@ -67,28 +67,27 @@ var uptimeBar = (function(){
       }
     }
 
-    if (now >= from && now <= to) {
-      // if current state is not up : change the bar for this period
-      if (!check.isUp || check.isPaused) {
-        if (currentIntervalBegin == null) {
-          currentIntervalBegin = Math.max(firstChecked, from);
-        }
+    // if current state is not up : change the bar for this period
+    if (!check.isUp || check.isPaused) {
+      if (currentIntervalBegin == null) {
+        currentIntervalBegin = Math.max(firstChecked, from);
+      }
 
-        // if the status has changed since the current interval,
-        // then the status was up from currentIntervalBegin to status changed
-        if (lastChanged > currentIntervalBegin) {
-          ret += availabilityBar(currentIntervalBegin, lastChanged, from, duration);
-          currentIntervalBegin = lastChanged;
-        }
+      // if the status has changed since the current interval,
+      // then the status was up from currentIntervalBegin to status changed
+      if (lastChanged > currentIntervalBegin) {
+        ret += availabilityBar(currentIntervalBegin, lastChanged, from, duration);
+        currentIntervalBegin = lastChanged;
+      }
 
-        // add current interval bar
-        if (check.isPaused) {
-          ret += pauseBar(currentIntervalBegin, Math.min(now, to), from, duration);
-        } else {
-          ret += outageBar(currentIntervalBegin, Math.min(now, to), from, duration);
-        }
+      // add current interval bar
+      if (check.isPaused) {
+        ret += pauseBar(currentIntervalBegin, Math.min(now, to), from, duration);
+      } else {
+        ret += outageBar(currentIntervalBegin, Math.min(now, to), from, duration);
       }
     }
+
 
     // hide not measured period
     if (from < firstChecked && firstChecked < to) {
