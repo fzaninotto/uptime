@@ -19,11 +19,10 @@ var uptimeBar = (function(){
          + '</div>'
   }
 
-
   var uptimeBar = function(type, args) {
     if (type === 'check') {
       return uptimeBarCheck(args);
-    } else if(type === 'tag') {
+    } else if (type === 'tag') {
       return uptimeBarTag(args);
     } else {
       return new Error('unkown type');
@@ -33,8 +32,8 @@ var uptimeBar = (function(){
   var uptimeBarCheck = function(args) {
     var from = args.from;
     var to = args.to;
-    var periods = args.periods;
     var check = args.check;
+    var periods = check.qos.outages || [];
     var now = Date.now();
     var currentIntervalBegin = null;
     var duration = to - from;
@@ -46,39 +45,48 @@ var uptimeBar = (function(){
     if (periods) {
       var nbPeriods = periods.length;
       for (var i = 0; i < nbPeriods; i++) {
+
+        // don't mind these periods
+        if (periods[i][0] > to || periods[i][1] < from) {
+          continue;
+        }
         currentIntervalBegin = periods[i][1];
 
-        // period is down or undefined
+        // add limit to current status
+        periods[i][0] = Math.max(periods[i][0], from);
+        periods[i][1] = Math.min(periods[i][1], to);
+
+        // build bars
         if (periods[i][2] == 0 || typeof periods[i][2] == 'undefined') {
           ret += outageBar(periods[i][0], periods[i][1], from, duration);
-        }
-        // period is paused
-        else if(periods[i][2] == -1) {
+        } else if (periods[i][2] == -1) {
           ret += pauseBar(periods[i][0], periods[i][1], from, duration);
-        }
-        else {
+        } else {
           ret += availabilityBar(periods[i][0], periods[i][1], periods[i][2], from, duration);
         }
       }
     }
 
-    // if current state is not up : change the bar for this period
-    if(!check.isUp || check.isPaused) {
-      if(currentIntervalBegin == null) {
-        currentIntervalBegin = Math.max(firstChecked, from);
-      }
+    if (now >= from && now <= to) {
+      // if current state is not up : change the bar for this period
+      if (!check.isUp || check.isPaused) {
+        if (currentIntervalBegin == null) {
+          currentIntervalBegin = Math.max(firstChecked, from);
+        }
 
-      // if the status has changed since the current interval,
-      // then the status was up from currentIntervalBegin to status changed
-      if (lastChanged > currentIntervalBegin) {
-        ret += availabilityBar(currentIntervalBegin, lastChanged, from, duration);
-        currentIntervalBegin = lastChanged;
-      }
+        // if the status has changed since the current interval,
+        // then the status was up from currentIntervalBegin to status changed
+        if (lastChanged > currentIntervalBegin) {
+          ret += availabilityBar(currentIntervalBegin, lastChanged, from, duration);
+          currentIntervalBegin = lastChanged;
+        }
 
-      if(check.isPaused) {
-        ret += pauseBar(currentIntervalBegin, Math.min(now, to), from, duration);
-      } else {
-        ret += outageBar(currentIntervalBegin, Math.min(now, to), from, duration);
+        // add current interval bar
+        if (check.isPaused) {
+          ret += pauseBar(currentIntervalBegin, Math.min(now, to), from, duration);
+        } else {
+          ret += outageBar(currentIntervalBegin, Math.min(now, to), from, duration);
+        }
       }
     }
 
@@ -112,7 +120,7 @@ var uptimeBar = (function(){
       for (var i = 0; i < nbPeriods; i++) {
         if (periods[i][2] == 0 || typeof periods[i][2] == 'undefined') {
           ret += outageBar(periods[i][0], periods[i][1], from, duration);
-        } else if(periods[i][2] == -1) {
+        } else if (periods[i][2] == -1) {
           ret += pauseBar(periods[i][0], periods[i][1], from, duration);
         } else {
           ret += availabilityBar(periods[i][0], periods[i][1], periods[i][2], from, duration);

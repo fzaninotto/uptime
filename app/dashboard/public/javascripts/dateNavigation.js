@@ -18,19 +18,19 @@ DateNavigation.prototype.init = function(type, check) {
   
   // redraw date range when time passes to enable new interval buttons
   setInterval(this.redrawPeriods.bind(this), 5 * 60 * 1000);
-  
+
   // redraw uptime bar when the data arrives
   interval.on('refresh-stat', function() {
     var outages = this.stat ? this.stat.outages || [] : [];
     var args = {
-      from: this.begin.valueOf(),
-      to: this.end.valueOf(),
+      from: interval.begin.valueOf(),
+      to: interval.end.valueOf(),
       periods: outages
     }
 
-    if(type == 'check') {
+    if (type == 'check') {
       args.check = check;
-    } else if(type == 'tag') {
+    } else if (type == 'tag') {
       args.origin = this.origin.valueOf();
     }
 
