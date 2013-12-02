@@ -343,6 +343,16 @@ Parameters :
 
 Ex: `http://localhost:8082/api/checks/527a25bdc9de6e0000000004`
 
+#### `DELETE /checks/:id`
+
+Delete a check
+
+Parameters :
+
+* `id` : (required) Id of the check
+
+Ex: `http://localhost:8082/api/checks/527a25bdc9de6e0000000004`
+
 ### Statistics routes
 
 #### `GET /checks/:id/stat/:period/:timestamp`
