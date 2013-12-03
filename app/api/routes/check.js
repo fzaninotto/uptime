@@ -125,6 +125,18 @@ module.exports = function(app) {
    });
  });
 
+ app.delete('/checks/:id', function (req, res, next) {
+   Check.findOne({ _id: req.params.id }, function(err, check) {
+     if (err) return next({status:500, error: err});
+     if (!check) return next({status:404, error: 'failed to load check ' + req.params.id})
+
+    check.remove(function(err2) {
+      if (err2) return next(err2);
+      res.end();
+    });
+   });
+ });
+
  app.post('/checks/:id', function(req, res, next) {
    Check.findOne({ _id: req.params.id }, function(err, check) {
      if (err) return next({status:500, error: err});
