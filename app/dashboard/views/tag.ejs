@@ -82,7 +82,7 @@ jQuery(document).ready(function($) {
   new StatNavigation(dateInterval);
 
   // initialize date navigation
-  new DateNavigation(dateInterval);
+  new DateNavigation(dateInterval, 'tag');
 
   // update stats every 15 minutes if looking at the current moment
   window.setInterval(function() {

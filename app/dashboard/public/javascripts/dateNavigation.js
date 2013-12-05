@@ -1,10 +1,10 @@
-var DateNavigation = function(interval) {
+var DateNavigation = function(interval, type, check) {
   this.interval = interval;
   this.initialType = interval.type;
   this.initialDate = interval.date;
-  this.init();
+  this.init(type, check);
 }
-DateNavigation.prototype.init = function() {
+DateNavigation.prototype.init = function(type, check) {
   // redraw on date change
   this.redraw();
   var interval = this.interval;
@@ -18,12 +18,24 @@ DateNavigation.prototype.init = function() {
   
   // redraw date range when time passes to enable new interval buttons
   setInterval(this.redrawPeriods.bind(this), 5 * 60 * 1000);
-  
+
   // redraw uptime bar when the data arrives
   interval.on('refresh-stat', function() {
     var outages = this.stat ? this.stat.outages || [] : [];
+    var args = {
+      from: interval.begin.valueOf(),
+      to: interval.end.valueOf(),
+      periods: outages
+    }
+
+    if (type == 'check') {
+      args.check = check;
+    } else if (type == 'tag') {
+      args.origin = this.origin.valueOf();
+    }
+
     $('#dateNavigation .timeline').html(
-      uptimeBar(this.begin.valueOf(), this.end.valueOf(), this.origin.valueOf(), outages)
+      uptimeBar(type, args)
     );
   });
   

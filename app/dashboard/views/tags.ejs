@@ -17,7 +17,12 @@
 <tr>
   <td data-sort="{{= tag.name }}"><a href="{{= route + '/tags/' + encodeURIComponent(tag.name) }}">{{= tag.name }}</a></td>
   <td data-sort="{{= tag.availability }}">{{= (tag.availability * 100).toFixed(3).replace('.000', '') }}%</td>
-  <td data-sort="{{= tag.availability }}">{{- uptimeBar(Date.now() - 24 * 60 * 60 * 1000, Date.now(), new Date(tag.firstTested).valueOf(), tag.outages) }}</td>
+  <td data-sort="{{= tag.availability }}">{{- uptimeBar('tag', {
+        from: Date.now() - 24 * 60 * 60 * 1000,
+        to: Date.now(),
+        origin: new Date(tag.firstTested).valueOf(),
+        periods: tag.outages
+      }) }}</td>
   <td data-sort="{{= tag.responseTime }}">{{= Math.round(tag.responseTime) }}ms</td>
 </tr>
 </script>
