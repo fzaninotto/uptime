@@ -21,7 +21,7 @@ jQuery(document).ready(function($) {
   });
   
   // manage pause
-  $('button[name="pause"]').click(function(e) {
+  $('a[name="pause"]').click(function(e) {
     var button = $(this).children();
     $.getJSON('/api/checks/<%= check._id %>/pause', function() {
       if(button.hasClass('icon-pause')) {
