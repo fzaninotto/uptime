@@ -53,7 +53,7 @@
             <div class="controls">
               <div class="input-prepend input-append">
                 <% if (check.lastTested) { %>
-                <button class="btn" name="pause"><i class="icon-<%= check.isPaused ? 'play' : 'pause' %>"></i></button>
+                <a class="btn" name="pause"><i class="icon-<%= check.isPaused ? 'play' : 'pause' %>"></i></a>
                 <% } %>
                 <input type="text" name="check[interval]" value="<%= (check.interval / 1000).toFixed() %>" class="span2" />
                 <span class="add-on">s</span>
