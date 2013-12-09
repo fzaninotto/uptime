@@ -28,9 +28,8 @@ Ping.methods.setDetails = function(details) {
 };
 
 Ping.statics.createForCheck = function(status, timestamp, time, check, monitorName, error, details, callback) {
-  timestamp = timestamp || new Date();
-  timestamp = timestamp instanceof Date ? timestamp : new Date(parseInt(timestamp, 10));
-
+  timestamp = parseInt(timestamp, 10);
+  timestamp = (typeof timestamp !== 'NaN') ? new Date(timestamp) : new Date();
   var ping = new this();
   ping.timestamp = timestamp;
   ping.isUp = status;
@@ -52,7 +51,7 @@ Ping.statics.createForCheck = function(status, timestamp, time, check, monitorNa
   }
   ping.save(function(err1) {
     if (err1) return callback(err1);
-    check.setLastTest(status, timestamp, error);
+    check.setLastTest(status, timestamp, error); // will create CheckEvent if necessary
     check.save(function(err2) {
       if (err2) return callback(err2);
       callback(null, ping);

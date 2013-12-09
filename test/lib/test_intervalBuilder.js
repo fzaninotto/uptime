@@ -1,3 +1,4 @@
+process.env.NODE_ENV = 'test';
 var should = require('should');
 var async = require('async');
 var mongoose = require('../../bootstrap');
@@ -22,82 +23,184 @@ describe('intervalBuilder', function() {
     now = Date.now();
   });
 
-  before(function(done) {
-    check1 = new Check();
-    check1.save(function(err) {
-      if (err) throw (err);
-      async.series([
-        function(cb) { Ping.createForCheck(false, now - 3000, 100, check1, 'dummy1', '', null, cb); },
-        function(cb) { Ping.createForCheck(false, now - 2000, 100, check1, 'dummy2', '', null, cb); },
-        function(cb) { Ping.createForCheck(true,  now - 1000, 100, check1, 'dummy3', '', null, cb); },
-        function(cb) { Ping.createForCheck(true,  now,        100, check1, 'dummy4', '', null, cb); },
-        function(cb) { Ping.createForCheck(true,  now + 1000, 100, check1, 'dummy5', '', null, cb); },
-        function(cb) { Ping.createForCheck(false, now + 2000, 100, check1, 'dummy6', '', null, cb); },
-        function(cb) { Ping.createForCheck(true,  now + 3000, 100, check1, 'dummy7', '', null, cb); }
-      ], done);
-    });
-  });
+  describe('#addTarget', function() {
 
-  before(function(done) {
-    check2 = new Check();
-    check2.save(done);
-  });
-
-  describe('addTarget', function() {
-
-    it('should accept Check objects', function(done) {
+    it('should accept Check objects', function() {
       var builder = new IntervalBuilder();
-      builder.addTarget(check1);
-      builder.determineInitialState(now, function(err) {
-        if (err) throw (err);
-        builder.currentState.should.eql(1);
-        done();
-      });
+      builder.isEmpty().should.be.ok;
+      var check = new Check();
+      var id = check._id;
+      builder.addTarget(check);
+      builder.isEmpty().should.not.be.ok;
+      builder.objectIds.should.eql([id]);
     });
 
-    it('should accept Check identifiers', function(done) {
+    it('should accept Check identifiers', function() {
       var builder = new IntervalBuilder();
-      builder.addTarget(check1._id);
-      builder.determineInitialState(now, function(err) {
-        if (err) throw (err);
-        builder.currentState.should.eql(1);
-        done();
-      });
+      builder.isEmpty().should.be.ok;
+      builder.addTarget('1234');
+      builder.isEmpty().should.not.be.ok;
+      builder.objectIds.should.eql(['1234']);
+    });
+
+  });
+
+  describe('#addEvent', function() {
+
+    it('should change the builder state to UP when passed an up event', function() {
+      var builder = new IntervalBuilder();
+      builder.addTarget('1234');
+      builder.addEvent('1234', 'up');
+      builder.isUp('1234').should.be.ok;
+      builder.isDown('1234').should.not.be.ok;
+      builder.isPaused('1234').should.not.be.ok;
+    });
+
+    it('should change the builder state to DOWN when passed a down event', function() {
+      var builder = new IntervalBuilder();
+      builder.addTarget('1234');
+      builder.addEvent('1234', 'down');
+      builder.isUp('1234').should.not.be.ok;
+      builder.isDown('1234').should.be.ok;
+      builder.isPaused('1234').should.not.be.ok;
+    });
+
+    it('should change the builder state to PAUSED when passed a paused event', function() {
+      var builder = new IntervalBuilder();
+      builder.addTarget('1234');
+      builder.addEvent('1234', 'paused');
+      builder.isUp('1234').should.not.be.ok;
+      builder.isDown('1234').should.not.be.ok;
+      builder.isPaused('1234').should.be.ok;
+    });
+
+    it('should change the builder state to PAUSED when passed a restarted event', function() {
+      var builder = new IntervalBuilder();
+      builder.addTarget('1234');
+      builder.addEvent('1234', 'restarted');
+      builder.isUp('1234').should.not.be.ok;
+      builder.isDown('1234').should.not.be.ok;
+      builder.isPaused('1234').should.be.ok;
+    });
+
+    it('should return true if the object state is modified', function() {
+      var builder = new IntervalBuilder();
+      builder.addTarget('1234');
+      builder.addEvent('1234', 'up').should.be.ok;
+      builder.addEvent('1234', 'down').should.be.ok;
+      builder.addEvent('1234', 'up').should.be.ok;
+      builder.addEvent('1234', 'paused').should.be.ok;
+      builder.addEvent('1234', 'down').should.be.ok;
+      builder.addEvent('1234', 'paused').should.be.ok;
+      builder.addEvent('1234', 'up').should.be.ok;
+      builder.addEvent('1234', 'restarted').should.be.ok;
+      builder.addEvent('1234', 'down').should.be.ok;
+      builder.addEvent('1234', 'restarted').should.be.ok;
+      builder.addEvent('1234', 'up').should.be.ok;
+    });
+
+    it('should return false if the object state is not modified', function() {
+      var builder = new IntervalBuilder();
+      builder.addTarget('1234');
+      builder.addEvent('1234', 'up');
+      builder.addEvent('1234', 'up').should.not.be.ok;
+      builder.addEvent('1234', 'down');
+      builder.addEvent('1234', 'down').should.not.be.ok;
+      builder.addEvent('1234', 'paused');
+      builder.addEvent('1234', 'paused').should.not.be.ok;
+      builder.addEvent('1234', 'restarted').should.not.be.ok;
+      builder.addEvent('1234', 'restarted').should.not.be.ok;
+      builder.addEvent('1234', 'paused').should.not.be.ok;
     });
 
   });
 
   describe('#determineInitialState', function() {
 
+    before(function(done) {
+      check1 = new Check();
+      check1.save(function(err) {
+        if (err) throw (err);
+        async.series([
+          function(cb) { Ping.createForCheck(false, now - 2000, 100, check1, 'dummy2', '', null, cb); },
+          function(cb) { Ping.createForCheck(true,  now - 1000, 100, check1, 'dummy3', '', null, cb); }
+        ], done);
+      });
+    });
+
+    before(function(done) {
+      check2 = new Check();
+      check2.save(done);
+    });
+
     it('should set initial state to PAUSED for new Checks', function(done) {
       var builder = new IntervalBuilder();
       builder.addTarget(check2);
       builder.determineInitialState(now, function(err) {
         if (err) throw (err);
-        builder.currentState.should.eql(-1);
+        builder.currentState.should.eql(builder.PAUSED);
         done();
       });
     });
 
-    it('should set the initial state according to the latest ping', function(done) {
+    it('should set the initial state to UP if the latest ping is up', function(done) {
       var builder = new IntervalBuilder(check1);
       builder.addTarget(check1);
       builder.determineInitialState(now, function(err) {
         if (err) throw (err);
-        builder.currentState.should.eql(1);
+        builder.currentState.should.eql(builder.UP);
         done();
       });
+    });
+
+    it('should set the initial state to DOWN if the latest ping is down', function(done) {
+      var builder = new IntervalBuilder(check1);
+      builder.addTarget(check1);
+      builder.determineInitialState(now - 1500, function(err) {
+        if (err) throw (err);
+        builder.currentState.should.eql(builder.DOWN);
+        done();
+      });
+    });
+
+    after(function(done) {
+      async.parallel([
+        function(cb) { Ping.collection.remove({ }, cb) },
+        function(cb) { Check.collection.remove({ }, cb) },
+        function(cb) { CheckEvent.collection.remove({ }, cb) },
+      ], done);
     });
 
   });
 
   describe('#build', function() {
 
+    before(function(done) {
+      check1 = new Check();
+      check1.save(function(err) {
+        if (err) return done(err);
+        async.series([
+          function(cb) { Ping.createForCheck(false, now - 3000, 100, check1, 'dummy1', '', null, cb); },
+          function(cb) { Ping.createForCheck(false, now - 2000, 100, check1, 'dummy2', '', null, cb); },
+          function(cb) { Ping.createForCheck(true,  now - 1000, 100, check1, 'dummy3', '', null, cb); },
+          function(cb) { Ping.createForCheck(true,  now,        100, check1, 'dummy4', '', null, cb); },
+          function(cb) { Ping.createForCheck(true,  now + 1000, 100, check1, 'dummy5', '', null, cb); },
+          function(cb) { Ping.createForCheck(false, now + 2000, 100, check1, 'dummy6', '', null, cb); },
+          function(cb) { Ping.createForCheck(true,  now + 3000, 100, check1, 'dummy7', '', null, cb); }
+        ], done);
+      });
+    });
+
+    before(function(done) {
+      check2 = new Check();
+      check2.save(done);
+    });
+
     it('should return a full pause array when there is no ping at all', function(done) {
       var builder = new IntervalBuilder();
       builder.addTarget(check2);
       builder.build(now, now + 1000, function(err, periods) {
-        if (err) throw (err);
+        if (err) return done(err);
         periods.should.eql([[now, now + 1000, -1]]);
         done();
       });
@@ -142,13 +245,14 @@ describe('intervalBuilder', function() {
         done();
       });
     });
+
+    after(function(done) {
+      async.parallel([
+        function(cb) { Ping.collection.remove({ }, cb) },
+        function(cb) { Check.collection.remove({ }, cb) },
+        function(cb) { CheckEvent.collection.remove({ }, cb) },
+      ], done);
+    });
   });
   
-  after(function(done) {
-    async.parallel([
-      function(cb) { Ping.collection.remove({ }, cb) },
-      function(cb) { Check.collection.remove({ }, cb) },
-      function(cb) { CheckEvent.collection.remove({ }, cb) },
-    ], done);
-  });
 });
