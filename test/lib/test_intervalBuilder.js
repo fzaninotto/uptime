@@ -45,12 +45,12 @@ describe('intervalBuilder', function() {
 
   });
 
-  describe('#addEvent', function() {
+  describe('#changeObjectState', function() {
 
     it('should change the builder state to UP when passed an up event', function() {
       var builder = new IntervalBuilder();
       builder.addTarget('1234');
-      builder.addEvent('1234', 'up');
+      builder.changeObjectState('1234', 'up');
       builder.isUp('1234').should.be.ok;
       builder.isDown('1234').should.not.be.ok;
       builder.isPaused('1234').should.not.be.ok;
@@ -59,7 +59,7 @@ describe('intervalBuilder', function() {
     it('should change the builder state to DOWN when passed a down event', function() {
       var builder = new IntervalBuilder();
       builder.addTarget('1234');
-      builder.addEvent('1234', 'down');
+      builder.changeObjectState('1234', 'down');
       builder.isUp('1234').should.not.be.ok;
       builder.isDown('1234').should.be.ok;
       builder.isPaused('1234').should.not.be.ok;
@@ -68,7 +68,7 @@ describe('intervalBuilder', function() {
     it('should change the builder state to PAUSED when passed a paused event', function() {
       var builder = new IntervalBuilder();
       builder.addTarget('1234');
-      builder.addEvent('1234', 'paused');
+      builder.changeObjectState('1234', 'paused');
       builder.isUp('1234').should.not.be.ok;
       builder.isDown('1234').should.not.be.ok;
       builder.isPaused('1234').should.be.ok;
@@ -77,7 +77,7 @@ describe('intervalBuilder', function() {
     it('should change the builder state to PAUSED when passed a restarted event', function() {
       var builder = new IntervalBuilder();
       builder.addTarget('1234');
-      builder.addEvent('1234', 'restarted');
+      builder.changeObjectState('1234', 'restarted');
       builder.isUp('1234').should.not.be.ok;
       builder.isDown('1234').should.not.be.ok;
       builder.isPaused('1234').should.be.ok;
@@ -86,31 +86,87 @@ describe('intervalBuilder', function() {
     it('should return true if the object state is modified', function() {
       var builder = new IntervalBuilder();
       builder.addTarget('1234');
-      builder.addEvent('1234', 'up').should.be.ok;
-      builder.addEvent('1234', 'down').should.be.ok;
-      builder.addEvent('1234', 'up').should.be.ok;
-      builder.addEvent('1234', 'paused').should.be.ok;
-      builder.addEvent('1234', 'down').should.be.ok;
-      builder.addEvent('1234', 'paused').should.be.ok;
-      builder.addEvent('1234', 'up').should.be.ok;
-      builder.addEvent('1234', 'restarted').should.be.ok;
-      builder.addEvent('1234', 'down').should.be.ok;
-      builder.addEvent('1234', 'restarted').should.be.ok;
-      builder.addEvent('1234', 'up').should.be.ok;
+      builder.changeObjectState('1234', 'up').should.be.ok;
+      builder.changeObjectState('1234', 'down').should.be.ok;
+      builder.changeObjectState('1234', 'up').should.be.ok;
+      builder.changeObjectState('1234', 'paused').should.be.ok;
+      builder.changeObjectState('1234', 'down').should.be.ok;
+      builder.changeObjectState('1234', 'paused').should.be.ok;
+      builder.changeObjectState('1234', 'up').should.be.ok;
+      builder.changeObjectState('1234', 'restarted').should.be.ok;
+      builder.changeObjectState('1234', 'down').should.be.ok;
+      builder.changeObjectState('1234', 'restarted').should.be.ok;
+      builder.changeObjectState('1234', 'up').should.be.ok;
     });
 
     it('should return false if the object state is not modified', function() {
       var builder = new IntervalBuilder();
       builder.addTarget('1234');
-      builder.addEvent('1234', 'up');
-      builder.addEvent('1234', 'up').should.not.be.ok;
-      builder.addEvent('1234', 'down');
-      builder.addEvent('1234', 'down').should.not.be.ok;
-      builder.addEvent('1234', 'paused');
-      builder.addEvent('1234', 'paused').should.not.be.ok;
-      builder.addEvent('1234', 'restarted').should.not.be.ok;
-      builder.addEvent('1234', 'restarted').should.not.be.ok;
-      builder.addEvent('1234', 'paused').should.not.be.ok;
+      builder.changeObjectState('1234', 'up');
+      builder.changeObjectState('1234', 'up').should.not.be.ok;
+      builder.changeObjectState('1234', 'down');
+      builder.changeObjectState('1234', 'down').should.not.be.ok;
+      builder.changeObjectState('1234', 'paused');
+      builder.changeObjectState('1234', 'paused').should.not.be.ok;
+      builder.changeObjectState('1234', 'restarted').should.not.be.ok;
+      builder.changeObjectState('1234', 'restarted').should.not.be.ok;
+      builder.changeObjectState('1234', 'paused').should.not.be.ok;
+    });
+
+  });
+
+  describe('#getGlobalState', function() {
+
+    it('should equal the target state when the target is unique', function() {
+      var builder = new IntervalBuilder();
+      builder.addTarget(1234);
+      builder.changeObjectState(1234, 'up');
+      builder.getGlobalState().should.eql(builder.UP);
+      builder.changeObjectState(1234, 'down');
+      builder.getGlobalState().should.eql(builder.DOWN);
+      builder.changeObjectState(1234, 'paused');
+      builder.getGlobalState().should.eql(builder.PAUSED);
+      builder.changeObjectState(1234, 'restarted');
+      builder.getGlobalState().should.eql(builder.PAUSED);
+    });
+
+    it('should be DOWN when at least one target is down', function() {
+      var builder = new IntervalBuilder();
+      builder.addTarget(1);
+      builder.addTarget(2);
+      builder.addTarget(3);
+      builder.addTarget(4);
+      builder.changeObjectState(1, 'up');
+      builder.changeObjectState(2, 'down');
+      builder.changeObjectState(3, 'paused');
+      builder.changeObjectState(4, 'restarted');
+      builder.getGlobalState().should.eql(builder.DOWN);
+    });
+
+    it('should be PAUSED when all targets are paused', function() {
+      var builder = new IntervalBuilder();
+      builder.addTarget(1);
+      builder.addTarget(2);
+      builder.addTarget(3);
+      builder.addTarget(4);
+      builder.changeObjectState(1, 'restared');
+      builder.changeObjectState(2, 'paused');
+      builder.changeObjectState(3, 'paused');
+      builder.changeObjectState(4, 'restarted');
+      builder.getGlobalState().should.eql(builder.PAUSED);
+    });
+
+    it('should be UP when no target are down', function() {
+      var builder = new IntervalBuilder();
+      builder.addTarget(1);
+      builder.addTarget(2);
+      builder.addTarget(3);
+      builder.addTarget(4);
+      builder.changeObjectState(1, 'restared');
+      builder.changeObjectState(2, 'paused');
+      builder.changeObjectState(3, 'up');
+      builder.changeObjectState(4, 'restarted');
+      builder.getGlobalState().should.eql(builder.UP);
     });
 
   });
@@ -201,7 +257,7 @@ describe('intervalBuilder', function() {
       builder.addTarget(check2);
       builder.build(now, now + 1000, function(err, periods) {
         if (err) return done(err);
-        periods.should.eql([[now, now + 1000, -1]]);
+        periods.should.eql([[now, now + 1000, builder.PAUSED]]);
         done();
       });
     });
