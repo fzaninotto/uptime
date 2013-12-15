@@ -14,6 +14,11 @@
  *   // in config/production.yaml
  *   plugins:
  *     - ./plugins/otheEmail
+ *     
+ *
+ *  IMPORTANT !!!!!!
+ *    You MUST DISABLE the normal Email Plugins
+ *  
  *
  * Usage
  * -----
@@ -63,7 +68,8 @@ exports.initWebApp = function(options) {
   var mailer = nodemailer.createTransport(config.method, config.transport);
   var templateDir = __dirname + '/views/';
 
-  // pko added
+  // Unclephil added
+  // copied from httpOptions & adapted
 
   var dashboard = options.dashboard;
 
@@ -88,7 +94,7 @@ exports.initWebApp = function(options) {
 
   options.app.use(express.static(__dirname + '/public'));
 
-  //pko end added
+  //UnclePhil end added
 
 
   CheckEvent.on('afterInsert', function(checkEvent) {
@@ -104,9 +110,13 @@ exports.initWebApp = function(options) {
         filename: filename
       };
       var lines = ejs.render(fs.readFileSync(filename, 'utf8'), renderOptions).split('\n');
+      var sendto = config.message.to;
+      if (check.otherEmail) {
+         sendto += "," +chek.otherEmail ;
+      }
       var mailOptions = {
         from:    config.message.from,
-        to:      config.message.to,
+        to:      sendto,
         subject: lines.shift(),
         text:    lines.join('\n')
       };
