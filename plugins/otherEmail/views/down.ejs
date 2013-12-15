@@ -1,0 +1,10 @@
+[Down] Check "<%= check.name %>" just went down
+On <%= moment(checkEvent.timestamp).format('LLLL') %>,
+a test on URL "<%= check.url %>" failed with the following error:
+
+    <%= checkEvent.details %>
+
+<% include details %>
+
+Uptime won't send anymore emails about this check until it goes back up.
+<% include footer %>
