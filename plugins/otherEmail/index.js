@@ -62,6 +62,9 @@ var nodemailer = require('nodemailer');
 var moment     = require('moment');
 var CheckEvent = require('../../models/checkEvent');
 var ejs        = require('ejs');
+var express = require('express');
+
+var template = fs.readFileSync(__dirname + '/views/_otherEmailEdit.ejs', 'utf8');
 
 exports.initWebApp = function(options) {
   var config = options.config.email;
@@ -76,10 +79,8 @@ exports.initWebApp = function(options) {
   dashboard.on('populateFromDirtyCheck', function(checkDocument, dirtyCheck, type) {
     if (!dirtyCheck.otherEmail) return;
     var otherEmail = dirtyCheck.otherEmail;
-    try {
       var options = dirtyCheck.otherEmail;
       checkDocument.setPollerParam('otherEmail', options);
-    }
   });
 
   dashboard.on('checkEdit', function(type, check, partial) {
