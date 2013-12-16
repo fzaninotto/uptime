@@ -13,7 +13,7 @@
  *
  *   // in config/production.yaml
  *   plugins:
- *     - ./plugins/otheEmail
+ *     - ./plugins/otherEmail
  *     
  *
  *  IMPORTANT !!!!!!
