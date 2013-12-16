@@ -112,7 +112,7 @@ exports.initWebApp = function(options) {
       };
       var lines = ejs.render(fs.readFileSync(filename, 'utf8'), renderOptions).split('\n');
       var sendto = config.message.to;
-      var otherEmail = getPollerParam('otherEmail');
+      var otherEmail = check.pollerParams.otherEmail;
       if (otherEmail) {
         if (sendto) {
           sendto += ",";
