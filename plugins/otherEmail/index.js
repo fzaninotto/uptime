@@ -88,7 +88,7 @@ exports.initWebApp = function(options) {
     check.otherEmail = '';
     var options = check.getPollerParam('otherEmail');
     if (options) {
-      check.setPollerParam('OtherEmail', options);
+      check.setPollerParam('otherEmail', options);
     }
     partial.push(ejs.render(template, { locals: { check: check } }));
   });
@@ -112,11 +112,12 @@ exports.initWebApp = function(options) {
       };
       var lines = ejs.render(fs.readFileSync(filename, 'utf8'), renderOptions).split('\n');
       var sendto = config.message.to;
-      if (check.otherEmail) {
+      var otherEmail = getPollerParam('otherEmail');
+      if (otherEmail) {
         if (sendto) {
           sendto += ",";
         }
-        sendto += check.otherEmail ;
+        sendto += otherEmail ;
       }
       var mailOptions = {
         from:    config.message.from,
