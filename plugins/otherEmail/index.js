@@ -113,7 +113,10 @@ exports.initWebApp = function(options) {
       var lines = ejs.render(fs.readFileSync(filename, 'utf8'), renderOptions).split('\n');
       var sendto = config.message.to;
       if (check.otherEmail) {
-         sendto += "," +chek.otherEmail ;
+        if (sendto) {
+          sendto += ",";
+        }
+        sendto += check.otherEmail ;
       }
       var mailOptions = {
         from:    config.message.from,
