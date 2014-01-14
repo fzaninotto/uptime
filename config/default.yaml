@@ -23,11 +23,12 @@ server:
   port:     8082
 
 plugins:
-  - ./plugins/console
-  - ./plugins/patternMatcher
-  - ./plugins/httpOptions
-  # - ./plugins/email
-  # - ./plugins/basicAuth
+  #- ./plugins/console
+  #- ./plugins/patternMatcher
+  #- ./plugins/httpOptions
+  #- ./plugins/email          ## Email defined at admin level
+  #- ./plugins/otherEmail      ## additional email defined on each check
+  #- ./plugins/basicAuth
 
 email:
   method:      SMTP  # possible methods are SMTP, SES, or Sendmail
@@ -35,7 +36,7 @@ email:
     service:   Gmail # see https://github.com/andris9/Nodemailer/blob/master/lib/wellknown.js for well-known services
     auth:            
       user:          # The email account username, e.g. 'username@gmail.com'
-      pass:          # The email account password, e.G. 'password'
+      pass:        # The email account password, e.G. 'password'
   event:
     up:        true
     down:      true
@@ -43,7 +44,7 @@ email:
     restarted: false
   message:           
     from:            # The message sender, e.g. 'Fred Foo <foo@blurdybloop.com>'
-    to:              # The message recipient, e.g. 'bar@blurdybloop.com, baz@blurdybloop.com'
+    to:             # The message recipient, e.g. 'bar@blurdybloop.com, baz@blurdybloop.com'
   dashboardUrl: 'http://localhost:8082'
 
 basicAuth:
