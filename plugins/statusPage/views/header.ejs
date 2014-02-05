@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="refresh" content="60" >
+    <title>Status Page</title>
+    <link rel="stylesheet" href="<%= route %>/stylesheets/bootstrap.css">
+    <link rel="stylesheet" href="<%= route %>/stylesheets/style.css">
+<% if (count.down > 0) {%>
+    <link rel="shortcut icon" href="<%= route %>/favicon_red.ico">
+<% } else { %>
+    <link rel="shortcut icon" href="<%= route %>/favicon.ico">
+<% } %>
+    <link rel="apple-touch-icon" href="<%= route %>/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="<%= route %>/apple-touch-icon-ipad.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="<%= route %>/apple-touch-icon-iphone4.png">
+  </head>
+  <body>
+    <div class="container">
+      <div class="navbar navbar-inverse">
+        <div class="navbar-inner">
+          <div class="container">
+            <a class="brand" href="">Status Page</a>
+            <ul class="nav pull-right" id="check_summary">
+<% if (count.up > 0) {%>
+              <li id="all_up"><span class="label label-success">Up</span><strong class="green"><%=count.up%></strong></li>
+<% } %>
+<% if (count.down > 0) {%>
+              <li id="all_down"><span class="label label-important">Down</span><strong class="red"><%=count.down%></strong></li>
+<% } %>
+            </ul>
+          </div>
+        </div>
+      </div>
