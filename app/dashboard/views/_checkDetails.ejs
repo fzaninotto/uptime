@@ -1,3 +1,4 @@
+<% addedCss.push('jquery-ui.autocomplete.min.css') %>
 <% addedCss.push('jquery.tagsinput.css') %>
 <div class="tab-pane" id="admin">
   <form id="check_form" method="post" class="form-horizontal" action="<%= route %>/checks<%= check.isNew ? '' : '/' + check._id %>">
@@ -164,7 +165,11 @@ $(document).ready(function() {
 
   var tagField = $('#check_form textarea[name="check[tags]"]');
   var tags = tagField.val().split(', ');
-  tagField.tagsInput();
+  tagField.tagsInput({
+    autocomplete_url:'/api/tags/search',
+    autocomplete: { autoFocus: true },
+    defaultText : 'Type tags here separated by a comma'
+  });
   $('.tagsinput span.tag span').live('click', function() {
     window.location = '<%= route %>/tags/' + $(this).text();
   });

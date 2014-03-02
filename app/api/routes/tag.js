@@ -22,6 +22,20 @@ module.exports = function(app) {
     });
   });
 
+  // tag search for autocomplete
+  app.get('/tags/search', function(req, res) {
+    Tag
+    .aggregate({ $match :   { name : { $regex: req.query.term, $options: 'i' } } },
+               { $project : {_id : 0,
+                             label : '$name',
+                             value : '$name'}},
+               { $sort :    { label : 1 }},
+    function(err, tags) {
+      if (err) return next(err);
+      res.json(tags);
+    });
+  });
+
   // tag route middleware
   var loadTag = function(req, res, next) {
     Tag.findOne({ name: req.params.name }, function(err, tag) {
