@@ -102,6 +102,7 @@
         <label class="control-label">Tags</label>
         <div class="controls">
           <textarea name="check[tags]" rows="2"/><%= check.tags.join(', ') %></textarea>
+          <p class="muted">Seperate tags with a comma</p>
         </div>
       </div>
       <% if (check.lastTested) { %>
@@ -167,8 +168,7 @@ $(document).ready(function() {
   var tags = tagField.val().split(', ');
   tagField.tagsInput({
     autocomplete_url:'/api/tags/search',
-    autocomplete: { autoFocus: true },
-    defaultText : 'Type tags here separated by a comma'
+    autocomplete: { autoFocus: true }
   });
   $('.tagsinput span.tag span').live('click', function() {
     window.location = '<%= route %>/tags/' + $(this).text();
