@@ -22,18 +22,18 @@ var uptimeBar = (function(){
   var uptimeBar = function(type, args) {
     if (type === 'check') {
       return uptimeBarCheck(args);
-    } else if (type === 'tag') {
-      return uptimeBarTag(args);
-    } else {
-      return new Error('unkown type');
     }
+    if (type === 'tag') {
+      return uptimeBarTag(args);
+    }
+    return new Error('unkown type');
   }
 
   var uptimeBarCheck = function(args) {
     var from = args.from;
     var to = args.to;
     var check = args.check;
-    var periods = check.qos.outages || [];
+    var periods = args.periods || [];
     var now = Date.now();
     var currentIntervalBegin = null;
     var duration = to - from;
