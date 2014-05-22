@@ -1,3 +1,5 @@
+url: 'http://localhost:8082'
+
 mongodb:
   server:   localhost
   database: uptime
@@ -18,9 +20,6 @@ analyzer:
   pingHistory:            8035200000 # three months
 
 autoStartMonitor: true
-
-server:
-  port:     8082
 
 plugins:
   - ./plugins/console
@@ -44,7 +43,7 @@ email:
   message:           
     from:            # The message sender, e.g. 'Fred Foo <foo@blurdybloop.com>'
     to:              # The message recipient, e.g. 'bar@blurdybloop.com, baz@blurdybloop.com'
-  dashboardUrl: 'http://localhost:8082'
+  # The email plugin also uses the main `url` param for hyperlinks in the sent emails
 
 basicAuth:
   username:    admin

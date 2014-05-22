@@ -71,6 +71,8 @@ Configuring
 Uptime uses [node-config](https://github.com/lorenwest/node-config) to allow YAML configuration and environment support. Here is the default configuration, taken from `config/default.yaml`:
 
 ```yaml
+url:        'http://localhost:8082'
+
 mongodb:
   server:   localhost
   database: uptime
@@ -92,9 +94,6 @@ analyzer:
 
 autoStartMonitor: true
 
-server:
-  port:     8082
-
 plugins:
   - ./plugins/console
   - ./plugins/patternMatcher
@@ -105,8 +104,7 @@ plugins:
 To modify this configuration, create a `development.yaml` or a `production.yaml` file in the same directory, and override just the settings you need. For instance, to run Uptime on port 80 in production, create a `production.yaml` file as follows:
 
 ```yaml
-server:
-  port:     80
+url: 'http://myDomain.com'
 ```
 
 Node that Uptime works great behind a proxy - it uses the `http_proxy` environment variable transparently.
