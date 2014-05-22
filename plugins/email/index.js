@@ -47,7 +47,7 @@
  *     message:           
  *       from:     'Fred Foo <foo@blurdybloop.com>'
  *       to:       'bar@blurdybloop.com, baz@blurdybloop.com'
- *     dashboardUrl: 'http://localhost:8082'
+ *     # The email plugin also uses the main `url` param for hyperlinks in the sent emails
  */
 var fs         = require('fs');
 var nodemailer = require('nodemailer');
@@ -67,7 +67,7 @@ exports.initWebApp = function(options) {
       var renderOptions = {
         check: check,
         checkEvent: checkEvent,
-        url: config.dashboardUrl,
+        url: options.config.url,
         moment: moment,
         filename: filename
       };
