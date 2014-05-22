@@ -138,7 +138,8 @@ fs.exists('./plugins/index.js', function(exists) {
 module.exports = app;
 if (!module.parent) {
   var port = process.env.PORT || config.server.port;
-  server.listen(port, function(){
+  var host = process.env.HOST || config.server.host;
+  server.listen(port, host, function(){
     console.log("Express server listening on port %d in %s mode", port, app.settings.env);
   });
 }
