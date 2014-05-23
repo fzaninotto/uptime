@@ -51,6 +51,6 @@ basicAuth:
 verbose: true # only used in dev
 
 webPageTest:
-  server: 'http://webpagetest.org'
-  key: 
+  server: 'http://www.webpagetest.org'
+  key:
   testOptions: 
