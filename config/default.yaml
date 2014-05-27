@@ -49,3 +49,8 @@ basicAuth:
   username:    admin
   password:    password
 verbose: true # only used in dev
+
+webPageTest:
+  server: 'http://www.webpagetest.org'
+  key:
+  testOptions: 
