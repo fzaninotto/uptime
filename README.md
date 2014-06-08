@@ -11,7 +11,7 @@ You can watch a [demo screencast on Vimeo](https://vimeo.com/39302164).
 Features
 --------
 
-* Monitor thousands of websites (powered by [Node.js asynchronous programming](http://dotheweb.posterous.com/nodejs-for-php-programmers-1-event-driven-pro))
+* Monitor thousands of websites (powered by [Node.js asynchronous programming](http://redotheweb.com/2012/01/23/nodejs-for-php-programmers-1-event-driven-programming-and-pasta.html))
 * Tweak frequency of monitoring on a per-check basis, up to the second
 * Check the presence of a pattern in the response body
 * Receive notifications whenever a check goes down
@@ -71,6 +71,8 @@ Configuring
 Uptime uses [node-config](https://github.com/lorenwest/node-config) to allow YAML configuration and environment support. Here is the default configuration, taken from `config/default.yaml`:
 
 ```yaml
+url:        'http://localhost:8082'
+
 mongodb:
   server:   localhost
   database: uptime
@@ -92,9 +94,6 @@ analyzer:
 
 autoStartMonitor: true
 
-server:
-  port:     8082
-
 plugins:
   - ./plugins/console
   - ./plugins/patternMatcher
@@ -105,8 +104,7 @@ plugins:
 To modify this configuration, create a `development.yaml` or a `production.yaml` file in the same directory, and override just the settings you need. For instance, to run Uptime on port 80 in production, create a `production.yaml` file as follows:
 
 ```yaml
-server:
-  port:     80
+url: 'http://myDomain.com'
 ```
 
 Node that Uptime works great behind a proxy - it uses the `http_proxy` environment variable transparently.
@@ -200,8 +198,246 @@ exports.initWebapp = function() {
   });
 }
 ```
-
 All Uptime entities emit lifecycle events that you can listen to on the Model class. These events are `beforeInsert`, `afterInsert`, `beforeUpdate`, `afterUpdate`, `beforeSave` (called for both inserts and updates), `afterSave` (called for both inserts and updates), `beforeRemove`, and `afterRemove`. For more information about these events, check the [mongoose-lifecycle](https://github.com/fzaninotto/mongoose-lifecycle) plugin.
+
+API
+---------------
+
+All API requests should be prefixed with `api`.
+The API response always uses the `application/json` mimetype.
+API requests do not require authentication.
+
+Example of a valid API request:
+
+`GET http://example.com/api/checks`
+
+Example for a valid API request using curl :
+
+`curl -i -H "Accept: application/json" -X PUT -d "name=example" -d "url=http://mysite.com" -d "interval=120" http://example.com/api/checks`
+
+### Status codes
+
+The API is designed to return different status codes :
+
+* `200 Ok` : The request was successful, the resource(s) itself is returned as JSON
+* `400 Bad Request` : An attribute of the API request is invalid or missing (e.g. the url of a check is missing)
+* `404 Not Found` : A resource could not be accessed (e.g. a check ID could not be found)
+* `500 Server Error` : Something went wrong on the server side (e.g. a check could not be saved in database)
+
+### CRUD routes
+
+#### `GET /checks`
+
+Return a list of all checks
+
+#### `GET /checks/needingPoll`
+
+Return a list of checks that need a poll (i.e. not paused, plus new or last tested > interval set between tests)
+
+#### `GET /checks/:id`
+
+Return a single check
+
+Parameter :
+
+* `id` : (required) Id of the check
+
+Ex: `http://localhost:8082/api/checks/527a25bdc9de6e0000000004`
+
+#### `GET /checks/:id/pause`
+
+Toggle the status (isPaused) of a check
+
+Parameter :
+
+* `id` : (required) Id of the check
+
+Ex: `http://localhost:8082/api/checks/527a25bdc9de6e0000000004/pause`
+
+#### `PUT /check/:id/test`
+
+Updates the last checked date for a check. Used to avoid double check when a target is slow.
+Return the number of affected records in the database (1 or 0).
+
+Parameter :
+
+* `id` : (required) Id of the check
+
+Ex: `http://localhost:8082/api/checks/527a25bdc9de6e0000000004/test`
+
+#### `GET /pings`
+
+Return a list of all pings
+
+Parameters :
+
+* `?page=1` : (optional) Paginate results by 50
+* `?check=:id` : (optional) Return only the pings for a given check
+
+Ex: `http://localhost:8082/api/pings?check=527a25bdc9de6e0000000004`
+
+#### `GET /pings/events`
+
+Return a list of events (CheckEvent) aggregated by day, limited to the latest week, and to 100 results
+
+#### `POST /pings`
+
+Create a ping for a check, if the check exists and is not already polled
+
+Parameters :
+
+* `checkId` : (required) Id of the check
+* `status` : (required)  Status
+* `timestamp` : (optional) Date of polling
+* `time` : (required) Response time
+* `name` : (optional) Monitor name
+* `error` : (optional)
+* `details` : (optional)
+
+#### `GET /tags`
+
+Return list of all tags
+
+#### `GET /tags/:name`
+
+Return a single tag
+
+Parameter :
+
+* `name` : (required) name of the tag
+
+Ex: `http://localhost:8082/tags/good`
+
+#### `PUT /checks`
+
+Create a new check and return it
+
+Parameters :
+
+* `url` : (required) Url of the check
+* `name` : (optional) Name of the check - if empty, url will be set as check name
+* `interval` : (optional) Interval of polling
+* `maxTime` : (optional) Slow threshold
+* `isPaused` : (optional) Status of polling
+* `alertTreshold` : (optional) set the threshold of failed pings that will create an alert
+* `tags` : (optional) list of tags (comma-separated values)
+* `type` : (optional) type of check (auto|http|https|udp)
+
+#### `POST /checks/:id`
+
+Update a check and return it
+
+Parameters :
+
+* `id` : (required) Id of the check
+* `url` : (optional) Url of the check
+* `name` : (optional) Name of the check - if empty, url will be set as check name
+* `interval` : (optional) Interval of polling
+* `maxTime` : (optional) Slow threshold
+* `isPaused` : (optional) Status of polling
+* `alertTreshold` : (optional) set the threshold of failed pings that will create an alert
+* `tags` : (optional) list of tags (comma-separated values)
+* `type` : (optional) type of check - values : `auto`|`http`|`https`|`udp`
+
+Ex: `http://localhost:8082/api/checks/527a25bdc9de6e0000000004`
+
+#### `DELETE /checks/:id`
+
+Delete a check
+
+Parameters :
+
+* `id` : (required) Id of the check
+
+Ex: `http://localhost:8082/api/checks/527a25bdc9de6e0000000004`
+
+### Statistics routes
+
+#### `GET /checks/:id/stat/:period/:timestamp`
+
+Return check stats for a period
+
+Parameters :
+
+   * `id` : (required) Id of the check
+   * `period` : (required) Period - values :  `hour`|`day`|`month`|`year`
+   * `timestamp` : (required) Start date (timestamp)
+
+Ex: `http://localhost:8082/api/checks/527a25bdc9de6e0000000004/stat/day/1383260400000`
+
+#### `GET /checks/:id/stats/:type`
+
+Return check stats for a period
+
+Parameters :
+
+* `id` : (required) Id of the check
+* `type` : (required) Period - values :  `hour`|`day`|`month`|`year`
+* `?begin=` : (required) Start date (timestamp)
+* `?end=` : (required) End date (timestamp)
+
+Ex: `http://localhost:8082/api/checks/527a25bdc9de6e0000000004/stats/month?begin=1383260400000&end=1385852399999`
+
+#### `GET /tags/:name/checks/:period/:timestamp`
+
+Return tag stats for a period, joined by checks
+
+Parameters :
+
+* `name` : (required) Name of the tag
+* `period` : (required) Period - values :  `hour`|`day`|`month`|`year`
+* `timestamp` : (required) Start date (timestamp)
+
+Ex: `http://localhost:8082/api/tags/good/checks/month/1384816432099`
+
+#### `GET /tags/:name/stat/:period/:timestamp`
+
+Return tag stats for a period
+
+Parameters :
+
+* `name` : (required) Name of the tag
+* `period` : (required) Period - values :  `hour`|`day`|`month`|`year`
+* `timestamp` : (required) Start date (timestamp)
+
+Ex: `http://localhost:8082/api/tags/good/stat/month/1383260400000`
+
+#### `GET /tags/:name/stats/:type`
+
+Return tag stats for a period
+
+Parameters :
+
+* `name` : (required) Name of the tag
+* `type` : (required) Period - values :  `day`|`month`|`year`
+* `?begin=` : (required) Start date (timestamp)
+* `?end=` : (required) End date (timestamp)
+
+Ex: `http://localhost:8082/api/tags/good/stats/month?begin=1383260400000&end=1385852399999`
+
+### Event routes
+
+#### `GET /checks/:id/events`
+
+Return the list of all events for the check
+
+Parameter :
+
+* `id` : (required) Id of the check
+
+Ex: `http://localhost:8082/api/checks/527a25bdc9de6e0000000004/events`
+
+#### `GET /tags/:name/events`
+
+Return the list of all events associated to the tag
+
+Parameter :
+
+* `name` : (required) Name of the tag
+* `?begin=` : (optional) Start date (timestamp)
+* `?end=` : (optional) End date (timestamp)
+
+Ex: `http://localhost:8082/api/tags/good/events?begin=1383260400000&end=1385852399999`
 
 Support and Discussion
 ----------------------

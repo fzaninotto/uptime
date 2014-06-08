@@ -90,9 +90,9 @@ jQuery(document).ready(function($) {
   
   // initialize secondary navigation
   new StatNavigation(dateInterval);
-  
+
   // initialize date navigation
-  new DateNavigation(dateInterval);
+  new DateNavigation(dateInterval, 'check', <%- JSON.stringify(check) %>);
   
   // hide alert after 5s
   window.setTimeout(function() {

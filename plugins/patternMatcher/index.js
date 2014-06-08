@@ -30,19 +30,20 @@ exports.initWebApp = function(options) {
 
   var dashboard = options.dashboard;
 
-	dashboard.on('populateCheckFromRequest', function(checkDocument, dirtyCheck, type) {
+	dashboard.on('populateFromDirtyCheck', function(checkDocument, dirtyCheck, type) {
 		if (type !== 'http' && type !== 'https') return;
-    if (!dirtyCheck.match) return;
     var match = dirtyCheck.match;
-    if (match.indexOf('/') !== 0) {
-      match = '/' + match + '/';
-    }
-    var matchParts = match.match(new RegExp(matchPattern));
-    try {
-      // check that the regexp doesn't crash
-      new RegExp(matchParts[1], matchParts[2]);
-    } catch (e) {
-      throw new Error('Malformed regular expression ' + dirtyCheck.match);
+    if (match) {
+      if (match.indexOf('/') !== 0) {
+        match = '/' + match + '/';
+      }
+      var matchParts = match.match(new RegExp(matchPattern));
+      try {
+        // check that the regexp doesn't crash
+        new RegExp(matchParts[1], matchParts[2]);
+      } catch (e) {
+        throw new Error('Malformed regular expression ' + dirtyCheck.match);
+      }
     }
     checkDocument.setPollerParam('match', match);
 	});

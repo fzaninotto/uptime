@@ -37,7 +37,13 @@
   <td data-sort="0"><span class="label label-important">down</span> <span class="label label-warning">new</span></td>
   {{ } }}
   {{ if (check.qos) { }}
-  <td data-sort="{{= check.qos.availability }}">{{- uptimeBar(Date.now() - 24 * 60 * 60 * 1000, Date.now(), new Date(check.firstTested).valueOf(), check.qos.outages || []) }}</td>
+  <td data-sort="{{= check.qos.availability }}">
+      {{- uptimeBar('check', {
+        from: Date.now() - 24 * 60 * 60 * 1000,
+        to: Date.now(),
+        periods: check.qos.outages || [],
+        check: check
+       }) }}</td>
   <td data-sort="{{= check.qos.responseTime }}">{{= Math.round(check.qos.responseTime) }}ms</td>
   {{ } else { }}
   <td data-sort="0">-</td>
@@ -49,7 +55,7 @@
 jQuery(document).ready(function($) {
   // highlight current section in main nav
   $('.navbar-inner li').eq(1).addClass('active');
-  
+
   // make the chesk table sortable
   $('#checks').tablesorter({
     textExtraction: function(node) {
@@ -57,7 +63,7 @@ jQuery(document).ready(function($) {
     },
     sortList: [[1,0]]
   });
-  
+
   // Fill in the table
   var check_template = document.getElementById('check_template').innerHTML;
   var ejs = require('ejs');
@@ -76,6 +82,7 @@ jQuery(document).ready(function($) {
       $('#checks tbody').html(lines.join(''));
       $('#checks').trigger('update');
     }
+
     if (checks) {
       updateChecksSection(checks);
     } else {

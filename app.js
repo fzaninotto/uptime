@@ -3,6 +3,7 @@
  */
 
 var http       = require('http');
+var url        = require('url');
 var express    = require('express');
 var config     = require('config');
 var socketIo   = require('socket.io');
@@ -135,11 +136,36 @@ fs.exists('./plugins/index.js', function(exists) {
   }
 });
 
-var port = process.env.PORT || config.server.port;
-server.listen(port);
-console.log("Express server listening on port %d in %s mode", port, app.settings.env);
+module.exports = app;
+
+var monitorInstance;
+
+if (!module.parent) {
+  var serverUrl = url.parse(config.url);
+  var port;
+  if (config.server && config.server.port) {
+    console.error('Warning: The server port setting is deprecated, please use the url setting instead');
+    port = config.server.port;
+  } else {
+    port = serverUrl.port;
+    if (port === null) {
+      port = 80;
+    }
+  }
+  var port = process.env.PORT || port;
+  var host = process.env.HOST || serverUrl.hostname;
+  server.listen(port, function(){
+    console.log("Express server listening on host %s, port %d in %s mode", host, port, app.settings.env);
+  });
+  server.on('error', function(e) {
+    if (monitorInstance) {
+      monitorInstance.stop();
+      process.exit(1);
+    }
+  });
+}
 
 // monitor
 if (config.autoStartMonitor) {
-  require('./monitor');
+  monitorInstance = require('./monitor');
 }
