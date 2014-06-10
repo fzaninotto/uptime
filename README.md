@@ -47,6 +47,12 @@ Lastly, start the application with:
 $ node app
 ```
 
+If you want a production environment:
+
+```sh
+$ NODE_ENV=production node app
+```
+
 Upgrading From a 2.0 Install
 ----------------------------
 
@@ -124,6 +130,8 @@ To that extent, set the `autoStartMonitor` setting to `false` in the `production
 $ node monitor &
 $ node app
 ```
+
+Don't forget to set `NODE_ENV=production` if you want to run the app in production environment.
 
 You can also run the monitor in a different server. This second server must be able to reach the API of the webapp server: set the `monitor.apiUrl` setting accordingly in the `production.yaml` file of the monitor server.
 
