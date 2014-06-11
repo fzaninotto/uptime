@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var Schema   = mongoose.Schema;
 var moment   = require('moment');
 var async    = require('async');
+var config   = require('config');
 
 // models dependencies
 var Ping             = require('../models/ping');
@@ -35,7 +36,14 @@ var Check = new Schema({
 Check.plugin(require('mongoose-lifecycle'));
 
 Check.pre('remove', function(next) {
-  async.parallel([this.removePings.bind(this), this.removeEvents.bind(this), this.removeStats.bind(this)], function() {
+  var methods = [this.removeStats.bind(this)]
+
+  if (config.pingCascadeDelete === true)
+    methods.push(this.removePings.bind(this))
+  if (config.eventCascadeDelete === true)
+    methods.push(this.removeEvents.bind(this))
+
+  async.parallel(methods, function() {
     next();
   });
 });
