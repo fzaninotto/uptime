@@ -36,12 +36,12 @@ var Check = new Schema({
 Check.plugin(require('mongoose-lifecycle'));
 
 Check.pre('remove', function(next) {
-  var methods = [this.removeStats.bind(this)]
+  var methods = [this.removeStats.bind(this)];
 
   if (config.pingCascadeDelete === true)
-    methods.push(this.removePings.bind(this))
+    methods.push(this.removePings.bind(this));
   if (config.eventCascadeDelete === true)
-    methods.push(this.removeEvents.bind(this))
+    methods.push(this.removeEvents.bind(this));
 
   async.parallel(methods, function() {
     next();
