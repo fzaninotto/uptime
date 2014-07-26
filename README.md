@@ -107,7 +107,7 @@ To modify this configuration, create a `development.yaml` or a `production.yaml`
 url: 'http://myDomain.com'
 ```
 
-Node that Uptime works great behind a proxy - it uses the `http_proxy` environment variable transparently.
+Note that Uptime works great behind a proxy - it uses the `http_proxy` environment variable transparently.
 
 Architecture
 ------------
@@ -135,10 +135,10 @@ You can even run several monitor servers in several datacenters to get average r
 Using Plugins
 -------------
 
-Plugins can add more notification types, more poller types, new routes to the webapp, etc. Uptime currently bundles three plugins:
+Plugins can add more notification types, more poller types, new routes to the webapp, etc. Uptime currently bundles five plugins:
 
  * [`console`](https://github.com/fzaninotto/uptime/blob/master/plugins/console/index.js): log pings and events in the console in real time
- * [`email`](https://github.com/fzaninotto/uptime/blob/master/plugins/email/index.js): notify events (up, down pause) by email
+ * [`email`](https://github.com/fzaninotto/uptime/blob/master/plugins/email/index.js): notify events (up, down, pause) by email
  * [`patternMatcher`](https://github.com/fzaninotto/uptime/blob/master/plugins/patternMatcher/index.js): allow HTTP & HTTPS pollers to test the response body against a pattern
  * [`httpOptions`](https://github.com/fzaninotto/uptime/blob/master/plugins/httpOptions/index.js): add custom HTTP options and headers to HTTP and HTTPS checks (e.g. to allow self-signed certificate on HTTPS, custom headers, custom HTTP methods, ...)
  * [`basicAuth`](https://github.com/fzaninotto/uptime/blob/master/plugins/basicAuth/index.js): add HTTP Basic Access Authentication to the dashboard and API applications
