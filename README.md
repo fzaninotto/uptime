@@ -308,7 +308,7 @@ Parameter :
 
 Ex: `http://localhost:8082/tags/good`
 
-#### `PUT /checks`
+#### `POST /checks`
 
 Create a new check and return it
 
@@ -323,7 +323,7 @@ Parameters :
 * `tags` : (optional) list of tags (comma-separated values)
 * `type` : (optional) type of check (auto|http|https|udp)
 
-#### `POST /checks/:id`
+#### `PUT /checks/:id`
 
 Update a check and return it
 
