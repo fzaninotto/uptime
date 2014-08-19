@@ -308,6 +308,14 @@ Parameter :
 
 Ex: `http://localhost:8082/tags/good`
 
+#### `DELETE /tags/:name`
+
+Return a tag
+
+Parameter :
+
+* `name` : (required) name of the tag
+
 #### `PUT /checks`
 
 Create a new check and return it
