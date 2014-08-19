@@ -150,7 +150,7 @@ app.delete('/checks/:id', function(req, res, next) {
 app.get('/tags', function(req, res, next) {
   Tag.find().sort({ name: 1 }).exec(function(err, tags) {
     if (err) return next(err);
-    res.render('tags', { tags: tags });
+    res.render('tags', { info: req.flash('info'), tags: tags });
   });
 });
 
@@ -161,6 +161,25 @@ app.get('/tags/:name', function(req, res, next) {
     }
     if (!tag) return next(new Error('failed to load tag ' + req.params.name));
     res.render('tag', { tag: tag, req: req });
+  });
+});
+
+app.delete('/tags/:name', function(req, res, next) {
+  Tag.findOne({ name: req.params.name }, function(err, tag) {
+    if (err) {
+      return next(err);
+    }
+    if (!tag) return next(new Error('failed to load tag ' + req.params.name));
+    // Delete tag relation first in order to avoid magic respawn
+    Check.collection.update({ tags: tag.name }, { $pull: { tags: tag.name } }, { multi: true }, function(err2) {
+      if (err2) return next(err2);
+      // Then, remove the tag
+      tag.remove(function(err3) {
+        if (err3) return next(err3);
+        req.flash('info', 'Tag has been deleted');
+        res.redirect(app.route + '/tags');
+      });
+    })
   });
 });
 
