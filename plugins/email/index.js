@@ -54,11 +54,14 @@ var nodemailer = require('nodemailer');
 var moment     = require('moment');
 var CheckEvent = require('../../models/checkEvent');
 var ejs        = require('ejs');
+var template = fs.readFileSync(__dirname + '/views/_detailsEdit.ejs', 'utf8');
+
 
 exports.initWebApp = function(options) {
   var config = options.config.email;
   var mailer = nodemailer.createTransport(config.method, config.transport);
   var templateDir = __dirname + '/views/';
+  var dashboard = options.dashboard;
   CheckEvent.on('afterInsert', function(checkEvent) {
     if (!config.event[checkEvent.message]) return;
     checkEvent.findCheck(function(err, check) {
@@ -78,11 +81,34 @@ exports.initWebApp = function(options) {
         subject: lines.shift(),
         text:    lines.join('\n')
       };
+      if (check.pollerParams.alert_email) {
+        mailOptions.to = check.pollerParams.alert_email;
+      }
       mailer.sendMail(mailOptions, function(err2, response) {
         if (err2) return console.error('Email plugin error: %s', err2);
         console.log('Notified event by email: Check ' + check.name + ' ' + checkEvent.message);
       });
     });
   });
+
+  dashboard.on('populateFromDirtyCheck', function(checkDocument, dirtyCheck, type) {
+      if (type !== 'http' && type !== 'https') return;
+      var alert_email = dirtyCheck.alert_email;
+    
+      if (alert_email) {
+        var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        if (!re.test(alert_email)) {
+          throw new Error('Invalid email address');
+        }  
+      }
+      checkDocument.setPollerParam('alert_email', alert_email);
+    });
+
+  dashboard.on('checkEdit', function(type, check, partial) {
+    if (type !== 'http' && type !== 'https') return;
+    partial.push(ejs.render(template, { locals: { check: check } }));
+  });
+
+
   console.log('Enabled Email notifications');
 };
