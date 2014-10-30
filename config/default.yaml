@@ -25,8 +25,17 @@ plugins:
   - ./plugins/console
   - ./plugins/patternMatcher
   - ./plugins/httpOptions
+  # - ./plugins/pagerduty
   # - ./plugins/email
   # - ./plugins/basicAuth
+
+pagerduty:
+  serviceKey: 1c1046e9fddd4d45a0302ec379144fc9 
+  event:
+    up:        true
+    down:      true
+    paused:    false
+    restarted: false
 
 email:
   method:      SMTP  # possible methods are SMTP, SES, or Sendmail
