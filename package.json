@@ -22,7 +22,8 @@
   },
   "devDependencies": {
     "mocha": "1.7.x",
-    "should": "1.1.0"
+    "should": "1.1.0",
+    "nodemon": "1.2.1"
   },
   "keywords": ["uptime", "monitoring", "api", "check"],
   "repository": "https://github.com/fzaninotto/uptime",
