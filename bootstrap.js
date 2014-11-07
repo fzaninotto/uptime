@@ -12,6 +12,13 @@ if (!connectionString) {
 	}
 }
 
+if (process.env.UPTIME_MONGO_1_PORT_27017_TCP_ADDR) {
+	/* If this environment variable is set we are running trough fig.
+	   This is the worst hack I have ever done. I feel ashamed.
+	*/
+	connectionString = util.format('mongodb://%s/%s', process.env.UPTIME_MONGO_1_PORT_27017_TCP_ADDR, config.mongodb.database)
+}
+
 mongoose.connect(connectionString)
 mongoose.connection.on('error', function (err) {
   console.error('MongoDB error: ' + err.message);
