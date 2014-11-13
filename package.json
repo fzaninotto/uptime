@@ -18,7 +18,8 @@
     "nodemailer": "0.3.35",
     "net-ping":  "1.1.7",
     "js-yaml": "2.1.0",
-    "webpagetest": "0.2.0"
+    "webpagetest": "0.2.0",
+    "pagerduty": "0.0.3"
   },
   "devDependencies": {
     "mocha": "1.7.x",
