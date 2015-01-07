@@ -1,0 +1,64 @@
+#!/bin/bash
+#
+#	/etc/rc.d/init.d/uptime
+#
+#	chkconfig: 345 70 30
+#   description: Remote monitoring application using Node.js, MongoDB, and Twitter Bootstrap.
+
+# Source function library.
+. /etc/init.d/functions
+
+RETVAL=0
+APP=uptime
+LOCKFILE=/var/lock/subsys/${APP}
+
+NODE_APP=$(which node)
+APP_ENTRYPOINT=app.js
+APP_DIR=/var/www/${APP}/
+APP_LOG=/var/log/${APP}.log
+
+start() {
+	echo -n "Starting ${APP}: "
+	forever start -a -l ${APP_LOG} --minUptime 1000 --spinSleepTime 50 --sourceDir ${APP_DIR} --workingDir ${APP_DIR} ${APP_ENTRYPOINT}
+	RETVAL=$?
+	[ ${RETVAL} -eq 0 ] && rm -f ${LOCKFILE}
+	echo
+	return ${RETVAL}
+}
+
+status() {
+	echo -n "Checking ${APP} status: "
+	forever list
+	RETVAL=$?
+	return ${RETVAL}
+}
+
+stop() {
+	echo -n "Shutting down ${APP}: "
+	forever stopall
+	RETVAL=$?
+	[ ${RETVAL} -eq 0 ] && rm -f ${LOCKFILE}
+	echo
+	return ${RETVAL}
+}
+
+case "$1" in
+	start)
+		start
+		;;
+	stop)
+		stop
+		;;
+	status)
+		status
+		;;
+	restart)
+		stop
+		start
+		;;
+	*)
+	echo "Usage: <servicename> {start|stop|status|restart"
+		exit 1
+		;;
+esac
+exit $?
