@@ -47,6 +47,8 @@ Lastly, start the application with:
 $ node app
 ```
 
+Alternatively, a simple init script is provided. It assumes Uptime is installed to `/var/www/uptime`. If Uptime is installed in a different directory, the `APP_DIR` variable needs to be changed to reflect the Uptime's true location. To install this init script, copy `uptime` from the project's root directory to your system's init script directory (for example `/etc/init.d/`). Make sure the file is executable (`sudo chmod +x /etc/init.d/uptime`) and owned by root (`sudo chown root:root /etc/init.d/uptime`). To start the uptime service on every boot, register the service with your particular init system and enable it. 
+
 Upgrading From a 2.0 Install
 ----------------------------
 
@@ -98,6 +100,7 @@ plugins:
   - ./plugins/console
   - ./plugins/patternMatcher
   - ./plugins/httpOptions
+  - ./plugins/basicAuth
   # - ./plugins/email
 ```
 
@@ -173,7 +176,8 @@ Third-party plugins:
 
  * [`webhooks`](https://github.com/mintbridge/uptime-webhooks): notify events to an URL by sending an HTTP POST request 
  * [`campfire`](https://gist.github.com/dmathieu/5592418): notify events to Campfire
- * [`pushover`](https://gist.github.com/xphyr/5994345): Notify events to mobile devices
+ * [`pushover`](https://gist.github.com/xphyr/5994345): notify events to mobile devices
+ * [`sns`](https://github.com/curtisz/uptime-sns-plugin): notify events to AWS SNS
 
 Writing Plugins
 ---------------
