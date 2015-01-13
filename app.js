@@ -3,6 +3,7 @@
  */
 
 var http       = require('http');
+var https      = require('https');
 var url        = require('url');
 var express    = require('express');
 var config     = require('config');
@@ -15,6 +16,7 @@ var Ping       = require('./models/ping');
 var PollerCollection = require('./lib/pollers/pollerCollection');
 var apiApp     = require('./app/api/app');
 var dashboardApp = require('./app/dashboard/app');
+var yargs      = require('yargs');
 
 // database
 
@@ -25,8 +27,31 @@ a.start();
 
 // web front
 
+var args = yargs
+  .usage('Usage: $0 [-c|--certificate certificate -k|--key key]')
+  .alias('c', 'certificate')
+  .describe('certificate', 'specify SSL certificate to use for HTTPS')
+  .alias('k', 'key')
+  .describe('key', 'specify SSL key to use for HTTPS')
+  .requiresArg(['certificate', 'key'])
+  .argv;
+
 var app = module.exports = express();
-var server = http.createServer(app);
+
+if ((args.certificate && !args.key) || (!args.certificate && args.key)) {
+  console.log('Using -c|--certificate or -k|--key requires both options to be set!');
+  process.exit(1);
+}
+var sslEnable = false;
+if (args.certificate && args.key) {
+  var options = {
+    cert: fs.readFileSync(args.certificate),
+    key: fs.readFileSync(args.key)
+  };
+  var server = https.createServer(options, app);
+} else {
+  var server = http.createServer(app);
+}
 
 app.configure(function(){
   app.use(app.router);
@@ -149,7 +174,7 @@ if (!module.parent) {
   } else {
     port = serverUrl.port;
     if (port === null) {
-      port = 80;
+      port = sslEnable ? 443 : 80;
     }
   }
   var port = process.env.PORT || port;
