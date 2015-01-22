@@ -1,14 +1,32 @@
 h1, h2, h3 {
-  font-weight: normal;
+}
+
+h1 {
+  border-bottom: 1px solid #e5e5e5;
+  padding-bottom: 15px;
 }
 
 h3 {
   font-size: 20px;
 }
 
-.footer {
-  padding: 35px 0 36px;
-  border-top: 1px solid #E5E5E5;
+body {
+  padding-bottom: 96px;
+}
+
+#mainFooter {
+  border-top: 1px solid #e5e5e5;
+  background: #f2f2f2;
+  padding: 10px 0;
+  font-size: 90%;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+
+#mainFooter p:last-child {
+  margin-bottom: 0;
 }
 
 #new_events a {
@@ -47,6 +65,7 @@ div.btn-toolbar {
   margin-top: 1em;
   margin-left: 0;
   list-style: none;
+  padding-left: 0;
 }
 
 #events li {
@@ -186,7 +205,7 @@ table .headerSortUp:after {
 }
 
 div.tagsinput span.tag span {
-  text-decoration: underline; cursor: pointer;
+  cursor: pointer;
 }
 
 table.chart td {
@@ -246,29 +265,29 @@ i.icon-chevron-right {
   margin-left: 29px;
   height: 22px;
 }
-.btn-small.month, .btn-small.day, .btn-small.hour, .btn-small.quarter {
+.btn-xs.month, .btn-small.day, .btn-small.hour, .btn-small.quarter {
   padding-right: 0;
   padding-left: 0;
 }
-.btn.btn-small.month {
+.btn.btn-xs.month {
   width: 61px;
 }
-.btn.btn-small.day.nb31 {
+.btn.btn-xs.day.nb31 {
   width: 24px;
 }
-.btn.btn-small.day.nb30 {
+.btn.btn-xs.day.nb30 {
   width: 25px;
 }
-.btn.btn-small.day.nb29 {
+.btn.btn-xs.day.nb29 {
   width: 26px;
 }
-.btn.btn-small.day.nb28 {
+.btn.btn-xs.day.nb28 {
   width: 27px;
 }
-.btn.btn-small.hour {
+.btn.btn-xs.hour {
   width: 31px;
 }
-.btn.btn-small.tenminutes {
+.btn.btn-xs.tenminutes {
   width: 120px;
 }
 ul.nav-tabs li span {
@@ -288,4 +307,42 @@ ul.nav-tabs li span {
 }
 #check_24h + a.btn {
   margin-left: 10px;
+}
+
+.uneditable-input {
+  font-weight: normal;
+  color: #737373;
+}
+
+.form-actions {
+  margin-top: 26px;
+}
+
+.help, .help-block {
+  font-size: 90%;
+}
+
+.btn-default.disabled, .btn-default.disabled.active, .btn-default.disabled.focus, .btn-default.disabled:active, .btn-default.disabled:focus, .btn-default.disabled:hover, .btn-default[disabled], .btn-default[disabled].active, .btn-default[disabled].focus, .btn-default[disabled]:active, .btn-default[disabled]:focus, .btn-default[disabled]:hover, fieldset[disabled] .btn-default, fieldset[disabled] .btn-default.active, fieldset[disabled] .btn-default.focus, fieldset[disabled] .btn-default:active, fieldset[disabled] .btn-default:focus, fieldset[disabled] .btn-default:hover {
+  background: #ededed;
+}
+
+#checkEvents .badge {
+  display: inline-block;
+  font-weight: normal;
+}
+
+#checkEvents time {
+  display: inline-block;
+  min-width: 64px;
+  text-align: left;
+  font-size: 80%;
+}
+
+#checkEvents span.msg {
+  margin-left: 8px;
+}
+
+li.event-item {
+  padding: .5em;
+  border-bottom: 1px solid #eee;
 }

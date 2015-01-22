@@ -6,7 +6,7 @@ var updateCheckState = function(check) {
       html += '<span class="label label-info">unknown</span>';
     } else {
       // never tested
-      html += '<span class="label label-important">down</span> <span class="label label-warning">new</span>';
+      html += '<span class="label label-danger">down</span> <span class="label label-warning">new</span>';
     }
   } else {
     var status = {};
@@ -24,7 +24,7 @@ var updateCheckState = function(check) {
       status.date = check.lastChanged;
     } else {
       // down
-      status.label = 'important';
+      status.label = 'danger';
       status.color = 'red';
       status.text = 'down';
       status.date = check.lastChanged;

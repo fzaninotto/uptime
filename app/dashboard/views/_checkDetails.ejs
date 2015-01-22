@@ -1,128 +1,129 @@
 <% addedCss.push('jquery.tagsinput.css') %>
 <div class="tab-pane" id="admin">
-  <form id="check_form" method="post" class="form-horizontal" action="<%= route %>/checks<%= check.isNew ? '' : '/' + check._id %>">
+  <form id="check_form" method="post" action="<%= route %>/checks<%= check.isNew ? '' : '/' + check._id %>">
     <input type="hidden" name="_method" value="<%= (check.isNew) ? 'post' : 'put' %>" />
 
-    <div class="row">
-
-      <div class="span6">
-        <fieldset>
-          <div class="control-group">
-            <label class="control-label">Url</label>
-            <div class="controls controls-row">
-              <input type="text" required name="check[url]" value="<%= check.url || '' %>" class="span5"  placeholder="http://www.example.com"/>
-              <span class="help-inline" style="position:absolute"><a href="<%= check.url %>" target="_blank"><img src="<%= route %>/images/external-link-ltr-icon.png"></a></span>
-            </div>
-          </div>
-        </fieldset>
+    <div class="form-group">
+      <label for="inputUrl">URL</label>
+      <div class="input-group">
+        <input 
+          type="text" 
+          id="inputUrl"
+          name="check[url]"
+          value="<%= check.url || '' %>" 
+          class="form-control"
+          placeholder="http://www.example.com"
+          requried 
+        />
+        <span class="input-group-addon"><a href="<%= check.url ? check.url : '' %>" target="_blank"><i class="fa fa-external-link"></i></a></span>
       </div>
-
-      <div class="span6">
-        <fieldset>
-          <div class="control-group">
-            <label class="control-label">Type</label>
-            <div class="controls controls-row">
-              <select name="check[type]" value="<% check.type || '' %>" class="span2">
-                <option value="">auto</option>
-                <% pollerCollection.getTypes().forEach(function(poller) { %>
-                <option value="<%= poller %>" <% if (poller === check.type) { %> selected="true" <% } %>><%= poller %></option>
-                <% }) %>
-              </select>
-            </div>
-          </div>
-        </fieldset>
-      </div>
-
     </div>
 
-    <fieldset>
-      <div class="control-group">
-        <label class="control-label">Name</label>
-        <div class="controls">
-          <input type="text" name="check[name]" value="<%= check.name || '' %>" class="span8" placeholder="Type a name here"/>
-        </div>
-      </div>
-    </fieldset>
-
-    <div class="row">
-
-      <div class="span6">
-        <fieldset>
-          <div class="control-group">
-            <label class="control-label">Polling interval</label>
-            <div class="controls">
-              <div class="input-prepend input-append">
-                <% if (check.lastTested) { %>
-                <a class="btn" name="pause"><i class="icon-<%= check.isPaused ? 'play' : 'pause' %>"></i></a>
-                <% } %>
-                <input type="text" name="check[interval]" value="<%= (check.interval / 1000).toFixed() %>" class="span2" />
-                <span class="add-on">s</span>
-              </div>
-            </div>
-          </div>
-        </fieldset>
-      </div>
-
-      <div class="span6">
-        <fieldset>
-          <div class="control-group">
-            <label class="control-label">Slow threshold</label>
-            <div class="controls">
-              <div class="input-append">
-                <input type="text" name="check[maxTime]" value="<%= check.maxTime %>" class="span1" />
-                <span class="add-on">ms</span>
-              </div>
-            </div>
-          </div>
-        </fieldset>
-      </div>
-
+    <div class="form-group">
+      <label for="inputType">Type</label>
+      <select name="check[type]" value="<% check.type || '' %>" class="form-control" id="inputType">
+        <option value="">Auto Detect</option>
+        <% pollerCollection.getTypes().forEach(function(poller) { %>
+        <option value="<%= poller %>" <% if (poller === check.type) { %> selected="true" <% } %>><%= poller %></option>
+        <% }) %>
+      </select>
     </div>
 
+    <div class="form-group">
+      <label for="inputName">Name</label>
+      <input 
+        type="text" 
+        class="form-control"
+        id="inputName" 
+        name="check[name]" 
+        value="<%= check.name || '' %>" 
+        placeholder="Type a name here"
+      />
+    </div>
 
-    <fieldset>
-      <div class="control-group">
-        <label class="control-label">Alert threshold</label>
-        <div class="controls">
-          <div class="input-append">
-            <input type="text" name="check[alertTreshold]" value="<%= check.alertTreshold %>" class="span1" />
-            <span class="add-on">failed pings</span>
-          </div>
-        </div>
-      </div>
-    </fieldset>
-
-    <span id="pollerDetails">
-    <%- pollerDetails %>
-    </span>
-
-    <fieldset>
-      <div class="control-group">
-        <label class="control-label">Tags</label>
-        <div class="controls">
-          <textarea name="check[tags]" rows="2"/><%= check.tags.join(', ') %></textarea>
-        </div>
-      </div>
-      <% if (check.lastTested) { %>
-      <div class="control-group">
-        <label class="control-label">Last edited on</label>
-        <div class="controls">
-          <span class="span4 uneditable-input"><%= check.lastTested.getTime() %></span>
-        </div>
-      </div>
-      <% } %>
-      <div class="form-actions">
-        <% if (check.isNew) { %>
-        <button type="submit" class="btn btn-primary">Save</button>
-        <button type="submit" name="saveandadd" value="true" class="btn btn-primary">Save and add</button>
-        <a class="btn" href="<%= route %>/checks">Cancel</a>
-        <% } else { %>
-        <button type="submit" class="btn btn-primary">Save changes</button>
-        <a class="btn" href="<%= route %>/checks/<%= check._id %>">Cancel</a>
-        <button type="submit" class="btn btn-danger pull-right" name="delete">Delete</button>
+    <div class="form-group">
+      <label for="inputPollingInterval">Polling Interval</label>
+      <div class="input-group">
+        <% if (check.lastTested) { %>
+        <span class="input-group-addon">
+          <a name="pause"><i class="fa fa-<%= check.isPaused ? 'play' : 'pause' %>"></i></a>
+        </span>
         <% } %>
+        <input 
+          type="number" 
+          min="60"
+          step="10"
+          id="inputPollingInterval"
+          name="check[interval]"
+          value="<%= (check.interval / 1000).toFixed() %>"
+          class="form-control"
+        />
+        <span class="input-group-addon">s</span>
       </div>
-    </fieldset>
+    </div>
+
+    <div class="form-group">
+      <label for="inputSlowThreshold">Slow Threshold</label>
+      <div class="input-group">
+        <input 
+          type="number" 
+          min="100"
+          step="100"
+          id="inputSlowThreshold"
+          name="check[maxTime]" 
+          value="<%= check.maxTime %>" 
+          class="form-control"
+        />
+        <span class="input-group-addon">ms</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="inputAlertThreshold">Alert Threshold</label>
+      <div class="input-group">
+        <input 
+          type="number"
+          min="1"
+          id="inputAlertThreshold"
+          name="check[alertTreshold]" 
+          value="<%= check.alertTreshold %>" 
+          class="form-control"
+        />
+        <span class="input-group-addon">failed ping(s)</span>
+      </div>
+    </div>
+
+    <section id="pollerDetails">
+    <%- pollerDetails %>
+    </section>
+
+    <div class="form-group">
+      <label for="textareaTags">Tags</label>
+      <textarea 
+        name="check[tags]" 
+        id="textareaTags"
+        cols="30"
+        rows="2"
+        class="form-control"><%= check.tags.join(', ') %></textarea>
+    </div>
+
+    <% if (check.lastTested) { %>
+    <p class="control-label">Last edited on:
+      <span class="uneditable-input"><%= check.lastTested.getTime() %></span>
+    </p>
+    <% } %>
+
+    <div class="form-actions">
+      <% if (check.isNew) { %>
+      <button type="submit" class="btn btn-primary">Save</button>
+      <button type="submit" name="saveandadd" value="true" class="btn btn-success">Save &amp; Add</button>
+      <a class="btn btn-default" href="<%= route %>/checks">Cancel</a>
+      <% } else { %>
+      <button type="submit" class="btn btn-primary">Save Changes</button>
+      <a class="btn btn-default" href="<%= route %>/checks/<%= check._id %>">Cancel</a>
+      <button type="submit" class="btn btn-danger pull-right" name="delete">Delete</button>
+      <% } %>
+    </div>
   </form>
 </div>
 <script src="<%= route %>/javascripts/jquery.tagsinput.min.js"></script>
@@ -164,7 +165,11 @@ $(document).ready(function() {
 
   var tagField = $('#check_form textarea[name="check[tags]"]');
   var tags = tagField.val().split(', ');
-  tagField.tagsInput();
+  tagField.tagsInput({
+    height: '100px',
+    width: '100%',
+    defaultText: 'Add a tag'
+  });
   $('.tagsinput span.tag span').live('click', function() {
     window.location = '<%= route %>/tags/' + $(this).text();
   });

@@ -41,7 +41,7 @@
 <tr class="{{= !ping.isUp ? 'red' : !ping.isResponsive ? 'orange' : '' }}">
   <td title="{{= new Date(ping.timestamp) }}">{{= moment(ping.timestamp).format('LLLL') }}</td>
   <td>
-    <span class="label {{= (ping.isUp ? 'label-success' : 'label-important') }}">{{= (ping.isUp ? 'Up' : 'Down') }}</span>
+    <span class="label {{= (ping.isUp ? 'label-success' : 'label-danger') }}">{{= (ping.isUp ? 'Up' : 'Down') }}</span>
     {{ if (ping.isUp && !ping.isResponsive) { }}<span class="label label-warning">Slow</span>{{ } }}
   </td>
   <td>{{= parseInt(ping.time) }}ms</td>

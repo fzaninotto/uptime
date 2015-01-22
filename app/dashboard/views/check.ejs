@@ -25,25 +25,25 @@ ejs.close = '}}';
 <div id="dateNavigationContainer">
   <div id="dateNavigation">
     <div class="row">
-      <div class="span2"></div>
-      <div class="span10">
+      <div class="col-md-2"></div>
+      <div class="col-md-10">
         <div class="title"></div>
         <div class="timeline"></div>
       </div>
     </div>
     <div class="row">
-      <div class="span2">
-        <ul class="btn-group zoom"></ul>
+      <div class="col-md-2">
+        <span class="btn-group zoom"></span>
       </div>
-      <div class="span10">
+      <div class="col-md-10">
         <div class="periods"></div>
       </div>
     </div>
   </div>
 </div>
 <div id="sectionList" class="row">
-  <div class="span2">
-    <ul id="secondaryNav" class="nav nav-tabs nav-stacked">
+  <div class="col-md-2">
+    <ul id="secondaryNav" class="nav nav-pills nav-stacked">
       <li><a href="#availability" title="Percentage of uptime over the period">Availability<i class="icon-chevron-right"></i><br/><strong class="availability"></strong>%</a></li>
       <li><a href="#events">Downtime<i class="icon-chevron-right"></i><br/><strong class="downtime"></strong></a></li>
       <li><a href="#responseTime" title="Average response time over the period">Response Time<i class="icon-chevron-right"></i><br/><strong class="avgRespTime"></strong>ms</a></li>
@@ -51,7 +51,7 @@ ejs.close = '}}';
       <li><a href="#data">Data<i class="icon-chevron-right"></i></a></li>
     </ul>
   </div>
-  <div class="span10">
+  <div class="col-md-10">
     <section id="availability">
     <%- partial('_availability') %>
     </section>
@@ -70,6 +70,7 @@ ejs.close = '}}';
     </section>
   </div>
 </div>
+
 <script>
 var dateInterval = new DateInterval(
   '<%= req.query.type || 'month' %>',
@@ -78,7 +79,8 @@ var dateInterval = new DateInterval(
   '/api/checks/<%= check._id %>/',
   'hour'
 );
-jQuery(document).ready(function($) {
+
+jQuery(function($) {
   // highlight current section in main nav
   $('.navbar-inner li').eq(1).addClass('active');
   

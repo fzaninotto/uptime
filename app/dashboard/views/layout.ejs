@@ -3,7 +3,8 @@
   <head>
     <meta charset="utf-8">
     <title>Uptime</title>
-    <link rel="stylesheet" href="<%= route %>/stylesheets/bootstrap.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="<%= route %>/stylesheets/style.css">
     <link rel="shortcut icon" href="<%= route %>/favicon.ico">
     <link rel="apple-touch-icon" href="<%= route %>/apple-touch-icon.png">
@@ -24,33 +25,48 @@
     <![endif]-->
   </head>
   <body>
-    <div class="container">
-      <div class="navbar navbar-inverse">
-        <div class="navbar-inner">
-          <div class="container">
-            <a class="brand" href="<%= route %>/events">Uptime</a>
-            <ul class="nav pull-left">
-              <li><a href="<%= route %>/events">Events</a></li>
-              <li><a href="<%= route %>/checks">Checks</a></li>
-              <li><a href="<%= route %>/tags">Tags</a></li>
-              <li id="new_events"><a href="<%= route %>/events?highlightFrom=<%= Date.now() %>"></a></li> 
-            </ul>
-            <ul class="nav pull-right" id="check_summary">
-              <li id="all_up" style="display:none;"><span class="label label-success">Up</span><strong class="green">0</strong></li>
-              <li id="all_down" style="display: none;"><span class="label label-important">Down</span><strong class="red">0</strong></li>
-            </ul>
-          </div>
+    <nav class="navbar navbar-inverse navbar-static-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="<%= route %>/events">Uptime</a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav pull-left">
+            <li><a href="<%= route %>/events">Events</a></li>
+            <li><a href="<%= route %>/checks">Checks</a></li>
+            <li><a href="<%= route %>/tags">Tags</a></li>
+            <li id="new_events"><a href="<%= route %>/events?highlightFrom=<%= Date.now() %>"></a></li> 
+          </ul>
+
+          <ul class="nav navbar-nav pull-right" id="check_summary">
+            <li id="all_up" style="display:none;"><span class="label label-success">Up</span><strong class="green">0</strong></li>
+            <li id="all_down" style="display: none;"><span class="label label-danger">Down</span><strong class="red">0</strong></li>
+          </ul>
         </div>
       </div>
-      <section>
+    </nav>
+
+    <section role="main">
+      <div class="container">
         <%- body %>
-      </section>
-      <footer class="footer">
+      </div>
+    </section>
+    <footer id="mainFooter">
+      <div class="container">
         <p class="pull-right"><a href="#">Back to top</a></p>
-        <p><a href="https://github.com/fzaninotto/uptime">Uptime <%= version %></a>, powered by <a href="http://nodejs.org/">Node.js</a>, <a href="http://www.mongodb.org/">MongoDB</a>, and <a href="http://twitter.github.com/bootstrap/">Bootstrap</a>.</p>
-        <p>Code licensed under the <a href="https://raw.github.com/fzaninotto/uptime/master/LICENSE">MIT License</a>. Check the <a href="https://github.com/fzaninotto/uptime">Uptime GitHub repository</a> regularly for updates.
-      </footer>
-    </div>
+        <p>
+          <a href="https://github.com/fzaninotto/uptime">Uptime <%= version %></a>, powered by <a href="http://nodejs.org/">Node.js</a>, <a href="http://www.mongodb.org/">MongoDB</a>, and <a href="http://twitter.github.com/bootstrap/">Bootstrap</a>.<br />
+          Code licensed under the <a href="https://raw.github.com/fzaninotto/uptime/master/LICENSE">MIT License</a>. Check the <a href="https://github.com/fzaninotto/uptime">Uptime GitHub repository</a> regularly for updates.
+      </div>
+    </footer>
+  
     <script>
     var nbNewEvents = 0;
     var loadedAt = new Date();

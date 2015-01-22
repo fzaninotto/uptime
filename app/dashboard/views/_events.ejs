@@ -1,33 +1,54 @@
 <div id="checkEvents"></div>
 <script id="event_template" type="text/template">
-<li class="{{= highlightFrom && date.valueOf() > highlightFrom ? 'new' : ''}}">
-  <span class="label" title="{{= date }}">{{= date.format('LT') }}</span>
-  {{ var label = (event.message == 'paused' || event.message == 'restarted') ? 'info' : (event.message == 'up') ? 'success' : 'important' }}
-  <span class="label label-{{= label }}">{{= event.message }}</span>
-  <a href="{{=  route + '/checks/' + event.check._id }}">{{= event.check.name }}</a>
-  <a href="{{= event.check.url }}" target="_blank"><img src="{{= route }}/images/external-link-ltr-icon.png"></a>
-  {{ switch (event.message) { // cannot close ejs tag here or compilation fails, sorry
-       case 'paused': }}
-    {{ case 'restarted': }}
-      was {{= event.message }}
-    {{ break; }}
-    {{ case 'down': }}
-      went down ({{= event.details }})
-    {{ break; }}
-    {{ case 'up': }}
-      {{ if (event.downtime) { }}
-      went back up after {{= moment.duration(event.downtime).humanize() }} of downtime
-      {{ } else { }}
-      is now up
-      {{ } }}
-    {{ break; }}
-    {{ default: }}
-      unnown event
-  {{ } }}
+{{ var label = (event.message == 'paused' || event.message == 'restarted') ? 'info' : (event.message == 'up') ? 'success' : 'danger' }}
+<li class="{{= highlightFrom && date.valueOf() > highlightFrom ? 'new' : ''}} event-item">
+  <time class="time" title="{{= date }}">{{= date.format('LT') }}</time>
+  <span class="badge alert-{{= label }} status"><i class="fa
+  {{ switch (event.message) { 
+        case 'paused': }}
+        fa-pause
+      {{ break; }}
+      {{ case 'restarted': }}
+        fa-play
+      {{ break; }}
+      {{ case 'down': }}
+        fa-arrow-down
+      {{ break; }}
+      {{ case 'up': }}
+        fa-arrow-up
+      {{ break; }}
+      {{ default: }}
+        fa-question
+    {{ } }}
+  "></i>
+  </span>
+  <span class="msg">
+    <a href="{{=  route + '/checks/' + event.check._id }}">{{= event.check.name }}</a>
+    <a href="{{= event.check.url }}" target="_blank"><i class="fa fa-external-link"></i></a>
+    {{ switch (event.message) { // cannot close ejs tag here or compilation fails, sorry
+         case 'paused': }}
+      {{ case 'restarted': }}
+        was {{= event.message }}
+      {{ break; }}
+      {{ case 'down': }}
+        went down ({{= event.details }})
+      {{ break; }}
+      {{ case 'up': }}
+        {{ if (event.downtime) { }}
+        went back up after {{= moment.duration(event.downtime).humanize() }} of downtime
+        {{ } else { }}
+        is now up
+        {{ } }}
+      {{ break; }}
+      {{ default: }}
+        unnown event
+    {{ } }}
+  </span>
 </li>
 </script>
+
 <script>
-$(document).ready(function() {
+jQuery(function($) {
   var highlightFrom = window.location.search.substring(0,15) == "?highlightFrom=" ? parseInt(window.location.search.substring(15)) : Date.now();
   var event_template = document.getElementById('event_template').innerHTML;
   var ejs = require('ejs');
@@ -39,10 +60,12 @@ $(document).ready(function() {
       $(hash).get(0).scrollIntoView();
     }
   };
+
   var emptyEvents = function() {
     $('#checkEvents').html('<p>Nothing happened lately. All Green!</p>');
     adjustHash();
-  }
+  };
+
   var updateEvents = function() {
     var queryString = typeof dateInterval == 'undefined' ? '' : dateInterval.getIntervalQueryString();
     $.getJSON('<%= url %>' + queryString, function(events) {
@@ -67,7 +90,8 @@ $(document).ready(function() {
       $('#checkEvents').html(lines.join(''));
       adjustHash();
     });
-  }
+  };
+
   socket.on('CheckEvent', updateEvents);
   if(typeof dateInterval != 'undefined') {
     dateInterval.on('refresh-stats', function() {
