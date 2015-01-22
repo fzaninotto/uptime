@@ -19,7 +19,7 @@ var Check = new Schema({
   url         : String,
   interval    : { type: Number, default: 60000 }, // interval between two pings
   maxTime     : { type: Number, default: 1500 },  // time under which a ping is considered responsive
-  alertTreshold : { type: Number, default: 1 },   // nb of errors from which to trigger a new CheckEvent
+  alertThreshold : { type: Number, default: 1 },   // nb of errors from which to trigger a new CheckEvent
   errorCount  : { type: Number, default: 0 },     // count number of errors
   tags        : [String],
   lastChanged : Date,
@@ -136,30 +136,30 @@ Check.methods.mustNotifyEvent = function(status) {
       // check goes down for the first time
       this.errorCount = 1;
     }
-    if (this.errorCount < this.alertTreshold) {
-      // repeated down pings - increase error count until reaching the down alert treshold
+    if (this.errorCount < this.alertThreshold) {
+      // repeated down pings - increase error count until reaching the down alert threshold
       this.errorCount++;
       return false;
     }
-    if (this.errorCount === this.alertTreshold) {
+    if (this.errorCount === this.alertThreshold) {
       // enough down pings to trigger notification
       return true;
     }
-    // error count higher than treshold, that means the alert was already sent
+    // error count higher than threshold, that means the alert was already sent
     return false;
   }
   // check is up
-  if (this.isUp != status && this.errorCount > this.alertTreshold) {
-    // check goes up after reaching the down alert treshold before
+  if (this.isUp != status && this.errorCount > this.alertThreshold) {
+    // check goes up after reaching the down alert threshold before
     return true;
   }
-  // check either goes up after less than alertTreshold down pings, or is already up for long
+  // check either goes up after less than alertThreshold down pings, or is already up for long
   return false;
 };
 
 Check.methods.markEventNotified = function() {
   // increase error count to disable notification if the next ping has the same status
-  this.errorCount = this.alertTreshold + 1;
+  this.errorCount = this.alertThreshold + 1;
 };
 
 Check.methods.getQosPercentage = function() {
@@ -318,7 +318,7 @@ Check.methods.populateFromDirtyCheck = function(dirtyCheck, pollerCollection) {
   this.url = dirtyCheck.url || this.url;
   this.maxTime = dirtyCheck.maxTime || this.maxTime;
   this.isPaused = dirtyCheck.isPaused || this.isPaused;
-  this.alertTreshold = dirtyCheck.alertTreshold || this.alertTreshold;
+  this.alertThreshold = dirtyCheck.alertThreshold || this.alertThreshold;
   this.interval = dirtyCheck.interval * 1000 || this.interval;
 
   if (typeof(dirtyCheck.name) !== 'undefined' && dirtyCheck.name.length) {

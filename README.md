@@ -319,7 +319,7 @@ Parameters :
 * `interval` : (optional) Interval of polling
 * `maxTime` : (optional) Slow threshold
 * `isPaused` : (optional) Status of polling
-* `alertTreshold` : (optional) set the threshold of failed pings that will create an alert
+* `alertThreshold` : (optional) set the threshold of failed pings that will create an alert
 * `tags` : (optional) list of tags (comma-separated values)
 * `type` : (optional) type of check (auto|http|https|udp)
 
@@ -335,7 +335,7 @@ Parameters :
 * `interval` : (optional) Interval of polling
 * `maxTime` : (optional) Slow threshold
 * `isPaused` : (optional) Status of polling
-* `alertTreshold` : (optional) set the threshold of failed pings that will create an alert
+* `alertThreshold` : (optional) set the threshold of failed pings that will create an alert
 * `tags` : (optional) list of tags (comma-separated values)
 * `type` : (optional) type of check - values : `auto`|`http`|`https`|`udp`
 
