@@ -107,7 +107,7 @@ To modify this configuration, create a `development.yaml` or a `production.yaml`
 url: 'http://myDomain.com'
 ```
 
-Node that Uptime works great behind a proxy - it uses the `http_proxy` environment variable transparently.
+Note that Uptime works great behind a proxy - it uses the `http_proxy` environment variable transparently.
 
 Architecture
 ------------
