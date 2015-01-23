@@ -1,59 +1,10 @@
 <div id="checkEvents"></div>
-<script id="event_template" type="text/template">
-{{ var label = (event.message == 'paused' || event.message == 'restarted') ? 'info' : (event.message == 'up') ? 'success' : 'danger' }}
-<li class="{{= highlightFrom && date.valueOf() > highlightFrom ? 'new' : ''}} event-item">
-  <time class="time" title="{{= date }}">{{= date.format('LT') }}</time>
-  <span class="badge alert-{{= label }} status"><i class="fa
-  {{ switch (event.message) { 
-        case 'paused': }}
-        fa-pause
-      {{ break; }}
-      {{ case 'restarted': }}
-        fa-play
-      {{ break; }}
-      {{ case 'down': }}
-        fa-arrow-down
-      {{ break; }}
-      {{ case 'up': }}
-        fa-arrow-up
-      {{ break; }}
-      {{ default: }}
-        fa-question
-    {{ } }}
-  "></i>
-  </span>
-  <span class="msg">
-    <a href="{{=  route + '/checks/' + event.check._id }}">{{= event.check.name }}</a>
-    <a href="{{= event.check.url }}" target="_blank"><i class="fa fa-external-link"></i></a>
-    {{ switch (event.message) { // cannot close ejs tag here or compilation fails, sorry
-         case 'paused': }}
-      {{ case 'restarted': }}
-        was {{= event.message }}
-      {{ break; }}
-      {{ case 'down': }}
-        went down ({{= event.details }})
-      {{ break; }}
-      {{ case 'up': }}
-        {{ if (event.downtime) { }}
-        went back up after {{= moment.duration(event.downtime).humanize() }} of downtime
-        {{ } else { }}
-        is now up
-        {{ } }}
-      {{ break; }}
-      {{ default: }}
-        unnown event
-    {{ } }}
-  </span>
-</li>
-</script>
 
 <script>
 jQuery(function($) {
   var highlightFrom = window.location.search.substring(0,15) == "?highlightFrom=" ? parseInt(window.location.search.substring(15)) : Date.now();
-  var event_template = document.getElementById('event_template').innerHTML;
-  var ejs = require('ejs');
-  ejs.open = '{{';
-  ejs.close = '}}';
+  var event_template = $('#event_template').html();
+
   var adjustHash = function() {
    var hash = window.location.hash;
     if (hash) {
@@ -79,7 +30,12 @@ jQuery(function($) {
         lines.push('<ul><li class="day"><h3>' + moment(key).format('dddd, MMMM Do') + '</h3><ul>');
         $.each(eventGroup, function(key, event) {
           if (!event.message) return;
-          lines.push(ejs.render(event_template, { event: event, date: moment(event.timestamp), highlightFrom: highlightFrom, route: '<%= route %>' }));
+          lines.push(window.templates.eventItem({ 
+            event: event, 
+            date: moment(event.timestamp), 
+            highlightFrom: highlightFrom, 
+            route: '<%= route %>' })
+          );
           nbEvents++;
         });
         lines.push('</ul></li></ul>');
@@ -93,6 +49,7 @@ jQuery(function($) {
   };
 
   socket.on('CheckEvent', updateEvents);
+  
   if(typeof dateInterval != 'undefined') {
     dateInterval.on('refresh-stats', function() {
       if (!this.stat) return emptyEvents();

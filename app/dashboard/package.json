@@ -1,0 +1,43 @@
+{
+  "name": "uptime-public",
+  "version": "3.2.0",
+  "description": "The public facing part of the Uptime dashboard",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/phanan/uptime.git"
+  },
+  "keywords": [
+    "uptime",
+    "node",
+    "gulp"
+  ],
+  "author": "fzaninotto, phanan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/phanan/uptime/issues"
+  },
+  "homepage": "https://github.com/phanan/uptime",
+  "devDependencies": {
+    "can-compile": "^0.7.1",
+    "grunt": "^0.4.5",
+    "gulp": "^3.8.10",
+    "gulp-autoprefixer": "^2.1.0",
+    "gulp-concat": "^2.4.3",
+    "gulp-ejs-precompiler": "^0.2.0",
+    "gulp-filter": "^2.0.0",
+    "gulp-imagemin": "^2.1.0",
+    "gulp-insert": "^0.4.0",
+    "gulp-livereload": "^3.5.0",
+    "gulp-minify-css": "^0.4.2",
+    "gulp-plumber": "^0.6.6",
+    "gulp-rename": "^1.2.0",
+    "gulp-sass": "^1.3.2",
+    "gulp-uglify": "^1.1.0",
+    "gulp-util": "^3.0.2",
+    "gulp-watch": "^4.0.3"
+  }
+}

@@ -1,62 +1,51 @@
 <h1>Tags <small class="pull-right">last 24 hours</small></h1>
 <table class="table chart" id="tags">
-  <thead>
-    <tr>
-      <th style="width:30%">Name</th>
-      <th style="width:20%" title="Percentage of all pings up in the last 24h">Availability</th>
-      <th style="width:35%" title="Outage periods in the last 24h">Uptime</th>
-      <th style="width:15%" title="Average response time in the last 24h">Response Time</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
+    <thead>
+        <tr>
+            <th style="width:30%">Name</th>
+            <th style="width:20%" title="Percentage of all pings up in the last 24h">Availability</th>
+            <th style="width:35%" title="Outage periods in the last 24h">Uptime</th>
+            <th style="width:15%" title="Average response time in the last 24h">Response Time</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
 </table>
-<script src="<%= route %>/javascripts/jquery.tablesorter.min.js"></script>
-<script src="<%= route %>/javascripts/uptimeBar.js"></script>
-<script src="<%= route %>/javascripts/ejs.min.js"></script>
-<script id="tag_template" type="text/template">
-<tr>
-  <td data-sort="{{= tag.name }}"><a href="{{= route + '/tags/' + encodeURIComponent(tag.name) }}">{{= tag.name }}</a></td>
-  <td data-sort="{{= tag.availability }}">{{= (tag.availability * 100).toFixed(3).replace('.000', '') }}%</td>
-  <td data-sort="{{= tag.availability }}">{{- uptimeBar('tag', {
-        from: Date.now() - 24 * 60 * 60 * 1000,
-        to: Date.now(),
-        origin: new Date(tag.firstTested).valueOf(),
-        periods: tag.outages
-      }) }}</td>
-  <td data-sort="{{= tag.responseTime }}">{{= Math.round(tag.responseTime) }}ms</td>
-</tr>
-</script>
+
 <script>
-jQuery(document).ready(function($) {
-  $('.navbar-inner li').eq(2).addClass('active');
-  $('#tags').tablesorter({
-    textExtraction: function(node) {
-      return $(node).data('sort');
-    },
-    sortList: [[0,0]]
-  });
-  var tag_template = document.getElementById('tag_template').innerHTML;
-  var ejs = require('ejs');
-  ejs.open = '{{';
-  ejs.close = '}}';
-  var updateTags = function(tags) {
-    var updateTagsSection = function(tags) {
-      var lines = [];
-      var lastUpdated;
-      $.each(tags, function(key, tag) {
-        lines.push(ejs.render(tag_template, { tag: tag, route: '<%= route %>' }));
-        lastUpdated = tag.lastUpdated;
-      });
-      $('#tags tbody').html(lines.join(''));
-      $('#tags').trigger('update');
+jQuery(function($) {
+    activateMenu(2);
+
+    $('#tags').tablesorter({
+        textExtraction: function(node) {
+            return $(node).data('sort');
+        },
+        sortList: [[0,0]]
+    });
+
+    var updateTags = function(tags) {
+        var updateTagsSection = function(tags) {
+            var lines = [];
+            var lastUpdated;
+
+            $.each(tags, function(key, tag) {
+                lines.push(window.templates.tagItem({ 
+                    tag: tag, 
+                    route: '<%= route %>' })
+                );
+                lastUpdated = tag.lastUpdated;
+            });
+
+            $('#tags tbody').html(lines.join(''));
+            $('#tags').trigger('update');
+        }
+        if (tags) {
+            updateTagsSection(tags);
+        } else {
+            $.getJSON('/api/tags', updateTagsSection);
+        }
     }
-    if (tags) {
-      updateTagsSection(tags);
-    } else {
-      $.getJSON('/api/tags', updateTagsSection);
-    }
-  }
-  updateTags(<%- JSON.stringify(tags) %>);
-  window.setInterval(updateTags, 5 * 60 * 1000); // refresh every 5 minutes to update the qos scores
+
+    updateTags(<%- JSON.stringify(tags) %>);
+    window.setInterval(updateTags, 5 * 60 * 1000); // refresh every 5 minutes to update the qos scores
 });
 </script>
