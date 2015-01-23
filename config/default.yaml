@@ -14,6 +14,12 @@ monitor:
   timeout:                5000       # five seconds
   userAgent:              NodeUptime/3.0 (https://github.com/fzaninotto/uptime)
 
+ssl:
+  enabled:                false
+  certificate:            uptime.crt # certificate file
+  key:                    uptime.key # key file
+  selfSigned:             false
+
 analyzer:
   updateInterval:         60000      # one minute
   qosAggregationInterval: 600000     # ten minutes
