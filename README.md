@@ -173,6 +173,7 @@ Third-party plugins:
 
  * [`webhooks`](https://github.com/mintbridge/uptime-webhooks): notify events to an URL by sending an HTTP POST request 
  * [`campfire`](https://gist.github.com/dmathieu/5592418): notify events to Campfire
+ * [`HipChat`](https://gist.github.com/ip2k/319f43ca65f4f55f4ac0): notify events to HipChat
  * [`pushover`](https://gist.github.com/xphyr/5994345): Notify events to mobile devices
 
 Writing Plugins
