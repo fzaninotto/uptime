@@ -17,6 +17,9 @@ var apiApp     = require('./app/api/app');
 var dashboardApp = require('./app/dashboard/app');
 
 // database
+process.on('uncaughtException', function(err) {
+  console.error('Caught exception: ' + err);
+});
 
 var mongoose   = require('./bootstrap');
 
