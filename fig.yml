@@ -9,4 +9,4 @@ uptime:
    - "8082:8082"
 
 mongo:
-  image: mongo
+  image: mongo:2.6.7

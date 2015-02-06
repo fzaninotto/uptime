@@ -1,3 +1,3 @@
-FROM node:0.10.33
+FROM node:0.10.36
 ADD . /code
 WORKDIR /code
