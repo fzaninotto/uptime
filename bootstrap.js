@@ -11,7 +11,6 @@ if(config.mongodb.service){
   config.mongodb.user = appEnv.getService(config.mongodb.service).credentials.username;
   config.mongodb.password = appEnv.getService(config.mongodb.service).credentials.password;
 }
-console.error(connectionString);
 // configure mongodb
 mongoose.connect(connectionString);
 mongoose.connection.on('error', function (err) {
