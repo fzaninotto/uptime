@@ -1,6 +1,7 @@
 url: 'http://localhost:8082'
 
 mongodb:
+  service: #if you wanna use a service from cloudfoundry
   server:   localhost
   database: uptime
   user:     root 

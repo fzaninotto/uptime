@@ -1,9 +1,16 @@
 var mongoose   = require('mongoose');
 var config     = require('config');
 var semver     = require('semver');
+var cfenv      = require('cfenv');
 
+
+var connectionString = config.mongodb.connectionString || 'mongodb://' + config.mongodb.user + ':' + config.mongodb.password + '@' + config.mongodb.server +'/' + config.mongodb.database;
+if(config.mongodb.service){
+  var appEnv = cfenv.getAppEnv();
+  connectionString = appEnv.getService(config.mongodb.service).credentials.url;
+}
 // configure mongodb
-mongoose.connect(config.mongodb.connectionString || 'mongodb://' + config.mongodb.user + ':' + config.mongodb.password + '@' + config.mongodb.server +'/' + config.mongodb.database);
+mongoose.connect(connectionString);
 mongoose.connection.on('error', function (err) {
   console.error('MongoDB error: ' + err.message);
   console.error('Make sure a mongoDB server is running and accessible by this application');
