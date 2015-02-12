@@ -8,7 +8,10 @@ var connectionString = config.mongodb.connectionString || 'mongodb://' + config.
 if(config.mongodb.service){
   var appEnv = cfenv.getAppEnv();
   connectionString = appEnv.getService(config.mongodb.service).credentials.url;
+  config.mongodb.user = appEnv.getService(config.mongodb.service).credentials.username;
+  config.mongodb.password = appEnv.getService(config.mongodb.service).credentials.password;
 }
+console.error(connectionString);
 // configure mongodb
 mongoose.connect(connectionString);
 mongoose.connection.on('error', function (err) {
