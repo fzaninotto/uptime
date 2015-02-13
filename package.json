@@ -5,7 +5,7 @@
   "author": "Francois Zaninotto",
   "dependencies": {
     "cfenv": "1.0.0",
-    "mongoose":  "3.6.7",
+    "mongoose":  "3.8.20",
     "mongoose-lifecycle": "1.0.0",
     "express":   "3.2.0",
     "express-partials": "0.1.1",
