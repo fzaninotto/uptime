@@ -5,11 +5,12 @@ var cfenv      = require('cfenv');
 
 
 var connectionString = config.mongodb.connectionString || 'mongodb://' + config.mongodb.user + ':' + config.mongodb.password + '@' + config.mongodb.server +'/' + config.mongodb.database;
-if(config.mongodb.service){
-  var appEnv = cfenv.getAppEnv();
-  connectionString = appEnv.getService(config.mongodb.service).credentials.url;
-  config.mongodb.user = appEnv.getService(config.mongodb.service).credentials.username;
-  config.mongodb.password = appEnv.getService(config.mongodb.service).credentials.password;
+var appEnv = cfenv.getAppEnv();
+var mongodbService = appEnv.getService(/.*mongodb.*/i);
+if(mongodbService != null){
+  connectionString = mongodbService.credentials.url;
+  config.mongodb.user = mongodbService.credentials.username;
+  config.mongodb.password = mongodbService.credentials.password;
 }
 // configure mongodb
 mongoose.connect(connectionString);
