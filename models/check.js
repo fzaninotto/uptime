@@ -317,7 +317,7 @@ Check.methods.getSingleStatForPeriod = function(period, date, callback) {
 Check.methods.populateFromDirtyCheck = function(dirtyCheck, pollerCollection) {
   this.url = dirtyCheck.url || this.url;
   this.maxTime = dirtyCheck.maxTime || this.maxTime;
-  this.isPaused = dirtyCheck.isPaused || this.isPaused;
+  this.isPaused = (dirtyCheck.isPaused == undefined) ? this.isPaused : dirtyCheck.isPaused
   this.alertTreshold = dirtyCheck.alertTreshold || this.alertTreshold;
   this.interval = dirtyCheck.interval * 1000 || this.interval;
 
