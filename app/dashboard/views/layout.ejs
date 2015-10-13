@@ -35,6 +35,21 @@
               <li><a href="<%= route %>/tags">Tags</a></li>
               <li id="new_events"><a href="<%= route %>/events?highlightFrom=<%= Date.now() %>"></a></li> 
             </ul>
+            
+            <ul class="nav">
+              <li>                
+                  <div class="navbar-form span3">
+                    <fieldset>
+                      <div class="controls controls-row">
+                        <form action="<%= route %>/getcheckbyname" method="POST">                        
+                          <input name="check" type="text" class="span3" placeholder="http://www.example.com"/ id="check">
+                        </form>
+                      </div>
+                    </fieldset>
+                  </div>              
+              </li>
+            </ul>  
+            
             <ul class="nav pull-right" id="check_summary">
               <li id="all_up" style="display:none;"><span class="label label-success">Up</span><strong class="green">0</strong></li>
               <li id="all_down" style="display: none;"><span class="label label-important">Down</span><strong class="red">0</strong></li>
