@@ -1,4 +1,7 @@
 <h1>Tags <small class="pull-right">last 24 hours</small></h1>
+<% if (info.length) { %>
+<div class="alert alert-success"><%= info %></div>
+<% } %>
 <table class="table chart" id="tags">
   <thead>
     <tr>

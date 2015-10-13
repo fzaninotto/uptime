@@ -2,6 +2,7 @@
  * Module dependencies.
  */
 
+var Check         = require('../../../models/check');
 var Tag           = require('../../../models/tag');
 var TagHourlyStat = require('../../../models/tagHourlyStat');
 var CheckEvent    = require('../../../models/checkEvent');
@@ -76,6 +77,18 @@ module.exports = function(app) {
         res.json(aggregatedEvents);
       });
     });
+  });
+
+  app.delete('/tags/:name', loadTag, function(req, res, next) {
+    // Delete tag relation first in order to avoid magic respawn
+    Check.collection.update({ tags: req.tag.name }, { $pull: { tags: req.tag.name } }, { multi: true }, function(err) {
+      if (err) return next(err);
+      // Then, remove the tag
+      req.tag.remove(function(err2) {
+        if (err2) return next(err2);
+        res.end();
+      });
+    })
   });
 
 };

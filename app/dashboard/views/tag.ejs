@@ -11,6 +11,12 @@ ejs.open = '{{';
 ejs.close = '}}';
 var page = {};
 </script>
+<div style="float: right;">
+  <form id="tag_delete_form" method="post" action="<%= route %>/tags/<%= tag.name %>">
+    <input type="hidden" name="_method" value="delete" />
+    <button type="submit" class="btn btn-danger pull-right" name="delete">Delete</button>
+  </form>
+</div>
 <h1>
   Tag "<%= tag.name %>"
 </h1>
@@ -75,6 +81,11 @@ var dateInterval = new DateInterval(
   'day'
 );
 jQuery(document).ready(function($) {
+  // Tag delete confirmation
+  $('#tag_delete_form button[name="delete"]').click(function() {
+    return confirm("This will delete the tag \"<%= tag.name %>\" and his checks relations.\nAre you sure?");
+  });
+
   // highlight current section in main nav
   $('.navbar-inner li').eq(2).addClass('active');
 
