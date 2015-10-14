@@ -50,7 +50,7 @@ var registerNewEventsLogger = function() {
          messageColor = 'bold';
       }
 
-      console.log(timestamp() + color(message, messageColor));
+      console.log(timestamp() + message);
     });
   });
 };

@@ -1,7 +1,7 @@
 uptime
 ======
 
-A remote monitoring application using Node.js, MongoDB, and Twitter Bootstrap.
+A remote monitoring application using Node.js, MongoDB, and Twitter Bootstrap. And this version work great with cloudfoundry just bind a service with mongodb inside his name, app will find by itself (use regular expression).
 
 <img src="https://raw.github.com/fzaninotto/uptime/downloads/check_details.png" title="Visualizing the availability of an HTTP check in Uptime" width="50%" valign="top" />
 <img src="https://raw.github.com/fzaninotto/uptime/downloads/check_form.png" title="Editing check attributes (polling interval, slow threshold, alert threshold, pattern to match, tags) in Uptime" width="50%" valign="top" />
