@@ -1,6 +1,7 @@
 /*
  * Monitor remote server uptime.
  */
+require('ssl-root-cas').inject();
 
 var http       = require('http');
 var url        = require('url');
