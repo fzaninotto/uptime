@@ -164,6 +164,17 @@ app.get('/tags/:name', function(req, res, next) {
   });
 });
 
+// fuzzy query
+app.post('/getcheckbyname', function(req, res) {
+  var check_name = req.body.check;
+  var reg_query = new RegExp("^.*" + check_name + ".*$"); 
+
+  Check.find({"$or": [{url: reg_query}, {name: reg_query}]}).sort({ isUp: 1, lastChanged: -1 }).exec(function(err, checks) {
+    if (err) return next(err);
+    res.render('checks', { info: req.flash('info'), checks: checks });
+  });
+});
+
 if (!module.parent) {
   app.listen(3000);
   console.log('Express started on port 3000');
