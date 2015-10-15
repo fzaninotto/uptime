@@ -55,7 +55,7 @@ $(document).ready(function() {
       $.each(events, function(key, eventGroup) {
         lines.push('<ul><li class="day"><h3>' + moment(key).format('dddd, MMMM Do') + '</h3><ul>');
         $.each(eventGroup, function(key, event) {
-          if (!event.message) return;
+          if (!event.message || !event.check) return;
           lines.push(ejs.render(event_template, { event: event, date: moment(event.timestamp), highlightFrom: highlightFrom, route: '<%= route %>' }));
           nbEvents++;
         });
