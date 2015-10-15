@@ -1,14 +1,31 @@
 var mongoose   = require('mongoose');
 var config     = require('config');
 var semver     = require('semver');
+var util       = require('util')
 
-// configure mongodb
-mongoose.connect(config.mongodb.connectionString || 'mongodb://' + config.mongodb.user + ':' + config.mongodb.password + '@' + config.mongodb.server +'/' + config.mongodb.database);
+var connectionString = config.mongodb.connectionString
+if (!connectionString) {
+	if(config.mongodb.user && config.mongodb.password) {
+		connectionString = util.format('mongodb://%s:%s@%s/%s', config.mongodb.user, config.mongodb.password, config.mongodb.server, config.mongodb.database)
+	} else {
+		connectionString = util.format('mongodb://%s/%s', config.mongodb.server, config.mongodb.database)
+	}
+}
+
+if (process.env.UPTIME_MONGO_1_PORT_27017_TCP_ADDR) {
+	/* If this environment variable is set we are running trough fig.
+	   This is the worst hack I have ever done. I feel ashamed.
+	*/
+	connectionString = util.format('mongodb://%s/%s', process.env.UPTIME_MONGO_1_PORT_27017_TCP_ADDR, config.mongodb.database)
+}
+
+mongoose.connect(connectionString)
 mongoose.connection.on('error', function (err) {
   console.error('MongoDB error: ' + err.message);
   console.error('Make sure a mongoDB server is running and accessible by this application');
   process.exit(1);
 });
+
 mongoose.connection.on('open', function (err) {
   mongoose.connection.db.admin().serverStatus(function(err, data) {
     if (err) {

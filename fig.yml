@@ -1,0 +1,12 @@
+uptime:
+  build: .
+  command: npm start
+  links:
+    - mongo
+  volumes:
+    - .:/code
+  ports:
+   - "8082:8082"
+
+mongo:
+  image: mongo:2.6.7
