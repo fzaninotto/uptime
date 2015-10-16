@@ -49,15 +49,20 @@ Tag.methods.getChecks = function(callback) {
   Check.find({ tags: this.name }, callback);
 };
 
-Tag.methods.getFirstTested = function(callback) {
-  var firstTested = Infinity;
-  this.getChecks(function(err, checks) {
-    checks.forEach(function(check) {
-      if (!check.firstTested) return;
-      firstTested = Math.min(firstTested, check.firstTested);
-    });
-    callback(err, firstTested);
-  });
+Tag.methods.getFirstTested = function getFirstTested(callback) {
+  var first_test = Infinity;
+  var currentTag = this;
+  var Check   = require('./check');
+   console.log('Getting FirstTested for: ' + this.name );
+   Check.find({ tags: this.name, firstTested: { $exists: true } }, { firstTested: 1, _id: 0 }).sort({ firstTested: 1 }).limit(1).exec(function (err, firstTested) {
+      if (err) return callback(err);
+      if (firstTested) {
+        currentTag.firstTested = new Date(firstTested[0]['firstTested'])
+        currentTag.save(callback);
+      } else {
+       callback(null, first_test);
+      }      
+   });
 };
 
 var statProvider = {
@@ -169,8 +174,7 @@ Tag.statics.ensureTagsHaveFirstTestedDate = function(callback) {
     async.forEach(tags, function(tag, next) {
       tag.getFirstTested(function(err2, firstTested) {
         if (err2 || firstTested == Infinity) return callback(err2);
-        tag.firstTested = firstTested;
-        tag.save(next);
+        next();
       });
     }, callback);
   });
