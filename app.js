@@ -140,7 +140,7 @@ module.exports = app;
 
 var monitorInstance;
 
-if (!module.parent) {
+if (!module.parent || module.parent.isApplicationLoader) {
   var serverUrl = url.parse(config.url);
   var port;
   if (config.server && config.server.port) {
