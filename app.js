@@ -3,6 +3,7 @@
  */
 
 var http       = require('http');
+var https      = require('https');
 var url        = require('url');
 var express    = require('express');
 var config     = require('config');
@@ -26,7 +27,21 @@ a.start();
 // web front
 
 var app = module.exports = express();
-var server = http.createServer(app);
+if (config.ssl && config.ssl.enabled === true) {
+  if (typeof(config.ssl.certificate) === 'undefined') {
+    throw new Error("Must specify certificate to enable SSL!");
+  }
+  if (typeof(config.ssl.key) === 'undefined') {
+    throw new Error("Must specify key file to enable SSL!");
+  }
+  var options = {
+    cert: fs.readFileSync(config.ssl.certificate),
+    key: fs.readFileSync(config.ssl.key)
+  };
+  var server = https.createServer(options, app);
+} else {
+  var server = http.createServer(app);
+}
 
 app.configure(function(){
   app.use(app.router);
@@ -149,7 +164,7 @@ if (!module.parent) {
   } else {
     port = serverUrl.port;
     if (port === null) {
-      port = 80;
+      port = config.ssl && config.ssl.enabled ? 443 : 80;
     }
   }
   var port = process.env.PORT || port;

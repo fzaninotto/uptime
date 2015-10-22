@@ -3,6 +3,7 @@ var config  = require('config');
 var Monitor = require('./lib/monitor');
 
 // start the monitor
+config.monitor.selfSigned = config.ssl && config.ssl.selfSigned ? true : false;
 monitor = Monitor.createMonitor(config.monitor);
 
 // load plugins

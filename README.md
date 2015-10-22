@@ -117,6 +117,21 @@ url: 'http://myDomain.com'
 
 Node that Uptime works great behind a proxy - it uses the `http_proxy` environment variable transparently.
 
+SSL
+---
+
+By default, Uptime uses regular HTTP on the API and monitor server, but it's possible to enable SSL for encrypting the connection to your monitor instance. The settings for this are located in the `config/default.yaml` file:
+
+```yaml
+ssl:
+  enabled:                true
+  certificate:            uptime.crt # path to certificate file
+  key:                    uptime.key # path to key file
+  selfSigned:             false
+```
+
+You must specify `true` for the `selfSigned` option when using a self-signed certificate, otherwise Node.js will throw an "UNABLE_TO_VERIFY_LEAF_NODE" error and will not poll.
+
 Architecture
 ------------
 
