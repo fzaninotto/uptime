@@ -1,4 +1,5 @@
 mongodb:
   server:   localhost
-  database: uptime-test
-  user:     root
+  database: uptime2-test
+  user:     uptime2-test-user
+  password: test
