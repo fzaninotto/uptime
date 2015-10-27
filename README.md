@@ -8,7 +8,7 @@ A remote monitoring application using Node.js, MongoDB, and Twitter Bootstrap.
 
 You can watch a [demo screencast on Vimeo](https://vimeo.com/39302164).
 
-**Warning**: This application isn't actively maintained anymore. You can find many alternatives, from completely free to very cheap, in [this list of website monitoring services](http://www.supermonitoring.com/blog/the-updated-list-of-website-monitoring-services/).
+I am new unofficial maintainer of this project.
 
 Features
 --------
