@@ -3,7 +3,7 @@ sudo: required
 cache:
   - apt
 env:
-  - NODE_ENV=travis
+  - NODE_ENV=test
 addons:
   apt:
     sources:
