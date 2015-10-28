@@ -152,7 +152,8 @@ if (!module.parent) {
       port = 80;
     }
   }
-  var port = process.env.PORT || port;
+  //var port = process.env.PORT || port;
+  //this some buggy...
   var host = process.env.HOST || serverUrl.hostname;
   server.listen(port, function(){
     console.log("Express server listening on host %s, port %d in %s mode", host, port, app.settings.env);
