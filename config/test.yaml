@@ -2,4 +2,4 @@ mongodb:
   server:   localhost
   database: uptime2-test
   user:     uptime2-test-user
-  password: test
+  password: password

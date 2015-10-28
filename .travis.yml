@@ -22,13 +22,15 @@ before_install:
   - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 50
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.6 20
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 50
-  - mongo uptime2-test --eval 'db.addUser("uptime2-test-user", "test");'
+  - mongo uptime2-test --eval 'db.addUser("uptime2-test-user", "password");'
+  - mongo uptime2-dev --eval 'db.addUser("uptime2-dev-user", "password");'
 services: mongodb
 matrix:
     fast_finish: true
     allow_failures:
      - node_js: "0.10"
 script:
+  - 'node app &'
   - 'make'
 notifications:
   email: false
