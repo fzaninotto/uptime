@@ -10,9 +10,13 @@ You can watch a [demo screencast on Vimeo](https://vimeo.com/39302164).
 
 I am new unofficial maintainer of this project.
 
+[![Dependency Status](https://david-dm.org/gunmetal313-nodejs/uptime2.svg)](https://david-dm.org/gunmetal313-nodejs/uptime2)
+[![devDependency Status](https://david-dm.org/gunmetal313-nodejs/uptime2/dev-status.svg)](https://david-dm.org/gunmetal313-nodejs/uptime2#info=devDependencies)
+
 | Build cl  | Status  | Branch| .... |
 |-------|---------|---------|--------|
 |Travis (Linux)| [![Build Status](https://travis-ci.org/gunmetal313-nodejs/uptime2.svg?branch=master)](https://travis-ci.org/gunmetal313-nodejs/uptime2) | master |  |
+
 
 Features
 --------
