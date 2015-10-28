@@ -52,7 +52,7 @@ describe('GET /checks', function() {
       });
 
       res.on('end', function(){
-        content = JSON.parse(body);
+        var content = JSON.parse(body);
         assert.equal(content.length, 2);
         done();
       });
