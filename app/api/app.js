@@ -4,26 +4,31 @@
 var express    = require('express');
 var Check      = require('../../models/check');
 var CheckEvent = require('../../models/checkEvent');
+var errorhandler = require('errorhandler');
 
 var app = module.exports = express();
 
 var debugErrorHandler = function() {
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+  app.use(errorhandler({ dumpExceptions: true, showStack: true }));
 }
 
 // middleware
-app.configure(function(){
-  app.use(app.router);
-});
+//app.use(app.router);
 
-app.configure('development', debugErrorHandler);
+var env = process.env.NODE_ENV || 'development';
+if ('development' == env) {
+   debugErrorHandler();
+}
 
-app.configure('test', debugErrorHandler);
+var env = process.env.NODE_ENV || 'test';
+if ('test' == env) {
+   debugErrorHandler();
+}
 
-app.configure('production', function(){
-  app.use(express.errorHandler());
-});
-
+var env = process.env.NODE_ENV || 'production';
+if ('production' == env) {
+   app.use(errorhandler());
+}
 
 // up count
 var upCount;
