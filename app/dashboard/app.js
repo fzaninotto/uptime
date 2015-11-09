@@ -38,6 +38,7 @@ app.use(function locals(req, res, next) {
   next();
 });
 app.engine('ejs', engine);
+app.set('views',__dirname + '/views');
 app.use(serveStatic(__dirname + '/public'))
 app.set('view engine', 'ejs');
 //app.use(serveStatic(__dirname + '/public'))
