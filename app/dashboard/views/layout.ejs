@@ -3,19 +3,19 @@
   <head>
     <meta charset="utf-8">
     <title>Uptime</title>
-    <link rel="stylesheet" href="<%= route %>/stylesheets/bootstrap.css">
-    <link rel="stylesheet" href="<%= route %>/stylesheets/style.css">
-    <link rel="shortcut icon" href="<%= route %>/favicon.ico">
-    <link rel="apple-touch-icon" href="<%= route %>/apple-touch-icon.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="<%= route %>/apple-touch-icon-ipad.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="<%= route %>/apple-touch-icon-iphone4.png">
+    <link rel="stylesheet" href="/stylesheets/bootstrap.css">
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-ipad.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-iphone4.png">
     <%- renderCssTags(addedCss) %>
-    <script src="<%= route %>/javascripts/jquery.min.js"></script>
+    <script src="/javascripts/jquery.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
     var socket = io.connect(location.protocol + '//' + location.hostname);
     </script>
-    <script src="<%= route %>/javascripts/moment.min.js"></script>
+    <script src="/javascripts/moment.min.js"></script>
     <!--[if lt IE 9]>
     <script src="http://raw.github.com/aFarkas/html5shiv/master/src/html5shiv.js"></script>
     <script src="http://raw.github.com/kriskowal/es5-shim/master/es5-shim.js"></script>
@@ -28,12 +28,12 @@
       <div class="navbar navbar-inverse">
         <div class="navbar-inner">
           <div class="container">
-            <a class="brand" href="<%= route %>/events">Uptime</a>
+            <a class="brand" href="/events">Uptime</a>
             <ul class="nav pull-left">
-              <li><a href="<%= route %>/events">Events</a></li>
-              <li><a href="<%= route %>/checks">Checks</a></li>
-              <li><a href="<%= route %>/tags">Tags</a></li>
-              <li id="new_events"><a href="<%= route %>/events?highlightFrom=<%= Date.now() %>"></a></li> 
+              <li><a href="/events">Events</a></li>
+              <li><a href="/checks">Checks</a></li>
+              <li><a href="/tags">Tags</a></li>
+              <li id="new_events"><a href="/events?highlightFrom=<%= Date.now() %>"></a></li>
             </ul>
             <ul class="nav pull-right" id="check_summary">
               <li id="all_up" style="display:none;"><span class="label label-success">Up</span><strong class="green">0</strong></li>
