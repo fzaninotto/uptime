@@ -1,11 +1,11 @@
-<script src="<%= route %>/javascripts/ejs.min.js"></script>
-<script src="<%= route %>/javascripts/bootstrap-affix.js"></script>
-<script src="<%= route %>/javascripts/checkState.js"></script>
-<script src="<%= route %>/javascripts/dateInterval.js"></script>
-<script src="<%= route %>/javascripts/dateNavigation.js"></script>
-<script src="<%= route %>/javascripts/statNavigation.js"></script>
-<script src="<%= route %>/javascripts/uptimeBar.js"></script>
-<script src="<%= route %>/javascripts/flotr2.min.js"></script>
+<script src="/javascripts/ejs.min.js"></script>
+<script src="/javascripts/bootstrap-affix.js"></script>
+<script src="/javascripts/checkState.js"></script>
+<script src="/javascripts/dateInterval.js"></script>
+<script src="/javascripts/dateNavigation.js"></script>
+<script src="/javascripts/statNavigation.js"></script>
+<script src="/javascripts/uptimeBar.js"></script>
+<script src="/javascripts/flotr2.min.js"></script>
 <script>
 var ejs = require('ejs');
 ejs.open = '{{';
@@ -81,19 +81,19 @@ var dateInterval = new DateInterval(
 jQuery(document).ready(function($) {
   // highlight current section in main nav
   $('.navbar-inner li').eq(1).addClass('active');
-  
+
   // update check state live
   updateCheckState(<%- JSON.stringify(check) %>);
   socket.on('CheckEvent', function() {
     $.getJSON('/api/checks/<%= check._id %>', updateCheckState);
   });
-  
+
   // initialize secondary navigation
   new StatNavigation(dateInterval);
 
   // initialize date navigation
   new DateNavigation(dateInterval, 'check', <%- JSON.stringify(check) %>);
-  
+
   // hide alert after 5s
   window.setTimeout(function() {
     $('h1 + div.alert').slideUp(400, function() {
@@ -106,7 +106,7 @@ jQuery(document).ready(function($) {
       });
     });
   }, 5000);
-  
+
   // update stats for each ping if looking at the current hour
   socket.emit('set check', '<%= check._id %>');
   socket.on('ping', function(ping) {
@@ -115,7 +115,7 @@ jQuery(document).ready(function($) {
       dateInterval.refreshData();
     }
   });
-  
+
   // update stats every 15 minutes if looking at the current moment
   window.setInterval(function() {
     var now = Date.now();

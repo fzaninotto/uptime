@@ -4,11 +4,11 @@
   Latest events
 </h1>
 <div id="events">
-  <%- partial('_events', { url: '/api/pings/events', route: route }) %>
+  <%- partial('_events', { url: '/api/pings/events' }) %>
 </div>
 <div id="welcome" style="display: none">
 <p>Welcome to Uptime, the web monitoring application.</p>
-<p>To begin, <a href="<%= route %>/checks/new">create your first check</a>.</p>
+<p>To begin, <a href="/checks/new">create your first check</a>.</p>
 </div>
 <script>
 $(document).ready(function() {

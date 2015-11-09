@@ -9,7 +9,7 @@ var engine = require('ejs-mate')
 var moment = require('moment')
 var errorhandler = require('errorhandler')
 var serveStatic = require('serve-static')
-
+var path = require('path')
 var Check = require('../../models/check');
 var Tag = require('../../models/tag');
 var TagDailyStat = require('../../models/tagDailyStat');
@@ -39,10 +39,8 @@ app.use(function locals(req, res, next) {
 });
 app.engine('ejs', engine);
 app.set('views',__dirname + '/views');
-app.use(serveStatic(__dirname + '/public'))
+app.use('/',serveStatic(__dirname + '/public'))
 app.set('view engine', 'ejs');
-//app.use(serveStatic(__dirname + '/public'))
-//app.use(express.static(__dirname + '/public'));
 
 var env = process.env.NODE_ENV || 'development';
 if ('development' == env) {
@@ -62,7 +60,7 @@ app.locals.version = moduleInfo.version;
 // Routes
 
 app.get('/events', function(req, res) {
-  res.render('events');
+  res.render('events',  { what: 'best', who: 'me' } );
 });
 
 app.get('/checks', function(req, res, next) {
