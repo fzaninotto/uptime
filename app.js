@@ -104,14 +104,22 @@ app.emit('afterLastRoute', app);
 // Sockets
 var io = socketIo.listen(server);
 
-io.configure('production', function() {
+var env = process.env.NODE_ENV || 'development';
+if ('development' == env) {
+  //io.enable('browser client etag');
+  //io.set('log level', 1);
+}
+
+/*io.configure('production', function() {
   io.enable('browser client etag');
   io.set('log level', 1);
 });
 
+
 io.configure('development', function() {
   if (!config.verbose) io.set('log level', 1);
-});
+});*/
+//TODO
 
 CheckEvent.on('afterInsert', function(event) {
   io.sockets.emit('CheckEvent', event.toJSON());
