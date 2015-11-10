@@ -20,6 +20,7 @@ var Ping = require('./models/ping');
 var PollerCollection = require('./lib/pollers/pollerCollection');
 var apiApp = require('./app/api/app');
 var dashboardApp = require('./app/dashboard/app');
+var serveStatic = require('serve-static')
 
 // database
 
@@ -33,10 +34,8 @@ a.start();
 var app = module.exports = express();
 var server = http.createServer(app);
 
-//app.use(app.router);
 // the following middlewares are only necessary for the mounted 'dashboard' app,
 // but express needs it on the parent app (?) and it therefore pollutes the api
-//app.use(bodyParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true
@@ -44,7 +43,7 @@ app.use(bodyParser.urlencoded({
 app.use(methodOverride());
 app.use(cookieParser('Z5V45V6B5U56B7J5N67J5VTH345GC4G5V4'));
 app.use(cookieSession({
-  key: 'uptime',
+  key: 'uptime2',
   secret: 'FZ5HEE5YHD3E566756234C45BY4DSFZ4',
   proxy: true,
   cookie: {
@@ -73,7 +72,8 @@ app.emit('beforeFirstRoute', app, apiApp);
 var env = process.env.NODE_ENV || 'development';
 if ('development' == env) {
   if (config.verbose) mongoose.set('debug', true);
-  app.use(express.static(__dirname + '/public'));
+  app.use(serveStatic(__dirname + '/public'))
+  //app.use(express.static(__dirname + '/public'));
   app.use(errorhandler({
     dumpExceptions: true,
     showStack: true
@@ -83,9 +83,12 @@ if ('development' == env) {
 var env = process.env.NODE_ENV || 'production';
 if ('production' == env) {
   var oneYear = 31557600000;
-  app.use(express.static(__dirname + '/public', {
+    app.use(serveStatic(__dirname + '/public', {
+    maxAge: oneYear,
+  }))
+  /*app.use(express.static(__dirname + '/public', {
     maxAge: oneYear
-  }));
+  }));*/
   app.use(errorhandler());
 }
 

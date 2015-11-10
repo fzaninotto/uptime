@@ -26,6 +26,10 @@
     "webpagetest": "0.3.3"
   },
   "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-cli": "^0.1.13",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-develop": "^0.4.0",
     "mocha": "^1.7.x",
     "should": "^1.1.0"
   },
