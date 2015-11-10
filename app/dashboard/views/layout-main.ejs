@@ -3,19 +3,19 @@
   <head>
     <meta charset="utf-8">
     <title>Uptime</title>
-    <link rel="stylesheet" href="<%= route_path %>/stylesheets/bootstrap.css">
-    <link rel="stylesheet" href="<%= route_path %>/stylesheets/style.css">
-    <link rel="shortcut icon" href="<%= route_path %>/favicon.ico">
-    <link rel="apple-touch-icon" href="<%= route_path %>/apple-touch-icon.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="<%= route_path %>/apple-touch-icon-ipad.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="<%= route_path %>/apple-touch-icon-iphone4.png">
+    <link rel="stylesheet" href="<%=routePath%>/stylesheets/bootstrap.css">
+    <link rel="stylesheet" href="<%=routePath%>/stylesheets/style.css">
+    <link rel="shortcut icon" href="<%=routePath%>/favicon.ico">
+    <link rel="apple-touch-icon" href="<%=routePath%>/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="<%=routePath%>/apple-touch-icon-ipad.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="<%=routePath%>/apple-touch-icon-iphone4.png">
     <%- renderCssTags(addedCss) %>
-    <script src="<%= route_path %>/javascripts/jquery.min.js"></script>
-    <script src="<%= route_path %>/socket.io/socket.io.js"></script>
+    <script src="<%=routePath%>/javascripts/jquery.min.js"></script>
+    <script src="<%=routePath%>/socket.io/socket.io.js"></script>
     <script>
     var socket = io.connect(location.protocol + '//' + location.hostname);
     </script>
-    <script src="<%= route_path %>/javascripts/moment.min.js"></script>
+    <script src="<%=routePath%>/javascripts/moment.min.js"></script>
     <!--[if lt IE 9]>
     <script src="http://raw.github.com/aFarkas/html5shiv/master/src/html5shiv.js"></script>
     <script src="http://raw.github.com/kriskowal/es5-shim/master/es5-shim.js"></script>

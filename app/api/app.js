@@ -11,20 +11,17 @@ var app = module.exports = express();
 var debugErrorHandler = function() {
   app.use(errorhandler({ dumpExceptions: true, showStack: true }));
 }
-
-// middleware
-//app.use(app.router);
-
+//TODO fix this shitcode
 var env = process.env.NODE_ENV || 'development';
 if ('development' == env) {
    debugErrorHandler();
 }
-
+//TODO fix this shitcode
 var env = process.env.NODE_ENV || 'test';
 if ('test' == env) {
    debugErrorHandler();
 }
-
+//TODO fix this shitcode
 var env = process.env.NODE_ENV || 'production';
 if ('production' == env) {
    app.use(errorhandler());
@@ -77,12 +74,22 @@ require('./routes/ping')(app);
 
 // route list
 app.get('/', function(req, res) {
-  var routes = [];
+  /*var routes = [];
   for (var verb in app.routes) {
     app.routes[verb].forEach(function(route) {
       routes.push({method: verb.toUpperCase() , path: app.route + route.path});
     });
   }
+  res.json(routes);*/
+  var routes = [];
+  app._router.stack.forEach(function(r){
+      if (r.route && r.route.path){
+          console.log(r.route);
+          routes.push({method: r.route.path.toUpperCase(), path: r.route.path});
+          //routes.push({method: r.route.toUpperCase() , path: r.route + r.route.path});
+      }
+  })
+
   res.json(routes);
 });
 

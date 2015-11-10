@@ -37,7 +37,9 @@ app.use(function locals(req, res, next) {
   res.locals.moment = moment;
   next();
 });
+// use ejs-locals for all ejs templates:
 app.engine('ejs', engine);
+
 app.set('views',__dirname + '/views');
 app.use('/',serveStatic(__dirname + '/public'))
 app.set('view engine', 'ejs');
@@ -77,10 +79,13 @@ app.get('/checks', function(req, res, next) {
 });
 
 app.get('/checks/new', function(req, res) {
+  var test1 = '/dashboard';
   res.render('check_new', {
     check: new Check(),
+    routePath: test1,
     pollerCollection: app.get('pollerCollection'),
     info: req.flash('info')
+    //TODO fix this!!!!
   });
 });
 

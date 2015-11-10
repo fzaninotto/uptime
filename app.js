@@ -72,8 +72,7 @@ app.emit('beforeFirstRoute', app, apiApp);
 var env = process.env.NODE_ENV || 'development';
 if ('development' == env) {
   if (config.verbose) mongoose.set('debug', true);
-  app.use(serveStatic(__dirname + '/public'))
-  //app.use(express.static(__dirname + '/public'));
+  //app.use(serveStatic(__dirname + '/public'));
   app.use(errorhandler({
     dumpExceptions: true,
     showStack: true
@@ -82,12 +81,9 @@ if ('development' == env) {
 
 var env = process.env.NODE_ENV || 'production';
 if ('production' == env) {
-  var oneYear = 31557600000;
+  /*var oneYear = 31557600000;
     app.use(serveStatic(__dirname + '/public', {
     maxAge: oneYear,
-  }))
-  /*app.use(express.static(__dirname + '/public', {
-    maxAge: oneYear
   }));*/
   app.use(errorhandler());
 }
