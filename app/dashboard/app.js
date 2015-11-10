@@ -60,7 +60,7 @@ app.locals.version = moduleInfo.version;
 // Routes
 
 app.get('/events', function(req, res) {
-  res.render('events',  { what: 'best', who: 'me' } );
+  res.render('events',  { route_path: '/dashboard' } );
 });
 
 app.get('/checks', function(req, res, next) {
