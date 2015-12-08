@@ -67,7 +67,7 @@ $ node models/migrations/upgrade2to3
 Adding Checks
 -------------
 
-By default, the web UI runs on port 8082, so just browse to 
+By default, the web UI runs on port 8082, so just browse to
 
     http://localhost:8082/
 
@@ -84,7 +84,7 @@ url:        'http://localhost:8082'
 mongodb:
   server:   localhost
   database: uptime
-  user:     root 
+  user:     root
   password:
   connectionString:       # alternative to setting server, database, user and password separately
 
@@ -181,7 +181,7 @@ plugins:
 
 Third-party plugins:
 
- * [`webhooks`](https://github.com/mintbridge/uptime-webhooks): notify events to an URL by sending an HTTP POST request 
+ * [`webhooks`](https://github.com/mintbridge/uptime-webhooks): notify events to an URL by sending an HTTP POST request
  * [`campfire`](https://gist.github.com/dmathieu/5592418): notify events to Campfire
  * [`pushover`](https://gist.github.com/xphyr/5994345): Notify events to mobile devices
 
@@ -448,6 +448,29 @@ Parameter :
 * `?end=` : (optional) End date (timestamp)
 
 Ex: `http://localhost:8082/api/tags/good/events?begin=1383260400000&end=1385852399999`
+
+Sending yourself text messages
+------------------------------
+How to Send a Text Message (SMS) Via Email:
+To send a text message via email, you must
+use a SMS to email gateway. Just substitute a 10-digit cell number for ‘number’
+for each carrier below:
+
+AT&T: number@txt.att.net
+T-Mobile: number@tmomail.net
+Verizon: number@vtext.com
+Sprint: number@messaging.sprintpcs.com or number@pm.sprint.com
+Virgin Mobile: number@vmobl.com
+Tracfone: number@mmst5.tracfone.com
+Metro PCS: number@mymetropcs.com
+Boost Mobile: number@myboostmobile.com
+Cricket: number@sms.mycricket.com
+Nextel: number@messaging.nextel.com
+Alltel: number@message.alltel.com
+Ptel: number@ptel.com
+Suncom: number@tms.suncom.com
+Qwest: number@qwestmp.com
+U.S. Cellular: number@email.uscc.net
 
 Support and Discussion
 ----------------------
