@@ -31,7 +31,7 @@ plugins:
 email:
   method:      SMTP  # possible methods are SMTP, SES, or Sendmail
   transport:         # see https://github.com/andris9/nodemailer for transport options
-    service:   Gmail # see https://github.com/andris9/Nodemailer/blob/master/lib/wellknown.js for well-known services
+    service:   Gmail # see https://github.com/andris9/nodemailer-wellknown#supported-services for supported-services services
     auth:            
       user:          # The email account username, e.g. 'username@gmail.com'
       pass:          # The email account password, e.G. 'password'
