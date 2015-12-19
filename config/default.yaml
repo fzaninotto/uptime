@@ -1,15 +1,15 @@
-url: 'http://localhost:8082'
+url: 'http://0.0.0.0:8082'
 
 mongodb:
-  server:   localhost
+  server: localhost
   database: uptime
-  user:     root 
-  password:
+  user: mohit
+  password: bnrtts
   connectionString:       # alternative to setting server, database, user and password separately
 
 monitor:
   name:                   origin
-  apiUrl:                 'http://localhost:8082/api' # must be accessible without a proxy
+  apiUrl:                 'http://0.0.0.0:8082/api' # must be accessible without a proxy
   pollingInterval:        10000      # ten seconds
   timeout:                5000       # five seconds
   userAgent:              NodeUptime/3.0 (https://github.com/fzaninotto/uptime)
@@ -26,7 +26,7 @@ plugins:
   - ./plugins/patternMatcher
   - ./plugins/httpOptions
   # - ./plugins/email
-  # - ./plugins/basicAuth
+  - ./plugins/basicAuth
 
 email:
   method:      SMTP  # possible methods are SMTP, SES, or Sendmail
@@ -41,13 +41,13 @@ email:
     paused:    false
     restarted: false
   message:           
-    from:            # The message sender, e.g. 'Fred Foo <foo@blurdybloop.com>'
-    to:              # The message recipient, e.g. 'bar@blurdybloop.com, baz@blurdybloop.com'
+    from: 'Mohit Sethi <mohit.sethi@target.com>'            # The message sender, e.g. 'Fred Foo <foo@blurdybloop.com>'
+    to: 'Mohit Sethi <mohit.sethi@target.com>'             # The message recipient, e.g. 'bar@blurdybloop.com, baz@blurdybloop.com'
   # The email plugin also uses the main `url` param for hyperlinks in the sent emails
 
 basicAuth:
   username:    admin
-  password:    password
+  password:    admin!@#
 verbose: true # only used in dev
 
 webPageTest:
