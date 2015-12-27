@@ -1,12 +1,15 @@
 /**
  * Module dependencies.
  */
-var express = require('express');
-var async = require('async');
-var partials = require('express-partials');
-var flash = require('connect-flash');
-var moment = require('moment');
-
+var express = require('express')
+var async = require('async')
+//var partials = require('express-partials');
+var flash = require('connect-flash')
+var engine = require('ejs-mate-gunmetal313')
+var moment = require('moment')
+var errorhandler = require('errorhandler')
+var serveStatic = require('serve-static')
+var path = require('path')
 var Check = require('../../models/check');
 var Tag = require('../../models/tag');
 var TagDailyStat = require('../../models/tagDailyStat');
@@ -14,61 +17,76 @@ var TagMonthlyStat = require('../../models/tagMonthlyStat');
 var CheckMonthlyStat = require('../../models/checkMonthlyStat');
 var moduleInfo = require('../../package.json');
 
-var app = module.exports = express();
+var app = module.exports = express()
 
 // middleware
-
-app.configure(function(){
-  app.use(partials());
-  app.use(flash());
-  app.use(function locals(req, res, next) {
-    res.locals.route = app.route;
-    res.locals.addedCss = [];
-    res.locals.renderCssTags = function (all) {
-      if (all != undefined) {
-        return all.map(function(css) {
-          return '<link rel="stylesheet" href="' + app.route + '/stylesheets/' + css + '">';
-        }).join('\n ');
-      } else {
-        return '';
-      }
-    };
-    res.locals.moment = moment;
-    next();
-  });
-  app.use(app.router);
-  app.set('views', __dirname + '/views');
-  app.set('view engine', 'ejs');
-  app.use(express.static(__dirname + '/public'));
+app.use(flash());
+app.use(function locals(req, res, next) {
+  res.locals.route = app.route;
+  res.locals.addedCss = [];
+  res.locals.renderCssTags = function(all) {
+    if (all != undefined) {
+      return all.map(function(css) {
+        return '<link rel="stylesheet" href="' + app.route + '/stylesheets/' + css + '">';
+      }).join('\n ');
+    }
+    else {
+      return '';
+    }
+  };
+  res.locals.moment = moment;
+  next();
 });
+// use ejs-locals for all ejs templates:
+app.engine('ejs', engine);
 
-app.configure('development', function(){
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-});
+app.set('views',__dirname + '/views');
+app.use('/',serveStatic(__dirname + '/public'))
+app.set('view engine', 'ejs');
 
-app.configure('production', function(){
-  app.use(express.errorHandler());
-});
+var env = process.env.NODE_ENV || 'development';
+if ('development' == env) {
+  app.use(errorhandler({
+    dumpExceptions: true,
+    showStack: true
+  }));
+}
 
-app.locals({
-  version: moduleInfo.version
-});
+var env = process.env.NODE_ENV || 'production';
+if ('production' == env) {
+  app.use(errorhandler());
+}
+
+app.locals.version = moduleInfo.version;
 
 // Routes
 
 app.get('/events', function(req, res) {
-  res.render('events');
+  res.render('events',  { route_path: '/dashboard' } );
 });
 
 app.get('/checks', function(req, res, next) {
-  Check.find().sort({ isUp: 1, lastChanged: -1 }).exec(function(err, checks) {
+  Check.find().sort({
+    isUp: 1,
+    lastChanged: -1
+  }).exec(function(err, checks) {
     if (err) return next(err);
-    res.render('checks', { info: req.flash('info'), checks: checks });
+    res.render('checks', {
+      info: req.flash('info'),
+      checks: checks
+    });
   });
 });
 
 app.get('/checks/new', function(req, res) {
-  res.render('check_new', { check: new Check(), pollerCollection: app.get('pollerCollection'), info: req.flash('info') });
+  var test1 = '/dashboard';
+  res.render('check_new', {
+    check: new Check(),
+    routePath: test1,
+    pollerCollection: app.get('pollerCollection'),
+    info: req.flash('info')
+    //TODO fix this!!!!
+  });
 });
 
 app.post('/checks', function(req, res, next) {
@@ -77,7 +95,8 @@ app.post('/checks', function(req, res, next) {
     var dirtyCheck = req.body.check;
     check.populateFromDirtyCheck(dirtyCheck, app.get('pollerCollection'))
     app.emit('populateFromDirtyCheck', check, dirtyCheck, check.type);
-  } catch (err) {
+  }
+  catch (err) {
     return next(err);
   }
   check.save(function(err) {
@@ -88,20 +107,34 @@ app.post('/checks', function(req, res, next) {
 });
 
 app.get('/checks/:id', function(req, res, next) {
-  Check.findOne({ _id: req.params.id }, function(err, check) {
+  Check.findOne({
+    _id: req.params.id
+  }, function(err, check) {
     if (err) return next(err);
     if (!check) return res.send(404, 'failed to load check ' + req.params.id);
-    res.render('check', { check: check, info: req.flash('info'), req: req });
+    res.render('check', {
+      check: check,
+      info: req.flash('info'),
+      req: req
+    });
   });
 });
 
 app.get('/checks/:id/edit', function(req, res, next) {
-  Check.findOne({ _id: req.params.id }, function(err, check) {
+  Check.findOne({
+    _id: req.params.id
+  }, function(err, check) {
     if (err) return next(err);
     if (!check) return res.send(404, 'failed to load check ' + req.params.id);
     var pollerDetails = [];
     app.emit('checkEdit', check.type, check, pollerDetails);
-    res.render('check_edit', { check: check, pollerCollection: app.get('pollerCollection'), pollerDetails: pollerDetails.join(''), info: req.flash('info'), req: req });
+    res.render('check_edit', {
+      check: check,
+      pollerCollection: app.get('pollerCollection'),
+      pollerDetails: pollerDetails.join(''),
+      info: req.flash('info'),
+      req: req
+    });
   });
 });
 
@@ -109,7 +142,8 @@ app.get('/pollerPartial/:type', function(req, res, next) {
   var poller;
   try {
     poller = app.get('pollerCollection').getForType(req.params.type);
-  } catch (err) {
+  }
+  catch (err) {
     return next(err);
   }
   var pollerDetails = [];
@@ -124,7 +158,8 @@ app.put('/checks/:id', function(req, res, next) {
       var dirtyCheck = req.body.check;
       check.populateFromDirtyCheck(dirtyCheck, app.get('pollerCollection'))
       app.emit('populateFromDirtyCheck', check, dirtyCheck, check.type);
-    } catch (populationError) {
+    }
+    catch (populationError) {
       return next(populationError);
     }
     check.save(function(err2) {
@@ -136,7 +171,9 @@ app.put('/checks/:id', function(req, res, next) {
 });
 
 app.delete('/checks/:id', function(req, res, next) {
-  Check.findOne({ _id: req.params.id }, function(err, check) {
+  Check.findOne({
+    _id: req.params.id
+  }, function(err, check) {
     if (err) return next(err);
     if (!check) return next(new Error('failed to load check ' + req.params.id));
     check.remove(function(err2) {
@@ -148,19 +185,28 @@ app.delete('/checks/:id', function(req, res, next) {
 });
 
 app.get('/tags', function(req, res, next) {
-  Tag.find().sort({ name: 1 }).exec(function(err, tags) {
+  Tag.find().sort({
+    name: 1
+  }).exec(function(err, tags) {
     if (err) return next(err);
-    res.render('tags', { tags: tags });
+    res.render('tags', {
+      tags: tags
+    });
   });
 });
 
 app.get('/tags/:name', function(req, res, next) {
-  Tag.findOne({ name: req.params.name }, function(err, tag) {
+  Tag.findOne({
+    name: req.params.name
+  }, function(err, tag) {
     if (err) {
       return next(err);
     }
     if (!tag) return next(new Error('failed to load tag ' + req.params.name));
-    res.render('tag', { tag: tag, req: req });
+    res.render('tag', {
+      tag: tag,
+      req: req
+    });
   });
 });
 

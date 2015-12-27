@@ -1,14 +1,22 @@
-uptime
+uptime2
 ======
 
 A remote monitoring application using Node.js, MongoDB, and Twitter Bootstrap.
 
-<img src="https://raw.github.com/fzaninotto/uptime/downloads/check_details.png" title="Visualizing the availability of an HTTP check in Uptime" width="50%" valign="top" />
-<img src="https://raw.github.com/fzaninotto/uptime/downloads/check_form.png" title="Editing check attributes (polling interval, slow threshold, alert threshold, pattern to match, tags) in Uptime" width="50%" valign="top" />
+<img src="https://raw.github.com/gunmetal313-nodejs/uptime2/downloads/check_details.png" title="Visualizing the availability of an HTTP check in Uptime" width="50%" valign="top" />
+<img src="https://raw.github.com/gunmetal313-nodejs/uptime2/downloads/check_form.png" title="Editing check attributes (polling interval, slow threshold, alert threshold, pattern to match, tags) in Uptime" width="50%" valign="top" />
 
 You can watch a [demo screencast on Vimeo](https://vimeo.com/39302164).
 
-**Warning**: This application isn't actively maintained anymore. You can find many alternatives, from completely free to very cheap, in [this list of website monitoring services](http://www.supermonitoring.com/blog/the-updated-list-of-website-monitoring-services/).
+I am new unofficial maintainer of this project.
+
+[![Dependency Status](https://david-dm.org/gunmetal313-nodejs/uptime2.svg)](https://david-dm.org/gunmetal313-nodejs/uptime2)
+[![devDependency Status](https://david-dm.org/gunmetal313-nodejs/uptime2/dev-status.svg)](https://david-dm.org/gunmetal313-nodejs/uptime2#info=devDependencies)
+
+| Build cl  | Status  | Branch| .... |
+|-------|---------|---------|--------|
+|Travis (Linux)| [![Build Status](https://travis-ci.org/gunmetal313-nodejs/uptime2.svg?branch=master)](https://travis-ci.org/gunmetal313-nodejs/uptime2) | master |  |
+
 
 Features
 --------
@@ -55,6 +63,22 @@ If you want a production environment:
 $ NODE_ENV=production node app
 ```
 
+Tests
+--------
+
+Windows
+  ```sh
+  > npm install -g mocha
+  ```
+  Run node app
+  ```sh
+  > node app
+  ```
+  run
+  ```sh
+  > run_tests.bat
+  ```
+
 Upgrading From a 2.0 Install
 ----------------------------
 
@@ -67,7 +91,7 @@ $ node models/migrations/upgrade2to3
 Adding Checks
 -------------
 
-By default, the web UI runs on port 8082, so just browse to 
+By default, the web UI runs on port 8082, so just browse to
 
     http://localhost:8082/
 
@@ -84,7 +108,7 @@ url:        'http://localhost:8082'
 mongodb:
   server:   localhost
   database: uptime
-  user:     root 
+  user:     root
   password:
   connectionString:       # alternative to setting server, database, user and password separately
 
@@ -181,7 +205,7 @@ plugins:
 
 Third-party plugins:
 
- * [`webhooks`](https://github.com/mintbridge/uptime-webhooks): notify events to an URL by sending an HTTP POST request 
+ * [`webhooks`](https://github.com/mintbridge/uptime-webhooks): notify events to an URL by sending an HTTP POST request
  * [`campfire`](https://gist.github.com/dmathieu/5592418): notify events to Campfire
  * [`pushover`](https://gist.github.com/xphyr/5994345): Notify events to mobile devices
 

@@ -3,19 +3,19 @@
   <head>
     <meta charset="utf-8">
     <title>Uptime</title>
-    <link rel="stylesheet" href="<%= route %>/stylesheets/bootstrap.css">
-    <link rel="stylesheet" href="<%= route %>/stylesheets/style.css">
-    <link rel="shortcut icon" href="<%= route %>/favicon.ico">
-    <link rel="apple-touch-icon" href="<%= route %>/apple-touch-icon.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="<%= route %>/apple-touch-icon-ipad.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="<%= route %>/apple-touch-icon-iphone4.png">
+    <link rel="stylesheet" href="<%=routePath%>/stylesheets/bootstrap.css">
+    <link rel="stylesheet" href="<%=routePath%>/stylesheets/style.css">
+    <link rel="shortcut icon" href="<%=routePath%>/favicon.ico">
+    <link rel="apple-touch-icon" href="<%=routePath%>/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="<%=routePath%>/apple-touch-icon-ipad.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="<%=routePath%>/apple-touch-icon-iphone4.png">
     <%- renderCssTags(addedCss) %>
-    <script src="<%= route %>/javascripts/jquery.min.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
+    <script src="<%=routePath%>/javascripts/jquery.min.js"></script>
+    <script src="<%=routePath%>/socket.io/socket.io.js"></script>
     <script>
     var socket = io.connect(location.protocol + '//' + location.hostname);
     </script>
-    <script src="<%= route %>/javascripts/moment.min.js"></script>
+    <script src="<%=routePath%>/javascripts/moment.min.js"></script>
     <!--[if lt IE 9]>
     <script src="http://raw.github.com/aFarkas/html5shiv/master/src/html5shiv.js"></script>
     <script src="http://raw.github.com/kriskowal/es5-shim/master/es5-shim.js"></script>
@@ -28,12 +28,12 @@
       <div class="navbar navbar-inverse">
         <div class="navbar-inner">
           <div class="container">
-            <a class="brand" href="<%= route %>/events">Uptime</a>
+            <a class="brand" href="/events">Uptime2</a>
             <ul class="nav pull-left">
-              <li><a href="<%= route %>/events">Events</a></li>
-              <li><a href="<%= route %>/checks">Checks</a></li>
-              <li><a href="<%= route %>/tags">Tags</a></li>
-              <li id="new_events"><a href="<%= route %>/events?highlightFrom=<%= Date.now() %>"></a></li> 
+              <li><a href="/events">Events</a></li>
+              <li><a href="/checks">Checks</a></li>
+              <li><a href="/tags">Tags</a></li>
+              <li id="new_events"><a href="/events?highlightFrom=<%= Date.now() %>"></a></li>
             </ul>
             <ul class="nav pull-right" id="check_summary">
               <li id="all_up" style="display:none;"><span class="label label-success">Up</span><strong class="green">0</strong></li>
@@ -43,12 +43,12 @@
         </div>
       </div>
       <section>
-        <%- body %>
+        <%- body -%>
       </section>
       <footer class="footer">
         <p class="pull-right"><a href="#">Back to top</a></p>
-        <p><a href="https://github.com/fzaninotto/uptime">Uptime <%= version %></a>, powered by <a href="http://nodejs.org/">Node.js</a>, <a href="http://www.mongodb.org/">MongoDB</a>, and <a href="http://twitter.github.com/bootstrap/">Bootstrap</a>.</p>
-        <p>Code licensed under the <a href="https://raw.github.com/fzaninotto/uptime/master/LICENSE">MIT License</a>. Check the <a href="https://github.com/fzaninotto/uptime">Uptime GitHub repository</a> regularly for updates.
+        <p><a href="https://github.com/gunmetal313-nodejs/uptime2">Uptime2 <%= version %></a>, powered by <a href="http://nodejs.org/">Node.js</a>, <a href="http://www.mongodb.org/">MongoDB</a>, and <a href="http://twitter.github.com/bootstrap/">Bootstrap</a>.</p>
+        <p>Code licensed under the <a href="https://raw.github.com/fzaninotto/uptime/master/LICENSE">MIT License</a>. Check the <a href="https://github.com/gunmetal313-nodejs/uptime2">Uptime GitHub repository</a> regularly for updates.
       </footer>
     </div>
     <script>
@@ -76,7 +76,7 @@
             }
           }
           if (nbNewEvents > 0) {
-            document.title = '(' + nbNewEvents +') Uptime';
+            document.title = '(' + nbNewEvents +') Uptime2';
           };
         });
       };
