@@ -15,7 +15,7 @@
     "socket.io": "0.9.14",
     "semver":    "1.1.0",
     "moment":    "2.1.0",
-    "nodemailer": "0.3.35",
+    "nodemailer": "2.6.4",
     "net-ping":  "1.1.7",
     "js-yaml": "2.1.0",
     "webpagetest": "0.2.0"
