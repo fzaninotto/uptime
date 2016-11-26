@@ -102,9 +102,9 @@ DateNavigation.prototype.redrawPeriods = function() {
   var type  = this.interval.type;
   var periods = '<div class="btn-group">';
   if (this.interval.beginsAfterOrigin()) {
-    periods += '<button class="btn btn-small" data-type="' + type + '" data-date="' + this.interval.getPreviousDate() + '">&lt;</button>';
+    periods += '<button class="btn btn-sm" data-type="' + type + '" data-date="' + this.interval.getPreviousDate() + '">&lt;</button>';
   } else {
-    periods += '<button class="btn btn-small" disabled="disabled">&lt;</button>';
+    periods += '<button class="btn btn-sm" disabled="disabled">&lt;</button>';
   }
   var begin = this.interval.begin;
   var end   = this.interval.end;
@@ -112,9 +112,9 @@ DateNavigation.prototype.redrawPeriods = function() {
   var d = begin.clone();
   while (d.valueOf() < end.valueOf()) {
     if (d.valueOf() < Date.now() && d.clone().endOf(subtype).valueOf() > this.interval.origin && !this.interval.isMaxZoom()) {
-      periods += '<button class="btn btn-small ' + subtype + ' nb' + end.date() + '" data-type="' + subtype + '" data-date="' + d.valueOf() + '" title="' + this.tooltipForPeriod(d, subtype) + '">' + this.titleForPeriod(d, subtype) + '</button>';
+      periods += '<button class="btn btn-sm ' + subtype + ' nb' + end.date() + '" data-type="' + subtype + '" data-date="' + d.valueOf() + '" title="' + this.tooltipForPeriod(d, subtype) + '">' + this.titleForPeriod(d, subtype) + '</button>';
     } else {
-      periods += '<button class="btn btn-small ' + subtype + ' nb' + end.date() + '" disabled="disabled">' + this.titleForPeriod(d, subtype) + '</button>';
+      periods += '<button class="btn btn-sm ' + subtype + ' nb' + end.date() + '" disabled="disabled">' + this.titleForPeriod(d, subtype) + '</button>';
     }
     if (subtype == 'tenminutes') {
       d.add('minutes', 10);
@@ -123,9 +123,9 @@ DateNavigation.prototype.redrawPeriods = function() {
     }
   }
   if (this.interval.endsBeforeNow()) {
-    periods += '<button class="btn btn-small" data-type="' + type + '" data-date="' + this.interval.getNextDate() + '">&gt;</button>';
+    periods += '<button class="btn btn-sm" data-type="' + type + '" data-date="' + this.interval.getNextDate() + '">&gt;</button>';
   } else {
-    periods += '<button class="btn btn-small" disabled="disabled">&gt;</button>';
+    periods += '<button class="btn btn-sm" disabled="disabled">&gt;</button>';
   }
   periods += '</div>';
   $('#dateNavigation .periods').html(periods);
@@ -162,15 +162,15 @@ DateNavigation.prototype.redrawZoom = function() {
   var zoom = '';
   var subType = this.interval.subType(this.interval.type);
   if (subType !== false && !this.interval.isMaxZoom()) {
-    zoom += '<button class="btn btn-small" data-type="' + subType + '" data-date="' + this.interval.date + '"><li class="icon-zoom-in"></li></button>';
+    zoom += '<button class="btn btn-sm" data-type="' + subType + '" data-date="' + this.interval.date + '"><li class="glyphicon glyphicon-zoom-in"></li></button>';
   } else {
-    zoom += '<button class="btn btn-small" disabled="disabled"><i class="icon-zoom-in"></i></button>'
+    zoom += '<button class="btn btn-sm" disabled="disabled"><i class="glyphicon glyphicon-zoom-in"></i></button>'
   }
   var superType = this.interval.superType(this.interval.type);
   if (superType !== false) {
-    zoom += '<button class="btn btn-small" data-type="' + superType + '" data-date="' + this.interval.date + '"><li class="icon-zoom-out"></li></button>';
+    zoom += '<button class="btn btn-sm" data-type="' + superType + '" data-date="' + this.interval.date + '"><li class="glyphicon glyphicon-zoom-out"></li></button>';
   } else {
-    zoom += '<button class="btn btn-small" disabled="disabled"><i class="icon-zoom-out"></i></button>'
+    zoom += '<button class="btn btn-sm" disabled="disabled"><i class="glyphicon glyphicon-zoom-out"></i></button>'
   }
   $('#dateNavigation .zoom').html(zoom);
 }

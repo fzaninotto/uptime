@@ -160,7 +160,7 @@ app.get('/tags/:name', function(req, res, next) {
       return next(err);
     }
     if (!tag) return next(new Error('failed to load tag ' + req.params.name));
-    res.render('tag', { tag: tag, req: req });
+    res.render('tag', { tag: tag, req: req, info: req.flash('info') });
   });
 });
 

@@ -1,5 +1,5 @@
 <script src="<%= route %>/javascripts/ejs.min.js"></script>
-<script src="<%= route %>/javascripts/bootstrap-affix.js"></script>
+<script src="<%= route %>/javascripts/bootstrap.js"></script>
 <script src="<%= route %>/javascripts/dateInterval.js"></script>
 <script src="<%= route %>/javascripts/dateNavigation.js"></script>
 <script src="<%= route %>/javascripts/statNavigation.js"></script>
@@ -17,24 +17,23 @@ var page = {};
 <div id="dateNavigationContainer">
   <div id="dateNavigation">
     <div class="row">
-      <div class="span2"></div>
-      <div class="span10">
+      <div class="col-md-10 col-md-offset-2">
         <div class="title"></div>
         <div class="timeline"></div>
       </div>
     </div>
     <div class="row">
-      <div class="span2">
+      <div class="col-md-2">
         <ul class="btn-group zoom"></ul>
       </div>
-      <div class="span10">
+      <div class="col-md-10">
         <div class="periods"></div>
       </div>
     </div>
   </div>
 </div>
 <div id="sectionList" class="row">
-  <div class="span2">
+  <div class="col-md-2">
     <ul id="secondaryNav" class="nav nav-tabs nav-stacked">
       <li><a href="#availability">Availability<i class="icon-chevron-right"></i><br/><strong class="availability"></strong>%</a></li>
       <li><a href="#events">Downtime<i class="icon-chevron-right"></i><br/><strong class="downtime"></strong></a></li>
@@ -44,7 +43,7 @@ var page = {};
       <li><a href="#data">Data<i class="icon-chevron-right"></i></a></li>
     </ul>
   </div>
-  <div class="span10">
+  <div class="col-md-10">
     <section id="availability">
     <%- partial('_availability') %>
     </section>
@@ -59,7 +58,7 @@ var page = {};
     <%- partial('_responsiveness') %>
     </section>
     <section id="checks">
-    <%- partial('_checks', { url: '/api/tags/' + encodeURIComponent(tag.name) + '/checks/', route: route } ) %>
+    <%- partial('checks', { url: '/api/tags/' + encodeURIComponent(tag.name) + '/checks/', route: route, info: info, checks: tag.checks } ) %>ß
     </section>
     <section id="data">
     <%- partial('_data', { url: '/api/tags/' + encodeURIComponent(tag.name) + '/stats/', route: route } ) %>

@@ -2,8 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Uptime</title>
-    <link rel="stylesheet" href="<%= route %>/stylesheets/bootstrap.css">
+    <link rel="stylesheet" href="<%= route %>/stylesheets/bootstrap.min.css">
     <link rel="stylesheet" href="<%= route %>/stylesheets/style.css">
     <link rel="shortcut icon" href="<%= route %>/favicon.ico">
     <link rel="apple-touch-icon" href="<%= route %>/apple-touch-icon.png">
@@ -20,37 +21,46 @@
     <script src="http://raw.github.com/aFarkas/html5shiv/master/src/html5shiv.js"></script>
     <script src="http://raw.github.com/kriskowal/es5-shim/master/es5-shim.js"></script>
     <script src="http://raw.github.com/kriskowal/es5-shim/master/es5-sham.js"></script>
-    <script type="text/javascript" src="path/to/flashcanvas.js"></script>
+    <script type="text/javascript" src="<%= route %>/javascripts/flashcanvas.js"></script>
     <![endif]-->
   </head>
   <body>
-    <div class="container">
-      <div class="navbar navbar-inverse">
-        <div class="navbar-inner">
-          <div class="container">
-            <a class="brand" href="<%= route %>/events">Uptime</a>
-            <ul class="nav pull-left">
-              <li><a href="<%= route %>/events">Events</a></li>
-              <li><a href="<%= route %>/checks">Checks</a></li>
-              <li><a href="<%= route %>/tags">Tags</a></li>
-              <li id="new_events"><a href="<%= route %>/events?highlightFrom=<%= Date.now() %>"></a></li> 
-            </ul>
-            <ul class="nav pull-right" id="check_summary">
-              <li id="all_up" style="display:none;"><span class="label label-success">Up</span><strong class="green">0</strong></li>
-              <li id="all_down" style="display: none;"><span class="label label-important">Down</span><strong class="red">0</strong></li>
-            </ul>
-          </div>
+    <div class="navbar navbar-inverse">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="<%= route %>/events">Uptime</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="<%= route %>/events">Events</a></li>
+            <li><a href="<%= route %>/checks">Checks</a></li>
+            <li><a href="<%= route %>/tags">Tags</a></li>
+            <li id="new_events"><a href="<%= route %>/events?highlightFrom=<%= Date.now() %>"></a></li>           
+          </ul>
+          <ul id="check_summary" class="nav navbar-nav navbar-right">
+            <li id="all_up" style="display:none;"><span class="label label-success">Up</span><strong class="green">0</strong></li>
+            <li id="all_down" style="display: none;"><span class="label label-important">Down</span><strong class="red">0</strong></li>
+          </ul>
         </div>
       </div>
+    </div> <!-- .navbar .navbar-inverse -->
+    
+    <div class="container">
       <section>
         <%- body %>
       </section>
       <footer class="footer">
         <p class="pull-right"><a href="#">Back to top</a></p>
-        <p><a href="https://github.com/fzaninotto/uptime">Uptime <%= version %></a>, powered by <a href="http://nodejs.org/">Node.js</a>, <a href="http://www.mongodb.org/">MongoDB</a>, and <a href="http://twitter.github.com/bootstrap/">Bootstrap</a>.</p>
+        <p><a href="https://github.com/fzaninotto/uptime">Uptime <%= version %></a>, powered by <a href="http://nodejs.org/">Node.js</a>, <a href="http://www.mongodb.org/">MongoDB</a>, and <a href="http://getbootstrap.com/">Bootstrap</a>.</p>
         <p>Code licensed under the <a href="https://raw.github.com/fzaninotto/uptime/master/LICENSE">MIT License</a>. Check the <a href="https://github.com/fzaninotto/uptime">Uptime GitHub repository</a> regularly for updates.
       </footer>
     </div>
+    
     <script>
     var nbNewEvents = 0;
     var loadedAt = new Date();

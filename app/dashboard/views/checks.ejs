@@ -5,7 +5,7 @@
 <% if (info.length) { %>
 <div class="alert alert-success"><%= info %></div>
 <% } %>
-<div style="text-align:right">
+<div class="text-right">
   <a class="btn btn-primary" href="<%= route %>/checks/new">Create check</a>
 </div>
 <table class="table" id="checks">
@@ -89,7 +89,9 @@ jQuery(document).ready(function($) {
       $.getJSON('/api/checks', updateChecksSection);
     }
   }
+  
   updateChecks(<%- JSON.stringify(checks) %>);
+  
   socket.on('CheckEvent', function(data) { updateChecks() });
   window.setInterval(updateChecks, 5 * 60 * 1000); // refresh every 5 minutes to update the qos scores
 
