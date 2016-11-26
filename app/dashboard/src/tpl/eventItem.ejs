@@ -1,0 +1,60 @@
+<% var label = (event.message == 'paused' || event.message == 'restarted') ? 'info' : (event.message == 'up') ? 'success' : 'danger' %>
+<li class="<%= highlightFrom && date.valueOf() > highlightFrom ? 'new' : ''%> event-item">
+    <time class="time" title="<%= date %>"><%= date.format('LT') %></time>
+    <span class="badge alert-<%= label %> status"><i class="fa
+    <% 
+    switch (event.message) { 
+        case 'paused': %>
+            fa-pause
+        <% 
+            break; 
+            case 'restarted': 
+        %>
+            fa-play
+        <% 
+            break;
+            case 'down': 
+        %>
+            fa-arrow-down
+        <% 
+            break;
+            case 'up': 
+        %>
+            fa-arrow-up
+        <% 
+            break; 
+            default: 
+        %>
+            fa-question
+    <% } %>
+    "></i>
+    </span>
+    <span class="msg">
+        <a href="<%= route %>/checks/<%= event.check._id %>"><%= event.check.name %></a>
+        <a href="<%= event.check.url %>" target="_blank"><i class="fa fa-external-link"></i></a>
+        <% 
+        switch (event.message) { 
+            case 'paused': 
+            case 'restarted': 
+        %>
+            was <%= event.message %>
+        <% 
+            break;
+            case 'down': 
+        %>
+            went down (<%= event.details %>)
+        <% 
+            break;
+            case 'up': 
+                if (event.downtime) { %>
+                    went back up after <%= moment.duration(event.downtime).humanize() %> of downtime
+                <% } else { %>
+                is now up
+
+            <%  }
+            break;
+            default: %>
+                unnown event
+        <% } %>
+    </span>
+</li>

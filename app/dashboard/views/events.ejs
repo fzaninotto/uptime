@@ -1,17 +1,17 @@
-<script src="<%= route %>/javascripts/ejs.min.js"></script>
-<h1>
-  Latest events
-</h1>
+<h1>Latest Events</h1>
+
 <div id="events">
   <%- partial('_events', { url: '/api/pings/events', route: route }) %>
 </div>
+
 <div id="welcome" style="display: none">
-<p>Welcome to Uptime, the web monitoring application.</p>
-<p>To begin, <a href="<%= route %>/checks/new">create your first check</a>.</p>
+  <p>Welcome to Uptime, the web monitoring application.</p>
+  <p>To begin, <a href="<%= route %>/checks/new">create your first check</a>.</p>
 </div>
+
 <script>
-$(document).ready(function() {
-  $('.navbar-inner li').eq(0).addClass('active');
+jQuery(function($) {
+  $('.navbar-nav li').eq(0).addClass('active');
   $.getJSON('/api/checks/count', function(nbChecks) {
     if (nbChecks.total == 0) {
       $('#events').hide();

@@ -1,15 +1,8 @@
-<script src="<%= route %>/javascripts/ejs.min.js"></script>
-<script src="<%= route %>/javascripts/bootstrap-affix.js"></script>
-<script src="<%= route %>/javascripts/dateInterval.js"></script>
-<script src="<%= route %>/javascripts/dateNavigation.js"></script>
-<script src="<%= route %>/javascripts/statNavigation.js"></script>
-<script src="<%= route %>/javascripts/uptimeBar.js"></script>
-<script src="<%= route %>/javascripts/flotr2.min.js"></script>
 <script>
-var ejs = require('ejs');
-ejs.open = '{{';
-ejs.close = '}}';
-var page = {};
+  var ejs = require('ejs');
+  ejs.open = '{{';
+  ejs.close = '}}';
+  var page = {};
 </script>
 <h1>
   Tag "<%= tag.name %>"
@@ -74,7 +67,8 @@ var dateInterval = new DateInterval(
   '/api/tags/<%= encodeURIComponent(tag.name) %>/',
   'day'
 );
-jQuery(document).ready(function($) {
+
+jQuery(function($) {
   // highlight current section in main nav
   $('.navbar-inner li').eq(2).addClass('active');
 

@@ -1,0 +1,55 @@
+<tr>
+    <td data-sort="<%= check.name %>">
+        <a href="<%=  route + '/checks/' + check._id %>"><%= check.name %></a>
+        <a href="<%= check.url %>" target="_blank"><i class="fa fa-external-link"></i></a>
+    </td>
+    <% if (check.lastTested) { %>
+        <% if (check.isPaused) { %>
+    <td data-sort="<%= check.isUp ? check.uptime : -check.downtime %>">
+        <span class="badge alert-info"><i class="fa fa-pause"></i></span>
+        <span class="text-info"> for <span title="<%= new Date(check.lastChanged) %>"><%= moment(check.lastChanged).fromNow(true) %></span>
+    </td>
+        <% } else if (check.isUp) { %>
+    <td data-sort="<%= check.uptime %>">
+        <span class="badge alert-success"><i class="fa fa-arrow-up"></i></span>
+        <span class="text-success"> for <span title="<%= new Date(check.lastChanged) %>"><%= moment(check.lastChanged).fromNow(true) %></span>
+    </td>
+        <% } else { %>
+    <td data-sort="<%= -check.downtime %>">
+        <span class="badge alert-danger"><i class="fa fa-arrow-down"></i></span>
+        <span class="text-danger"> for <span title="<%= new Date(check.lastChanged) %>"><%= moment(check.lastChanged).fromNow(true) %></span>
+    </td>
+        <% } %>
+    <% } else { %>
+    <td data-sort="0">
+        <span class="badge alert-warning"><i class="fa fa-clock-o"></i></span>
+        <span class="text-warning">Just created</span>
+    </td>
+    <% } %>
+    <% if (check.qos) { %>
+    <td data-sort="<%= check.qos.availability %>">
+        <%- uptimeBar('check', {
+            from: Date.now() - 24 * 60 * 60 * 1000,
+            to: Date.now(),
+            periods: check.qos.outages || [],
+            check: check
+         }) %>
+     </td>
+    <td data-sort="<%= check.qos.responseTime %>"><%= Math.round(check.qos.responseTime) %>ms</td>
+    <% } else { %>
+    <td data-sort="0">-</td>
+    <td data-sort="0">-</td>
+    <% } %>
+
+    <td>
+        <a href="<%= route + '/checks/' + check._id %>" class="btn btn-primary btn-xs">
+            <i class="fa fa-area-chart"></i>
+        </a>
+        <a href="<%= route + '/checks/' + check._id + '/edit' %>" class="btn btn-warning btn-xs">
+            <i class="fa fa-pencil"></i>
+        </a>
+        <a href="#" class="btn btn-danger btn-xs">
+            <i class="fa fa-times"></i>
+        </a>
+    </td>
+</tr>
