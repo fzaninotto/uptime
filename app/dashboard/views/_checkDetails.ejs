@@ -139,6 +139,12 @@ function updatePollingIntervalTooltip() {
   }
 }
 $(document).ready(function() {
+  $('#check_form input').keydown(function (e) {
+    if (e.keyCode == 13) {
+      e.preventDefault();
+    }
+  });
+
   $('.uneditable-input').text(moment(parseInt($('.uneditable-input').html())).format('LLLL'));
   $('#check_form button[name="delete"]').click(function() {
     if (!confirm("This will delete the check and related pings and stats.\nAre you sure?")) return false;
