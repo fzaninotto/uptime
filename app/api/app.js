@@ -54,14 +54,18 @@ Check.on('afterRemove', function() { upCount = undefined; });
 CheckEvent.on('afterInsert', function() { upCount = undefined; });
 
 app.get('/checks/count', function(req, res, next) {
+  /*
   if (upCount) {
     res.json(upCount);
   } else {
+  */
     refreshUpCount(function(err) {
       if (err) return next(err);
       res.json(upCount);
     });
+  /*
   }
+  */
 });
 
 // Routes
