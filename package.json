@@ -9,6 +9,7 @@
     "express":   "3.2.0",
     "express-partials": "0.1.1",
     "connect-flash": "0.1.0",
+    "dateutil":  "0.1.0",
     "ejs":       "2.5.5",
     "config":    "0.4.32",
     "async":     "0.1.22",

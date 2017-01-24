@@ -27,6 +27,7 @@ plugins:
   - ./plugins/httpOptions
   # - ./plugins/email
   # - ./plugins/basicAuth
+  - ./plugins/replaceDatetime
 
 email:
   method:      SMTP  # possible methods are SMTP, SES, or Sendmail
