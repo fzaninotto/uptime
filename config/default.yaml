@@ -3,9 +3,9 @@ url: 'http://localhost:8082'
 mongodb:
   server:   localhost
   database: uptime
-  user:     root 
+  user:     root
   password:
-  connectionString:       # alternative to setting server, database, user and password separately
+  connectionString: mongodb://localhost/uptime      # alternative to setting server, database, user and password separately
 
 monitor:
   name:                   origin
@@ -34,7 +34,7 @@ email:
   method:      SMTP  # possible methods are SMTP, SES, or Sendmail
   transport:         # see https://github.com/andris9/nodemailer for transport options
     service:   Gmail # see https://github.com/andris9/Nodemailer/blob/master/lib/wellknown.js for well-known services
-    auth:            
+    auth:
       user:          # The email account username, e.g. 'username@gmail.com'
       pass:          # The email account password, e.G. 'password'
   event:
@@ -42,17 +42,12 @@ email:
     down:      true
     paused:    false
     restarted: false
-  message:           
+  message:
     from:            # The message sender, e.g. 'Fred Foo <foo@blurdybloop.com>'
     to:              # The message recipient, e.g. 'bar@blurdybloop.com, baz@blurdybloop.com'
-  # The email plugin also uses the main `url` param for hyperlinks in the sent emails
+  dashboardUrl: 'http://localhost:8082'
 
 basicAuth:
   username:    admin
   password:    password
 verbose: true # only used in dev
-
-webPageTest:
-  server: 'http://www.webpagetest.org'
-  key:
-  testOptions: 
