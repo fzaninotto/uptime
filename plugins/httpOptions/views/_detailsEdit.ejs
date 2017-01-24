@@ -12,6 +12,13 @@
         <% } %>
         documentation</a> for a list of available options</span>
     </div>
+    <div class="control-group">
+        <label class="control-label">HTTP Body</label>
+        <div class="controls">
+            <textarea name="check[http_body]" class="span8" rows="3" placeholder="POST body go here.."/><%= check.getPollerParam('http_body') || '' %></textarea>
+            <span class="help-inline">You can provide your body in this text area.</span>
+        </div>
+    </div>
   </div>
 </fieldset>
 <script type="text/javascript">
