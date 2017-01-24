@@ -3,37 +3,29 @@
   <form id="check_form" method="post" class="form-horizontal" action="<%= route %>/checks<%= check.isNew ? '' : '/' + check._id %>">
     <input type="hidden" name="_method" value="<%= (check.isNew) ? 'post' : 'put' %>" />
 
-    <div class="row">
-
-      <div class="span6">
-        <fieldset>
-          <div class="control-group">
-            <label class="control-label">Url</label>
-            <div class="controls controls-row">
-              <input type="text" required name="check[url]" value="<%= check.url || '' %>" class="span5"  placeholder="http://www.example.com"/>
-              <span class="help-inline" style="position:absolute"><a href="<%= check.url %>" target="_blank"><img src="<%= route %>/images/external-link-ltr-icon.png"></a></span>
-            </div>
-          </div>
-        </fieldset>
+    <fieldset>
+      <div class="control-group">
+        <label class="control-label">Type</label>
+        <div class="controls controls-row">
+          <select name="check[type]" value="<% check.type || '' %>" class="span2">
+            <option value="">auto</option>
+            <% pollerCollection.getTypes().forEach(function(poller) { %>
+            <option value="<%= poller %>" <% if (poller === check.type) { %> selected="true" <% } %>><%= poller %></option>
+            <% }) %>
+          </select>
+        </div>
       </div>
+    </fieldset>
 
-      <div class="span6">
-        <fieldset>
-          <div class="control-group">
-            <label class="control-label">Type</label>
-            <div class="controls controls-row">
-              <select name="check[type]" value="<% check.type || '' %>" class="span2">
-                <option value="">auto</option>
-                <% pollerCollection.getTypes().forEach(function(poller) { %>
-                <option value="<%= poller %>" <% if (poller === check.type) { %> selected="true" <% } %>><%= poller %></option>
-                <% }) %>
-              </select>
-            </div>
-          </div>
-        </fieldset>
+    <fieldset>
+      <div class="control-group">
+        <label class="control-label">Url</label>
+        <div class="controls controls-row">
+          <textarea type="text" required name="check[url]" class="span8"  placeholder="http://www.example.com"><%= check.url || '' %></textarea>
+          <span class="help-inline" style="position:absolute"><a href="<%= check.url %>" target="_blank"><img src="<%= route %>/images/external-link-ltr-icon.png"></a></span>
+        </div>
       </div>
-
-    </div>
+    </fieldset>
 
     <fieldset>
       <div class="control-group">
