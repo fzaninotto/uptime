@@ -27,6 +27,7 @@ plugins:
   - ./plugins/httpOptions
   # - ./plugins/email
   # - ./plugins/basicAuth
+  - ./plugins/jsonSchema
   - ./plugins/replaceDatetime
 
 email:
