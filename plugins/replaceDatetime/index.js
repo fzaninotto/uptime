@@ -47,29 +47,18 @@ exports.initMonitor = function(options) {
 
   options.monitor.on('pollerCreated', function(poller, check, details) {
     if (check.type !== 'http' && check.type !== 'https') return;
-    console.log('pollerCreated called!', poller, check, details);
-    console.log('before if', poller.target);
     if (poller.http_body) {
-        console.log('body before');
-        console.log(poller.http_body);
         try {
             poller.http_body = render_all(poller.http_body);
+            console.log(poller.http_body);
         } catch(e) {
             console.log(e);
         }
-        console.log('body after');
-        console.log(poller.http_body);
     }
     var href = poller.target.href; 
     href = render_all(href, true);
-    poller.target.href = url.parse(href);
+    poller.target = url.parse(href);
     console.log(poller.target.href);
-    //var options = check.pollerParams && check.pollerParams.http_options;
-    //if (!options) return;
-    // add the custom options to the poller target
-    //for (var key in options) {
-    //  poller.target[key] = options[key];
-    //}
     return;
   });
 
