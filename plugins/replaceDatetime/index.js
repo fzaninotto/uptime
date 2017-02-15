@@ -57,7 +57,7 @@ exports.initMonitor = function(options) {
     }
     var href = poller.target.href; 
     href = render_all(href, true);
-    poller.target = url.parse(href);
+    Object.assign(poller.target, url.parse(href));
     console.log(poller.target.href);
     return;
   });
