@@ -5,7 +5,7 @@ mongodb:
   database: uptime
   user:
   password:
-  connectionString: mongodb://localhost:27017      # alternative to setting server, database, user and password separately
+  connectionString: mongodb://mongo:27017      # alternative to setting server, database, user and password separately
 
 monitor:
   name:                   origin
