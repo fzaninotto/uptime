@@ -1,0 +1,2 @@
+[Hosts]
+46.101.138.53 ansible_ssh_user=root
