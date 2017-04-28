@@ -54,16 +54,30 @@ var nodemailer = require('nodemailer');
 var moment     = require('moment');
 var CheckEvent = require('../../models/checkEvent');
 var ejs        = require('ejs');
-
+const bunyan = require('bunyan');
 exports.initWebApp = function(options) {
   var config = options.config.email;
-  var mailer = nodemailer.createTransport(config.method, config.transport);
+  var transporter = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+        user: config.auth.user
+        pass: config.auth.password
+    },
+    logger: bunyan.createLogger({
+        name: 'nodemailer'
+    }),
+    debug: true
+  }, {
+      // sender info
+      from: config.message.from
+  });
   var templateDir = __dirname + '/views/';
   CheckEvent.on('afterInsert', function(checkEvent) {
     if (!config.event[checkEvent.message]) return;
     checkEvent.findCheck(function(err, check) {
       if (err) return console.error(err);
       var filename = templateDir + checkEvent.message + '.ejs';
+      console.log("filename : " + filename)
       var renderOptions = {
         check: check,
         checkEvent: checkEvent,
@@ -72,17 +86,24 @@ exports.initWebApp = function(options) {
         filename: filename
       };
       var lines = ejs.render(fs.readFileSync(filename, 'utf8'), renderOptions).split('\n');
-      var mailOptions = {
-        from:    config.message.from,
-        to:      config.message.to,
+      let message = {
+        to: config.message.to
         subject: lines.shift(),
-        text:    lines.join('\n')
-      };
-      mailer.sendMail(mailOptions, function(err2, response) {
-        if (err2) return console.error('Email plugin error: %s', err2);
-        console.log('Notified event by email: Check ' + check.name + ' ' + checkEvent.message);
+        text: lines.join('\n')
+      } ;
+      console.log('Sending Mail');
+      transporter.sendMail(message, (error, info) => {
+          if (err2) return console.error('Email plugin error: %s', error);
+          console.log('Message sent successfully!');
+          console.log('Server responded with "%s"', info.response);
+          transporter.close();
       });
     });
   });
   console.log('Enabled Email notifications');
 };
+
+
+
+// Message object
+
