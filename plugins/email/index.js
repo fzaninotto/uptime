@@ -54,7 +54,8 @@ var nodemailer = require('nodemailer');
 var moment     = require('moment');
 var CheckEvent = require('../../models/checkEvent');
 var ejs        = require('ejs');
-const bunyan = require('bunyan');
+var bunyan = require('bunyan');
+
 exports.initWebApp = function(options) {
   var config = options.config.email;
   var transporter = nodemailer.createTransport({
@@ -102,8 +103,3 @@ exports.initWebApp = function(options) {
   });
   console.log('Enabled Email notifications');
 };
-
-
-
-// Message object
-
