@@ -33,16 +33,16 @@ email:
   transport:         # see https://github.com/andris9/nodemailer for transport options
     service:   Gmail # see https://github.com/andris9/Nodemailer/blob/master/lib/wellknown.js for well-known services
     auth:            
-      user:    bdqnghi@gmail.com     # The email account username, e.g. 'username@gmail.com'
-      pass:    06121991      # The email account password, e.G. 'password'
+      user:    user@gmail.com     # The email account username, e.g. 'username@gmail.com'
+      pass:    pass      # The email account password, e.G. 'password'
   event:
     up:        true
     down:      true
     paused:    false
     restarted: false
   message:           
-    from:      Bui Duy Quoc Nghi      # The message sender, e.g. 'Fred Foo <foo@blurdybloop.com>'
-    to:        bdqnghi91@gmail.com      # The message recipient, e.g. 'bar@blurdybloop.com, baz@blurdybloop.com'
+    from:            # The message sender, e.g. 'Fred Foo <foo@blurdybloop.com>'
+    to:              # The message recipient, e.g. 'bar@blurdybloop.com, baz@blurdybloop.com'
   # The email plugin also uses the main `url` param for hyperlinks in the sent emails
 
 basicAuth:
