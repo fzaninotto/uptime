@@ -25,7 +25,7 @@ plugins:
   - ./plugins/console
   - ./plugins/patternMatcher
   - ./plugins/httpOptions
-  # - ./plugins/email
+  - ./plugins/email
   # - ./plugins/basicAuth
 
 email:
@@ -33,16 +33,16 @@ email:
   transport:         # see https://github.com/andris9/nodemailer for transport options
     service:   Gmail # see https://github.com/andris9/Nodemailer/blob/master/lib/wellknown.js for well-known services
     auth:            
-      user:          # The email account username, e.g. 'username@gmail.com'
-      pass:          # The email account password, e.G. 'password'
+      user:    bdqnghi@gmail.com     # The email account username, e.g. 'username@gmail.com'
+      pass:    06121991      # The email account password, e.G. 'password'
   event:
     up:        true
     down:      true
     paused:    false
     restarted: false
   message:           
-    from:            # The message sender, e.g. 'Fred Foo <foo@blurdybloop.com>'
-    to:              # The message recipient, e.g. 'bar@blurdybloop.com, baz@blurdybloop.com'
+    from:      Bui Duy Quoc Nghi      # The message sender, e.g. 'Fred Foo <foo@blurdybloop.com>'
+    to:        bdqnghi91@gmail.com      # The message recipient, e.g. 'bar@blurdybloop.com, baz@blurdybloop.com'
   # The email plugin also uses the main `url` param for hyperlinks in the sent emails
 
 basicAuth:

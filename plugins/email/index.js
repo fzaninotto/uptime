@@ -60,8 +60,8 @@ exports.initWebApp = function(options) {
   var transporter = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
-        user: config.auth.user
-        pass: config.auth.password
+        user: config.transport.auth.user,
+        pass: config.transport.auth.pass
     },
     logger: bunyan.createLogger({
         name: 'nodemailer'
@@ -87,13 +87,13 @@ exports.initWebApp = function(options) {
       };
       var lines = ejs.render(fs.readFileSync(filename, 'utf8'), renderOptions).split('\n');
       let message = {
-        to: config.message.to
+        to: config.message.to,
         subject: lines.shift(),
         text: lines.join('\n')
       } ;
       console.log('Sending Mail');
       transporter.sendMail(message, (error, info) => {
-          if (err2) return console.error('Email plugin error: %s', error);
+          if (error) return console.error('Email plugin error: %s', error);
           console.log('Message sent successfully!');
           console.log('Server responded with "%s"', info.response);
           transporter.close();
