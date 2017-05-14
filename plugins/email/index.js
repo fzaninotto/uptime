@@ -87,8 +87,9 @@ exports.initWebApp = function(options) {
         filename: filename
       };
       var lines = ejs.render(fs.readFileSync(filename, 'utf8'), renderOptions).split('\n');
+      mailist = config.message.to.split(",")
       let message = {
-        to: config.message.to,
+        to: mailist,
         subject: lines.shift(),
         text: lines.join('\n')
       } ;
