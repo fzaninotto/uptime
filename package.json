@@ -13,6 +13,7 @@
     "ejs":       "2.5.5",
     "config":    "0.4.32",
     "async":     "0.1.22",
+    "sync-request": "4.0.3",
     "socket.io": "0.9.14",
     "semver":    "1.1.0",
     "moment":    "2.1.0",

@@ -25,10 +25,11 @@ plugins:
   - ./plugins/console
   - ./plugins/patternMatcher
   - ./plugins/httpOptions
+  - ./plugins/httpAuth
   # - ./plugins/email
   # - ./plugins/basicAuth
-  - ./plugins/jsonSchema
-  - ./plugins/replaceDatetime
+#  - ./plugins/jsonSchema
+#  - ./plugins/replaceDatetime
 
 email:
   method:      SMTP  # possible methods are SMTP, SES, or Sendmail
@@ -51,3 +52,14 @@ basicAuth:
   username:    admin
   password:    password
 verbose: true # only used in dev
+
+
+# Example configuration of httpAuth plugin
+#httpAuth:
+#  plugins:
+#    exampleApi:                                   # plugin name
+#      host: 'example.api.com'                     # API host
+#      fields_mapping:                             # mapping of model fields and response fields
+#        access_token: 'access_token'              # <field name of check mode>: <field name from response>
+#        expires_in: 'expires_in'                  # <field name of check mode>: <field name from response>
+#      access_token_placeholder: '@access_token@'  # place holder where access token should be passed
