@@ -10,19 +10,34 @@
  *
  *   // in config/production.yaml
  *   plugins:
- *     # - ./plugins/httpOptions
+ *     # - ./plugins/httpAuth
  *
  * Usage
  * -----
- * Add the custom HTTP/HTTPS options in the 'HTTP Auth' textarea displayed
- * in the check Edit page, in YAML format. For instance:
+ * Add the custom request into the 3rd API for access token using below field:
+ *  AuthUrl - url of auth API,
+ *  AuthHttpBody - JSON data which needs to be send during the authentication process
+ *  AuthHTTPHeaders - HTTP headers in YAML format which needs to be send during the authentication process
  *
- * method: HEAD
- * headers:
- *   User-Agent: This Is Uptime Calling
- *   X-My-Custom-Header: FooBar
+ * Into the HttpOptions you should add a placeholder into the specific HTTP header where access token should be present.
+ * Example below:
  *
- * See the Node documentation for a list of available options.
+ * HTTP Options:
+ *      method: GET
+ *      headers:
+ *          "Content-Type": application/json
+ *           Authorization: "Bearer @access_token@"
+ *
+ * Auth Url:
+ *      https://api.example.com/oauth/token
+ *
+ * Auth HTTP Body:
+ *      {"grant_type":"client_credentials","scope":"public"}
+ *
+ * Auth HTTP Headers:
+ *      "Content-Type": application/json
+ *      Authorization: Basic SuperSecurityToken
+ *
  *
  * When Uptime polls a HTTP or HTTPS check, the custom options override
  * the ClientRequest options.
