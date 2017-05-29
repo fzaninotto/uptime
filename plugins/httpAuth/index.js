@@ -164,8 +164,8 @@ function loadPluginConfig(auth_url, config) {
      * Loads a plugin config based on provided url.
      */
 
-    for (var pluginName in config.plugins) {
-        var plugin = config.plugins[pluginName];
+    for (var checkName in config.checks) {
+        var plugin = config.checks[checkName];
         if (auth_url.indexOf(plugin.host) !== -1) {
             return plugin;
         }

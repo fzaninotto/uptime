@@ -56,8 +56,8 @@ verbose: true # only used in dev
 
 # Example configuration of httpAuth plugin
 #httpAuth:
-#  plugins:
-#    exampleApi:                                   # plugin name
+#  checks:
+#    exampleApi:                                   # check name
 #      host: 'example.api.com'                     # API host
 #      fields_mapping:                             # mapping of model fields and response fields
 #        access_token: 'access_token'              # <field name of check mode>: <field name from response>
