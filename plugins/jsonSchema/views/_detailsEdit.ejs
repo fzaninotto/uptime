@@ -1,0 +1,15 @@
+    <script src="/httpOptions/javascripts/jquery.autoresize.js"></script>
+<fieldset>
+  <div class="control-group">
+    <label class="control-label">JSON Schema</label>
+    <div class="controls">
+      <textarea name="check[jschema]" class="span8" rows="3" placeholder="JSON Schema"/><%= check.getPollerParam('jschema') || '' %></textarea>
+      <span class="help-inline">See the <a target="_blank" href="http://json-schema.org/"> documentation</a> for a list of available options</span>
+    </div>
+  </div>
+</fieldset>
+<script type="text/javascript">
+jQuery(function($) {
+  $('#check_form textarea[name="check[jschema]"]').autoResize();
+});
+</script>

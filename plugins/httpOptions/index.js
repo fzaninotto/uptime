@@ -42,6 +42,7 @@ exports.initWebApp = function(options) {
 		if (type !== 'http' && type !== 'https') return;
     if (!dirtyCheck.http_options) return;
     var http_options = dirtyCheck.http_options;
+    var http_body = dirtyCheck.http_body;
     try {
       var options = yaml.safeLoad(dirtyCheck.http_options);
       checkDocument.setPollerParam('http_options', options);
@@ -50,11 +51,13 @@ exports.initWebApp = function(options) {
         throw new Error('Malformed YAML configuration ' + dirtyCheck.http_options);
       } else throw e;
     }
+    checkDocument.setPollerParam('http_body', http_body);
 	});
 
   dashboard.on('checkEdit', function(type, check, partial) {
     if (type !== 'http' && type !== 'https') return;
     check.http_options = '';
+    check.http_body = '';
     var options = check.getPollerParam('http_options');
     if (options) {
       try {
@@ -66,7 +69,11 @@ exports.initWebApp = function(options) {
       }
       check.setPollerParam('http_options', options);
     }
-    partial.push(ejs.render(template, { locals: { check: check } }));
+    var http_body = check.getPollerParam('http_body');
+    if (http_body) {
+      check.setPollerParam('http_body', http_body);
+    }
+    partial.push(ejs.render(template, { check: check }));
   });
 
   options.app.use(express.static(__dirname + '/public'));
@@ -78,11 +85,13 @@ exports.initMonitor = function(options) {
   options.monitor.on('pollerCreated', function(poller, check, details) {
     if (check.type !== 'http' && check.type !== 'https') return;
     var options = check.pollerParams && check.pollerParams.http_options;
+    var http_body = check.pollerParams && check.pollerParams.http_body;
     if (!options) return;
     // add the custom options to the poller target
     for (var key in options) {
       poller.target[key] = options[key];
     }
+    poller.http_body = http_body;
     return;
   });
 
