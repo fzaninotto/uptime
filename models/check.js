@@ -31,7 +31,7 @@ var Check = new Schema({
   downtime    : { type: Number, default: 0 },
   qos         : {},
   pollerParams : Schema.Types.Mixed,
-  access_token : {}
+  placeHolderValues : {}
 });
 Check.plugin(require('mongoose-lifecycle'));
 
