@@ -34,6 +34,15 @@ var express = require('express');
 
 var template = fs.readFileSync(__dirname + '/views/_detailsEdit.ejs', 'utf8');
 
+function validateFilePath(filePath) {
+  try {
+    return fs.readFileSync(filePath);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
 exports.initWebApp = function(options) {
 
   var dashboard = options.dashboard;
@@ -50,6 +59,10 @@ exports.initWebApp = function(options) {
       if (e instanceof YAMLException) {
         throw new Error('Malformed YAML configuration ' + dirtyCheck.http_options);
       } else throw e;
+    }
+    if (options.keyPath && options.certPath) {
+      validateFilePath(options.keyPath);
+      validateFilePath(options.certPath);
     }
     checkDocument.setPollerParam('http_body', http_body);
 	});
