@@ -4,3 +4,6 @@ plugins/index.js
 node_modules
 npm-debug.log
 *.swp
+
+.idea
+config/local.yaml
