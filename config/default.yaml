@@ -57,9 +57,17 @@ verbose: true # only used in dev
 # Example configuration of httpAuth plugin
 #httpAuth:
 #  checks:
-#    exampleApi:                                   # check name
-#      host: 'example.api.com'                     # API host
-#      fields_mapping:                             # mapping of model fields and response fields
-#        access_token: 'access_token'              # <field name of check mode>: <field name from response>
-#        expires_in: 'expires_in'                  # <field name of check mode>: <field name from response>
-#      access_token_placeholder: '@access_token@'  # place holder where access token should be passed
+#    exampleApi:                               # check name
+#      host: 'example.com'                     # API host
+#      auth_resp_selectors:                    # mapping of model fields and response fields
+#        access_token: 'access_token'          # <field name of check mode>: <field name from response>
+#        expires_in: 'expires_in'              # <field name of check mode>: <field name from response>
+#      placeholders:
+#        access_token: '@access_token@'        # <placeholder name from auth_resp_selectors>: <placeholder used in resources (headers, body)>
+#    complexResponseExampleApi:                # check name
+#      host: 'dummy.rpcxml.com'                # API host
+#      auth_resp_selectors:
+#        access_token: 'methodResponse.params.param.value.string'  # selector to get response from nested structure
+#      placeholders:
+#        access_token: '@access_token@'        # place holder where access token should be passed
+
