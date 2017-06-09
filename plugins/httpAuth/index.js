@@ -60,15 +60,12 @@ exports.initWebApp = function (options) {
 
     dashboard.on('populateFromDirtyCheck', function (checkDocument, dirtyCheck, type) {
         if (type !== 'http' && type !== 'https') return;
-        if (!dirtyCheck.http_auth_url) return;
+        if (!dirtyCheck.http_auth_url || !dirtyCheck.http_auth_headers || !dirtyCheck.http_options) return;
+
         var http_auth_url = dirtyCheck.http_auth_url;
         var http_auth_body = dirtyCheck.http_auth_body;
-
-        if (!dirtyCheck.http_auth_headers) return;
-        var http_auth_headers = loadYamlValue(dirtyCheck.http_auth_headers);
-
-        if (!dirtyCheck.http_options) return;
-        var http_options = loadYamlValue(dirtyCheck.http_options);
+        var http_auth_headers = yaml.safeLoad(dirtyCheck.http_auth_headers);
+        var http_options = yaml.safeLoad(dirtyCheck.http_options);
 
         checkDocument.setPollerParam('http_options', http_options);
         checkDocument.setPollerParam('http_auth_url', http_auth_url);
@@ -78,10 +75,6 @@ exports.initWebApp = function (options) {
 
     dashboard.on('checkEdit', function (type, check, partial) {
         if (type !== 'http' && type !== 'https') return;
-        check.http_auth_url = '';
-        check.http_auth_body = '';
-        check.http_auth_headers = '';
-        check.http_options = '';
 
         var http_auth_url = check.getPollerParam('http_auth_url');
         if (http_auth_url) {
@@ -94,13 +87,13 @@ exports.initWebApp = function (options) {
 
         var http_auth_headers = check.getPollerParam('http_auth_headers');
         if (http_auth_headers) {
-            http_auth_headers = dumpYamlValue(http_auth_headers);
+            http_auth_headers = yaml.safeDump(http_auth_headers);
             check.setPollerParam('http_auth_headers', http_auth_headers);
         }
 
         var http_options = check.getPollerParam('http_options');
         if (http_options) {
-            http_options = dumpYamlValue(http_options);
+            http_options = yaml.safeDump(http_options);
             check.setPollerParam('http_options', http_options);
         }
 
@@ -123,40 +116,13 @@ exports.initMonitor = function (options) {
 
         if (!http_auth_url) return;
 
-        console.log('url: ' + http_auth_url);
-        console.log('headers: ' + http_auth_headers);
-        console.log('post body: ' + http_auth_body);
-        console.log('check._id: ' + check._id);
-
         var plugin_config = loadPluginConfig(http_auth_url, config);
-        console.log('plugin config: ' + plugin_config);
-
         var placeholderValues = check.placeHolderValues;
         if (!isAccessTokenValid(check, 'expires_on'))
             placeholderValues = updatePlaceHolderValues(check, http_auth_url, http_auth_body, http_auth_headers, plugin_config);
-
         replacePlaceholders(poller, http_options, plugin_config.placeholders, placeholderValues);
-        console.log('---------------------------');
-        console.log(poller.target);
-        console.log('---------------------------');
     });
 };
-
-function loadYamlValue(value) {
-    try {
-        return yaml.safeLoad(value);
-    } catch (e) {
-        throw e;
-    }
-}
-
-function dumpYamlValue(value) {
-    try {
-        return yaml.safeDump(value);
-    } catch (e) {
-        throw e;
-    }
-}
 
 function loadPluginConfig(auth_url, config) {
     /**
@@ -164,9 +130,11 @@ function loadPluginConfig(auth_url, config) {
      */
 
     for (var checkName in config.checks) {
-        var plugin = config.checks[checkName];
-        if (auth_url.indexOf(plugin.host) !== -1) {
-            return plugin;
+        if (config.checks.hasOwnProperty(checkName)) {
+            var plugin = config.checks[checkName];
+            if (auth_url.indexOf(plugin.host) !== -1) {
+                return plugin;
+            }
         }
     }
     return null;
@@ -198,9 +166,6 @@ function updatePlaceHolderValues(check, auth_url, auth_body, auth_headers, confi
 
     var placeholderValues = serializeResponse(response, config);
     updateCheckPlaceHoldersInDB(check._id, placeholderValues);
-    console.log('Placeholder values were built from the 3rd API and saved into the db');
-    console.log('serialized_resp: ' + response.getBody('utf-8'));
-    console.log("Placeholder values: ", placeholderValues);
     return placeholderValues;
 }
 
@@ -244,7 +209,6 @@ function updateCheckPlaceHoldersInDB(checkId, placeholderValues) {
         check.placeHolderValues = placeholderValues;
         check.save(function (saveErr) {
             if (saveErr) console.error(saveErr);
-            console.log('Check with id ' + checkId + ' was saved');
         });
     });
 }
