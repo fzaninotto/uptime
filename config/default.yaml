@@ -26,8 +26,8 @@ plugins:
   - ./plugins/patternMatcher
   - ./plugins/httpOptions
   - ./plugins/httpAuth
-  # - ./plugins/email
-  # - ./plugins/basicAuth
+#  - ./plugins/email
+#  - ./plugins/basicAuth
 #  - ./plugins/jsonSchema
 #  - ./plugins/replaceDatetime
 
