@@ -1,0 +1,30 @@
+<script src="/httpAuth/javascripts/jquery.autoresize.js"></script>
+<fieldset>
+    <div class="control-group">
+        <label class="control-label">Auth Url</label>
+        <div class="controls">
+            <textarea name="check[http_auth_url]" class="span8" placeholder="http://www.example.com/auth"><%= check.getPollerParam('http_auth_url') || '' %></textarea>
+            <span class="help-inline">You can provide authentication endpoint in this text area.</span>
+        </div>
+        <div class="control-group">
+            <label class="control-label">Auth HTTP Body</label>
+            <div class="controls">
+                <textarea name="check[http_auth_body]" class="span8" rows="3" placeholder="POST body in JSON format go here..."><%= check.getPollerParam('http_auth_body') || '' %></textarea>
+                <span class="help-inline">You can provide your body in this text area.</span>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">Auth HTTP Headers</label>
+            <div class="controls">
+                <textarea name="check[http_auth_headers]" class="span8" rows="3" placeholder="Use YAML format"><%= check.getPollerParam('http_auth_headers') || '' %></textarea>
+                <span class="help-inline">You can provide your auth HTTP headers in this text area.</span>
+            </div>
+        </div>
+</fieldset>
+<script type="text/javascript">
+    jQuery(function ($) {
+        $('#check_form textarea[name="check[http_auth_body]"]').autoResize();
+        $('#check_form textarea[name="check[http_auth_headers]"]').autoResize();
+        $('#check_form textarea[name="check[http_options]"]').autoResize();
+    });
+</script>

@@ -50,7 +50,7 @@ exports.initWebApp = function(options) {
 
   dashboard.on('checkEdit', function(type, check, partial) {
     if (type !== 'http' && type !== 'https') return;
-    partial.push(ejs.render(template, { locals: { check: check } }));
+    partial.push(ejs.render(template, { check: check }));
   });
 
 };
