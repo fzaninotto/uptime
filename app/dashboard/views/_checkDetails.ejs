@@ -11,7 +11,7 @@
             <label class="control-label">Url</label>
             <div class="controls controls-row">
               <input type="text" required name="check[url]" value="<%= check.url || '' %>" class="span5"  placeholder="http://www.example.com"/>
-              <span class="help-inline" style="position:absolute"><a href="<%= check.url %>" target="_blank"><img src="<%= route %>/images/external-link-ltr-icon.png"></a></span>
+              <span class="help-inline" style="position:absolute"><a href="<%= check.url || 'javascript:void 0;' %>" target="_blank"><img src="<%= route %>/images/external-link-ltr-icon.png"></a></span>
             </div>
           </div>
         </fieldset>
