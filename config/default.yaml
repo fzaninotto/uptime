@@ -27,6 +27,7 @@ plugins:
   - ./plugins/httpOptions
   # - ./plugins/email
   # - ./plugins/basicAuth
+  # - ./plugins/pushover
 
 email:
   method:      SMTP  # possible methods are SMTP, SES, or Sendmail
@@ -54,3 +55,12 @@ webPageTest:
   server: 'http://www.webpagetest.org'
   key:
   testOptions: 
+
+pushover:
+  token:
+  users:
+  event:
+    up: true
+    down: true
+    paused:    false
+    restarted: false

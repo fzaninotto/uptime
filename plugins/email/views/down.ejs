@@ -1,5 +1,5 @@
 [Down] Check "<%= check.name %>" just went down
-On <%= moment(checkEvent.timestamp).format('LLLL') %>,
+On <%= moment(checkEvent.timestamp).format('DD.MM.YYYY HH:mm') %>,
 a test on URL "<%= check.url %>" failed with the following error:
 
     <%= checkEvent.details %>

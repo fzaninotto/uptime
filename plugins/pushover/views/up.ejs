@@ -7,6 +7,3 @@ and after <%= moment.duration(checkEvent.downtime).humanize() %> of downtime,
 On <%= moment(checkEvent.timestamp).format('DD.MM.YYYY HH:mm') %>,
 <% }%>
 a test on URL "<%= check.url %>" responded correctly.
-
-<% include details %>
-<% include footer %>
