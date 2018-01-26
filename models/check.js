@@ -153,6 +153,10 @@ Check.methods.mustNotifyEvent = function(status) {
     // check goes up after reaching the down alert treshold before
     return true;
   }
+
+  // reset count because status is already up 
+  this.errorCount = 0;  
+
   // check either goes up after less than alertTreshold down pings, or is already up for long
   return false;
 };
