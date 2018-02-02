@@ -23,7 +23,7 @@
 var fs   = require('fs');
 var ejs  = require('ejs');
 
-var matchPattern = '^/(.*?)/(g?i?m?y?)$';
+var matchPattern = '^/(.*?)/([gimy]*)$';
 var template = fs.readFileSync(__dirname + '/views/_detailsEdit.ejs', 'utf8');
 
 exports.initWebApp = function(options) {

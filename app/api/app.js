@@ -51,6 +51,7 @@ var refreshUpCount = function(callback) {
 
 Check.on('afterInsert', function() { upCount = undefined; });
 Check.on('afterRemove', function() { upCount = undefined; });
+Check.on('afterUpdate', function() { upCount = undefined; });
 CheckEvent.on('afterInsert', function() { upCount = undefined; });
 
 app.get('/checks/count', function(req, res, next) {
