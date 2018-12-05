@@ -113,6 +113,7 @@ module.exports = function(app) {
 
  app.put('/checks', function(req, res, next) {
    var check = new Check();
+    
    try {
      check.populateFromDirtyCheck(req.body, app.get('pollerCollection'));
      app.emit('populateFromDirtyCheck', check, req.body, check.type);
