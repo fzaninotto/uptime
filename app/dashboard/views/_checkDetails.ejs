@@ -10,7 +10,7 @@
           <div class="control-group">
             <label class="control-label">Url</label>
             <div class="controls controls-row">
-              <input type="text" required name="check[url]" value="<%= check.url || '' %>" class="span5"  placeholder="http://www.example.com"/>
+              <input type="text" required name="check[url]" value="<%= check.url || '' %>" class="span5" placeholder="http://www.example.com" />
               <span class="help-inline" style="position:absolute"><a href="<%= check.url %>" target="_blank"><img src="<%= route %>/images/external-link-ltr-icon.png"></a></span>
             </div>
           </div>
@@ -25,7 +25,10 @@
               <select name="check[type]" value="<% check.type || '' %>" class="span2">
                 <option value="">auto</option>
                 <% pollerCollection.getTypes().forEach(function(poller) { %>
-                <option value="<%= poller %>" <% if (poller === check.type) { %> selected="true" <% } %>><%= poller %></option>
+                <option value="<%= poller %>" <% if (poller===check.type) { %> selected="true"
+                  <% } %>>
+                  <%= poller %>
+                </option>
                 <% }) %>
               </select>
             </div>
@@ -39,7 +42,7 @@
       <div class="control-group">
         <label class="control-label">Name</label>
         <div class="controls">
-          <input type="text" name="check[name]" value="<%= check.name || '' %>" class="span8" placeholder="Type a name here"/>
+          <input type="text" name="check[name]" value="<%= check.name || '' %>" class="span8" placeholder="Type a name here" />
         </div>
       </div>
     </fieldset>
@@ -76,7 +79,80 @@
           </div>
         </fieldset>
       </div>
+    </div>
 
+    <div class="row">
+      <div class="span6">
+        <fieldset>
+          <div class="control-group">
+            <label class="control-label">Days of Week</label>
+            <div class="controls">
+              <div class="checkbox">
+                <label>
+                  <% let checkedMonday = check.monday ? "checked" : "" %>
+                  <input type="checkbox" name="check[monday]" value="1" <%=checkedMonday %> /><span>Monday</span>
+                </label>
+              </div>
+              <div class="checkbox">
+                <label>
+                  <% let checkedTuesday = check.tuesday ? "checked" : "" %>
+                  <input type="checkbox" name="check[tuesday]" value="2" <%=checkedTuesday %>/><span>Tuesday</span>
+                </label>
+              </div>
+              <div class="checkbox">
+                <label>
+                  <% let checkedWednesday = check.wednesday ? "checked" : "" %>
+                  <input type="checkbox" name="check[wednesday]" value="3" <%=checkedWednesday %>/><span>Wednesday</span>
+                </label>
+              </div>
+
+              <div class="checkbox">
+                <label>
+                  <% let checkedThursday = check.thursday ? "checked" : "" %>
+                  <input type="checkbox" name="check[thursday]" value="4" <%=checkedThursday %>/><span>Thursday</span>
+                </label>
+              </div>
+
+              <div class="checkbox">
+                <label>
+                    <% let checkedFriday = check.friday ? "checked" : "" %>
+                  <input type="checkbox" name="check[friday]" value="5" <%=checkedFriday %>/><span>Friday</span>
+                </label>
+              </div>
+
+              <div class="checkbox">
+                <label>
+                  <% let checkedSaturday = check.saturday ? "checked" : "" %>
+                  <input type="checkbox" name="check[saturday]" value="6" <%=checkedSaturday %>/><span>Saturday</span>
+                </label>
+              </div>
+
+              <div class="checkbox">
+                <label>
+                  <% let checkedSunday = check.sunday ? "checked" : "" %>
+                  <input type="checkbox" name="check[sunday]" value="7" <%=checkedSunday %>/> <span>Sunday</span>
+                </label>
+              </div>
+
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="span6">
+        <div class="row">
+
+          <div class="form-group">
+            <label>Start Hour</label>
+            <input type="text" class="form-control" name="check[startHour]" placeholder="hh:mm" value="<%= check.startHour ? check.startHour : '5:00' %>">
+          </div>
+
+          <div class="form-group">
+            <label>Stop Hour</label>
+            <input type="text" class="form-control" name="check[stopHour]" placeholder="hh:mm" value="<%= check.stopHour ? check.stopHour : '19:00' %>">
+          </div>
+        </div>
+      </div>
     </div>
 
 
@@ -86,28 +162,28 @@
         <div class="controls">
           <div class="input-append">
             <input type="text" name="check[alertTreshold]" value="<%= check.alertTreshold %>" class="span1" />
-            <span class="add-on">failed pings</span>
           </div>
         </div>
       </div>
     </fieldset>
 
     <span id="pollerDetails">
-    <%- pollerDetails %>
+      <%- pollerDetails %>
     </span>
 
     <fieldset>
       <div class="control-group">
         <label class="control-label">Tags</label>
         <div class="controls">
-          <textarea name="check[tags]" rows="2"/><%= check.tags.join(', ') %></textarea>
+          <textarea name="check[tags]" rows="2" /><%= check.tags.join(', ') %></textarea>
         </div>
       </div>
       <% if (check.lastTested) { %>
       <div class="control-group">
         <label class="control-label">Last edited on</label>
         <div class="controls">
-          <span class="span4 uneditable-input"><%= check.lastTested.getTime() %></span>
+          <span class="span4 uneditable-input">
+            <%= check.lastTested.getTime() %></span>
         </div>
       </div>
       <% } %>
@@ -127,46 +203,53 @@
 </div>
 <script src="<%= route %>/javascripts/jquery.tagsinput.min.js"></script>
 <script>
-var intervalFieldSelector = 'form input[name="check\\[interval\\]"]';
-function updatePollingIntervalTooltip() {
-  var value = $(intervalFieldSelector).val();
-  if (value > 60 ) {
-    value = (value / 60).toFixed();
-    unit = 'minute' + (value > 1 ? 's' : '');
-    $(intervalFieldSelector + ' + span').html('s (' + value + ' ' + unit + ')');
-  } else {
-    $(intervalFieldSelector + ' + span').html('s');
-  }
-}
-$(document).ready(function() {
-  $('.uneditable-input').text(moment(parseInt($('.uneditable-input').html())).format('LLLL'));
-  $('#check_form button[name="delete"]').click(function() {
-    if (!confirm("This will delete the check and related pings and stats.\nAre you sure?")) return false;
-    $('#check_form input[name="_method"]').val('delete');
-  });
-  updatePollingIntervalTooltip();
+  var intervalFieldSelector = 'form input[name="check\\[interval\\]"]';
 
-  $(intervalFieldSelector).bind('keypress keyup', updatePollingIntervalTooltip);
+  var intervalPeriod = 'form input[name="check\\[period\\]"]';
 
-  $('#check_form input[name*="url"]').blur(function() {
-    var field = $(this);
-    if (field.val() && field.val().indexOf('://') == -1) {
-      field.val('http://' + field.val());
+  function updatePollingIntervalTooltip() {
+    var value = $(intervalFieldSelector).val();
+    if (value > 60) {
+      value = (value / 60).toFixed();
+      unit = 'minute' + (value > 1 ? 's' : '');
+      $(intervalFieldSelector + ' + span').html('s (' + value + ' ' + unit + ')');
+    } else {
+      $(intervalFieldSelector + ' + span').html('s');
     }
-  });
+  }
+  $(document).ready(function () {
+    $('.uneditable-input').text(moment(parseInt($('.uneditable-input').html())).format('LLLL'));
+    $('#check_form button[name="delete"]').click(function () {
+      if (!confirm("This will delete the check and related pings and stats.\nAre you sure?")) return false;
+      $('#check_form input[name="_method"]').val('delete');
+    });
+    updatePollingIntervalTooltip();
 
-  $('form select[name="check\\[type\\]"]').bind('change', function() {
-    var pollerDetails = $('#pollerDetails');
-    $.get('<%= route %>/pollerPartial/' + $(this).val())
-      .fail(function() { pollerDetails.html(''); })
-      .done(function(html) { pollerDetails.html(html); });
-  });
+    $(intervalFieldSelector).bind('keypress keyup', updatePollingIntervalTooltip);
 
-  var tagField = $('#check_form textarea[name="check[tags]"]');
-  var tags = tagField.val().split(', ');
-  tagField.tagsInput();
-  $('.tagsinput span.tag span').live('click', function() {
-    window.location = '<%= route %>/tags/' + $(this).text();
+    $('#check_form input[name*="url"]').blur(function () {
+      var field = $(this);
+      if (field.val() && field.val().indexOf('://') == -1) {
+        field.val('http://' + field.val());
+      }
+    });
+
+    $('form select[name="check\\[type\\]"]').bind('change', function () {
+      var pollerDetails = $('#pollerDetails');
+      $.get('<%= route %>/pollerPartial/' + $(this).val())
+        .fail(function () {
+          pollerDetails.html('');
+        })
+        .done(function (html) {
+          pollerDetails.html(html);
+        });
+    });
+
+    var tagField = $('#check_form textarea[name="check[tags]"]');
+    var tags = tagField.val().split(', ');
+    tagField.tagsInput();
+    $('.tagsinput span.tag span').live('click', function () {
+      window.location = '<%= route %>/tags/' + $(this).text();
+    });
   });
-});
 </script>

@@ -99,6 +99,7 @@ app.get('/checks/:id/edit', function(req, res, next) {
   Check.findOne({ _id: req.params.id }, function(err, check) {
     if (err) return next(err);
     if (!check) return res.send(404, 'failed to load check ' + req.params.id);
+    check = setDaysOfWeek(check);
     var pollerDetails = [];
     app.emit('checkEdit', check.type, check, pollerDetails);
     res.render('check_edit', { check: check, pollerCollection: app.get('pollerCollection'), pollerDetails: pollerDetails.join(''), info: req.flash('info'), req: req });
@@ -167,4 +168,38 @@ app.get('/tags/:name', function(req, res, next) {
 if (!module.parent) {
   app.listen(3000);
   console.log('Express started on port 3000');
+}
+
+let setDaysOfWeek = function(check) {
+
+  check.daysOfWeek.forEach(x => {
+    switch (x) {
+      case 1:
+        check.monday = x;
+        break;
+      case 2:
+        check.tuesday = x;
+        break;
+      case 3:
+        check.wednesday = x;
+        break;
+      case 4:
+        check.thursday = x;
+        break;
+      case 5:
+        check.friday = x;
+        break;
+      case 6:
+        check.saturday = x;
+        break;
+      case 0:
+        check.sunday = x;
+        break;
+    
+      default:
+        break;
+    }
+  });
+
+  return check;
 }
