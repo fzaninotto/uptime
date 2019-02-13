@@ -25,6 +25,7 @@ plugins:
   - ./plugins/console
   - ./plugins/patternMatcher
   - ./plugins/httpOptions
+  - ./plugins/webhooks
   # - ./plugins/email
   # - ./plugins/basicAuth
   # - ./plugins/pushover

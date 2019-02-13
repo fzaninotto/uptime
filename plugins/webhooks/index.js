@@ -1,0 +1,1 @@
+exports.initWebApp = require('uptime-webhooks').init;

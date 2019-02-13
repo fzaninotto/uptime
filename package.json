@@ -19,6 +19,7 @@
     "pushover-notifications": "^0.2.4",
     "semver": "1.1.0",
     "socket.io": "0.9.14",
+    "uptime-webhooks": "0.0.1",
     "webpagetest": "0.2.0"
   },
   "devDependencies": {
