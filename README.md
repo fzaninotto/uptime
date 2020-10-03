@@ -1,7 +1,7 @@
 uptime
 ======
 
-A remote monitoring application using Node.js, MongoDB, and Twitter Bootstrap.
+A remote monitoring application us[![Run on Repl.it](https://repl.it/badge/github/fzaninotto/uptime)](https://repl.it/github/fzaninotto/uptime)ing Node.js, MongoDB, and Twitter Bootstrap.
 
 <img src="https://raw.github.com/fzaninotto/uptime/downloads/check_details.png" title="Visualizing the availability of an HTTP check in Uptime" width="50%" valign="top" />
 <img src="https://raw.github.com/fzaninotto/uptime/downloads/check_form.png" title="Editing check attributes (polling interval, slow threshold, alert threshold, pattern to match, tags) in Uptime" width="50%" valign="top" />
