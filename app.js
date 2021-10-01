@@ -6,8 +6,12 @@ var http       = require('http');
 var url        = require('url');
 var express    = require('express');
 var config     = require('config');
-var socketIo   = require('socket.io');
+var { Server }   = require('socket.io');
 var fs         = require('fs');
+var bodyParser = require('body-parser');
+var cookieSession = require('cookie-session');
+var cookieParser = require('cookie-parser');
+var methodOverride = require('method-override');
 var monitor    = require('./lib/monitor');
 var analyzer   = require('./lib/analyzer');
 var CheckEvent = require('./models/checkEvent');
@@ -28,21 +32,18 @@ a.start();
 var app = module.exports = express();
 var server = http.createServer(app);
 
-app.configure(function(){
-  app.use(app.router);
-  // the following middlewares are only necessary for the mounted 'dashboard' app, 
-  // but express needs it on the parent app (?) and it therefore pollutes the api
-  app.use(express.bodyParser());
-  app.use(express.methodOverride());
-  app.use(express.cookieParser('Z5V45V6B5U56B7J5N67J5VTH345GC4G5V4'));
-  app.use(express.cookieSession({
-    key:    'uptime',
-    secret: 'FZ5HEE5YHD3E566756234C45BY4DSFZ4',
-    proxy:  true,
-    cookie: { maxAge: 60 * 60 * 1000 }
-  }));
-  app.set('pollerCollection', new PollerCollection());
-});
+// the following middlewares are only necessary for the mounted 'dashboard' app, 
+// but express needs it on the parent app (?) and it therefore pollutes the api
+app.use(bodyParser());
+app.use(methodOverride());
+app.use(cookieParser('Z5V45V6B5U56B7J5N67J5VTH345GC4G5V4'));
+app.use(cookieSession({
+  key:    'uptime',
+  secret: 'FZ5HEE5YHD3E566756234C45BY4DSFZ4',
+  proxy:  true,
+  cookie: { maxAge: 60 * 60 * 1000 }
+}));
+app.set('pollerCollection', new PollerCollection());
 
 // load plugins (may add their own routes and middlewares)
 config.plugins.forEach(function(pluginName) {
@@ -61,17 +62,15 @@ config.plugins.forEach(function(pluginName) {
 
 app.emit('beforeFirstRoute', app, apiApp);
 
-app.configure('development', function() {
+if (process.env.NODE_ENV === 'development') {
   if (config.verbose) mongoose.set('debug', true);
   app.use(express.static(__dirname + '/public'));
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-});
+}
 
-app.configure('production', function() {
+if (process.env.NODE_ENV === 'production') {
   var oneYear = 31557600000;
   app.use(express.static(__dirname + '/public', { maxAge: oneYear }));
-  app.use(express.errorHandler());
-});
+}
 
 // Routes
 app.emit('beforeApiRoutes', app, apiApp);
@@ -90,16 +89,8 @@ app.get('/favicon.ico', function(req, res) {
 app.emit('afterLastRoute', app);
 
 // Sockets
-var io = socketIo.listen(server);
-
-io.configure('production', function() {
-  io.enable('browser client etag');
-  io.set('log level', 1);
-});
-
-io.configure('development', function() {
-  if (!config.verbose) io.set('log level', 1);
-});
+var io = new Server();
+io.listen(server);
 
 CheckEvent.on('afterInsert', function(event) {
   io.sockets.emit('CheckEvent', event.toJSON());
@@ -107,14 +98,12 @@ CheckEvent.on('afterInsert', function(event) {
 
 io.sockets.on('connection', function(socket) {
   socket.on('set check', function(check) {
-    socket.set('check', check);
+    socket.data.check = check;
   });
   Ping.on('afterInsert', function(ping) {
-    socket.get('check', function(err, check) {
-      if (ping.check == check) {
-        socket.emit('ping', ping);
-      }
-    });
+    if (ping.check == socket.data.check) {
+      socket.emit('ping', ping);
+    }
   });
 });
 

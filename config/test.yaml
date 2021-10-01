@@ -1,4 +1,2 @@
 mongodb:
-  server:   localhost
-  database: uptime-test
-  user:     root
+  connectionString: mongodb://127.0.0.1:27017/uptime-test

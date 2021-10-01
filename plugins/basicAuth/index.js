@@ -30,11 +30,16 @@
  *     password: S3cR3t
  */
 var express = require('express');
+var basicAuth = require('express-basic-auth');
 
 exports.initWebApp = function(options) {
   var config = options.config.basicAuth;
   options.app.on('beforeFirstRoute', function(app, dashboardApp) {
-    app.use(express.basicAuth(config.username, config.password));
+    app.use(basicAuth({
+      users: {
+        [config.username]: config.password
+      }
+    }));
   });
 };
 

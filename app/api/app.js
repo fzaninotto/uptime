@@ -7,23 +7,7 @@ var CheckEvent = require('../../models/checkEvent');
 
 var app = module.exports = express();
 
-var debugErrorHandler = function() {
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-}
-
 // middleware
-app.configure(function(){
-  app.use(app.router);
-});
-
-app.configure('development', debugErrorHandler);
-
-app.configure('test', debugErrorHandler);
-
-app.configure('production', function(){
-  app.use(express.errorHandler());
-});
-
 
 // up count
 var upCount;

@@ -346,12 +346,12 @@ Check.methods.populateFromDirtyCheck = function(dirtyCheck, pollerCollection) {
 };
 
 Check.statics.getAllTags = function(callback) {
-  this.aggregate(
+  this.aggregate([
     { $unwind: "$tags" },
     { $group: {
     _id: null,
     tags: { $addToSet: "$tags" }
-  } }, function(err, res) {
+  } }], function(err, res) {
     if (err || !res.length) return callback(err, []);
     return callback(null, res[0].tags);
   });

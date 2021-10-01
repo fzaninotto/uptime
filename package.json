@@ -4,27 +4,32 @@
   "version": "3.2.0",
   "author": "Francois Zaninotto",
   "dependencies": {
-    "async": "0.1.22",
-    "config": "0.4.32",
-    "connect-flash": "0.1.0",
-    "ejs": "0.8.3",
-    "express": "3.2.0",
-    "express-partials": "0.1.1",
-    "js-yaml": "2.1.0",
-    "moment": "2.1.0",
-    "mongoose": "3.6.7",
+    "async": "3.2.1",
+    "body-parser": "^1.19.0",
+    "config": "3.3.6",
+    "connect-flash": "0.1.1",
+    "cookie-parser": "^1.4.5",
+    "cookie-session": "^1.4.0",
+    "ejs": "3.1.6",
+    "express": "4.17.1",
+    "express-basic-auth": "^1.2.0",
+    "express-partials": "0.3.0",
+    "js-yaml": "4.1.0",
+    "method-override": "^3.0.0",
+    "moment": "2.29.1",
+    "mongoose": "6.0.8",
     "mongoose-lifecycle": "1.0.0",
-    "net-ping": "1.1.7",
-    "nodemailer": "2.6.4",
-    "pushover-notifications": "^0.2.4",
-    "semver": "1.1.0",
-    "socket.io": "0.9.14",
+    "net-ping": "1.2.3",
+    "nodemailer": "6.6.5",
+    "pushover-notifications": "^1.2.2",
+    "semver": "7.3.5",
+    "socket.io": "4.2.0",
     "uptime-webhooks": "0.0.1",
-    "webpagetest": "0.2.0"
+    "webpagetest": "0.5.0"
   },
   "devDependencies": {
-    "mocha": "1.7.x",
-    "should": "1.1.0"
+    "mocha": "9.1.x",
+    "should": "13.2.3"
   },
   "keywords": [
     "uptime",
@@ -35,8 +40,8 @@
   "repository": "https://github.com/fzaninotto/uptime",
   "license": "MIT",
   "engines": {
-    "node": "0.10.x",
-    "npm": "1.2.x"
+    "node": ">=16",
+    "npm": ">=7"
   },
   "scripts": {
     "test": "node_modules/.bin/mocha test/lib/",

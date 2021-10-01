@@ -10,7 +10,6 @@ var Ping       = require('../../../models/ping');
  * Check Routes
  */
 module.exports = function(app) {
-
   // support 'check' and 'page' arguments in query string
   app.get('/pings', function(req, res, next) {
     var query = {};
@@ -21,7 +20,7 @@ module.exports = function(app) {
     .find(query)
     .sort({ timestamp: -1 })
     .limit(50)
-    .skip((req.param('page', 1) - 1) * 50)
+    .skip(((req.params.page ?? 1) - 1) * 50)
     .exec(function(err, pings) {
       if (err) return next(err);
       res.json(pings);
@@ -45,18 +44,18 @@ module.exports = function(app) {
   app.post('/pings', function(req, res) {
     Check.findById(req.body.checkId, function(err1, check) {
       if (err1) {
-        return res.send(err1.message, 500);
+        return res.status(500).send(err1.message);
       }
       if (!check) {
-        return res.send('Error: No existing check with id ' + req.body.checkId, 403);
+        return res.status(403).send('Error: No existing check with id ' + req.body.checkId);
       }
       if (!check.needsPoll) {
-        return res.send('Error: This check was already polled. No ping was created', 403);
+        return res.status(403).send('Error: This check was already polled. No ping was created');
       }
       var status = req.body.status === 'true';
       Ping.createForCheck(status, req.body.timestamp, req.body.time, check, req.body.name, req.body.error, req.body.details,  function(err2, ping) {
         if (err2) {
-          return res.send(err2.message, 500);
+          return res.status(500).send(err2.message);
         }
         res.json(ping);
       });
